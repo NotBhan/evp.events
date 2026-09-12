@@ -1,0 +1,334 @@
+@import "tailwindcss";
+
+@theme {
+  /* Dominant Foundation Tokens (Derived from Client Poster & Hoarding) */
+  --color-deep-plum: #12080D;
+  --color-royal-maroon: #220D1A;
+  --color-card-surface: #1C0D18;
+  --color-royal-purple: #220D1A;
+
+  /* Primary Accents (Royal Gold, Festive Vermilion, Diya Amber) */
+  --color-antique-gold: #D4AF37;
+  --color-ochre-gold: #D4AF37;
+  --color-bright-gold: #F3C64C;
+  --color-vermilion: #D92524;
+  --color-festival-red: #B50D00;
+  --color-amber-glow: #FF9429;
+  --color-festival-pink: #D92524;
+
+  /* Typography & High-Contrast Readability */
+  --color-warm-cream: #FFF8EB;
+  --color-muted-cream: #D6C8B4;
+
+  /* Typography Fonts */
+  --font-display: var(--font-bebas-neue), sans-serif;
+  --font-body: var(--font-manrope), sans-serif;
+}
+
+:root {
+  --background: #12080D;
+  --foreground: #FFF8EB;
+}
+
+/* Base Body Styles */
+html {
+  background-color: #12080D;
+  color: #FFF8EB;
+  font-family: var(--font-body), sans-serif;
+  overflow-x: clip;
+}
+
+body {
+  background-color: #12080D;
+  color: #FFF8EB;
+  font-family: var(--font-body), sans-serif;
+  overflow-x: clip;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection Color */
+::selection {
+  background-color: #D92524;
+  color: #FFF8EB;
+}
+
+/* Lenis Recommended CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Custom Festival Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #12080D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #220D1A;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Zero-Flash Initial CSS State for Hero Stage */
+.hero-wrapper-sticky {
+  min-height: 200svh;
+  min-height: 200vh; /* Fallback */
+  position: relative;
+  width: 100%;
+}
+
+.hero-stage-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  height: 100vh; /* Fallback */
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Diya Ambient Sway Keyframe Animation (Independent of Scroll) */
+@keyframes diyaSwayLeft {
+  0%, 100% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(-2.5deg);
+  }
+}
+
+@keyframes diyaSwayRight {
+  0%, 100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+
+.animate-diya-left {
+  animation: diyaSwayLeft 5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.animate-diya-right {
+  animation: diyaSwayRight 5.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+@keyframes flamePulse {
+  0%, 100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px rgba(255, 148, 41, 0.8));
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(255, 190, 64, 1));
+    transform: scale(1.08);
+  }
+}
+
+.animate-flame {
+  animation: flamePulse 2.2s ease-in-out infinite;
+}
+
+/* Chakri Ambient Rotational Animations (Mechanical Temple Halo) */
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinSlowReverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes auraPulse {
+  0%, 100% {
+    opacity: 0.75;
+    transform: scale(1.15);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.28);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 22s linear infinite;
+  transform-origin: center center;
+}
+
+.animate-spin-slow-reverse {
+  animation: spinSlowReverse 16s linear infinite;
+  transform-origin: center center;
+}
+
+.animate-spin-subtle {
+  animation: spinSlow 30s linear infinite;
+  transform-origin: center center;
+}
+
+.animate-aura-pulse {
+  animation: auraPulse 4.5s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 30s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-slow,
+  .animate-spin-slow-reverse,
+  .animate-spin-subtle,
+  .animate-aura-pulse,
+  .animate-diya-left,
+  .animate-diya-right,
+  .animate-flame,
+  .animate-marquee {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   OFFICIAL BOOKING RECEIPT PRINT STYLESHEET
+   Isolates receipt on clean light paper, suppresses ink-waste & UI navigation
+   ========================================================================== */
+@media print {
+  /* Standard suppression */
+  nav,
+  footer,
+  header,
+  .no-print,
+  #navbar,
+  button,
+  a[href^="http"],
+  .hero-wrapper-sticky,
+  .hero-stage-sticky {
+    display: none !important;
+  }
+
+  /* Reset body and html for printer */
+  html,
+  body {
+    background: #FFFFFF !important;
+    color: #12080D !important;
+    font-size: 11pt;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Visibility isolation: Hide all page content except the printable receipt */
+  body * {
+    visibility: hidden;
+  }
+
+  #booking-receipt-document,
+  #booking-receipt-document * {
+    visibility: visible;
+  }
+
+  #booking-receipt-document {
+    position: relative !important;
+    margin: 16pt auto !important;
+    width: 100% !important;
+    max-width: 95% !important;
+    padding: 20pt 24pt !important;
+    background: #FFFFFF !important;
+    color: #12080D !important;
+    border: 2pt solid #B38F24 !important;
+    border-radius: 6pt !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Ink-friendly typography and light panel tints for print */
+  #booking-receipt-document h1,
+  #booking-receipt-document h2,
+  #booking-receipt-document h3,
+  #booking-receipt-document .font-display {
+    color: #4A0E2E !important;
+  }
+
+  #booking-receipt-document span,
+  #booking-receipt-document p,
+  #booking-receipt-document div {
+    color: #12080D !important;
+  }
+
+  #booking-receipt-document strong {
+    color: #B50D00 !important;
+  }
+
+  #booking-receipt-document .text-bright-gold {
+    color: #8C1D40 !important;
+  }
+
+  #booking-receipt-document .text-warm-cream {
+    color: #12080D !important;
+  }
+
+  #booking-receipt-document div[class*="bg-deep-plum"],
+  #booking-receipt-document div[class*="bg-royal-maroon"] {
+    background: #FFFDF5 !important;
+    border: 1pt solid #D4AF37 !important;
+  }
+
+  #booking-receipt-document header,
+  #booking-receipt-document footer,
+  #booking-receipt-document div[class*="border-b"] {
+    border-color: #B38F24 !important;
+  }
+}
+
+
