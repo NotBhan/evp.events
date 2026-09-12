@@ -25,6 +25,9 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import BookingReceipt from './BookingReceipt';
+import BookingReceiptPrint, { SubmittedBookingRecord } from './BookingReceiptPrint';
+
+export type { SubmittedBookingRecord };
 
 interface BookingDeskProps {
   initialPassId?: string;
@@ -32,28 +35,17 @@ interface BookingDeskProps {
 
 type SubmissionState = 'IDLE' | 'SUBMITTING' | 'SUCCESS' | 'ERROR';
 
-interface SubmittedBookingRecord {
-  bookingId: string;
-  passType: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-  fullName: string;
-  phone: string;
-  email?: string;
-  city?: string;
-  timestamp: string;
-}
-
 export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
   // Stage state: 1 = Select Pass, 2 = Attendee Info, 3 = Review & Submit
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
-  // Animation Refs
+  // Stable Component & Stage Shell Refs
+  const bookingDeskRef = useRef<HTMLDivElement>(null);
+  const stageShellRef = useRef<HTMLDivElement>(null);
+  const fullNameInputRef = useRef<HTMLInputElement>(null);
   const stageIndicatorRef = useRef<HTMLDivElement>(null);
   const stage1Ref = useRef<HTMLDivElement>(null);
   const stage2Ref = useRef<HTMLFormElement>(null);
-  const receiptRef = useRef<HTMLDivElement>(null);
   const stage3ActionsRef = useRef<HTMLDivElement>(null);
   const successBoxRef = useRef<HTMLDivElement>(null);
 
@@ -84,6 +76,50 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
 
   const totalAmount = selectedPass.price * quantity;
 
+  // Controlled Stage Transition: preserves the booking desk's document-top anchor
+  // and positions viewport naturally if the user was scrolled far past the desk
+  const transitionToStep = (targetStep: 1 | 2 | 3) => {
+    if (!bookingDeskRef.current) {
+      setCurrentStep(targetStep);
+      return;
+    }
+
+    const deskRect = bookingDeskRef.current.getBoundingClientRect();
+    const deskDocTop = deskRect.top + window.scrollY;
+    const masthead = typeof document !== 'undefined' ? document.getElementById('main-masthead') : null;
+    const mastheadHeight = masthead ? masthead.offsetHeight : 80;
+
+    setCurrentStep(targetStep);
+
+    // After DOM commit: compensate scroll position to keep booking desk anchored
+    requestAnimationFrame(() => {
+      if (!bookingDeskRef.current) return;
+      const newRect = bookingDeskRef.current.getBoundingClientRect();
+      const newDocTop = newRect.top + window.scrollY;
+      const lenis = typeof window !== 'undefined' ? (window as any).lenis : null;
+
+      // If user scrolled past the desk top (e.g. after scrolling through tall pass list in Stage 1)
+      if (deskRect.top < 0) {
+        const targetY = Math.max(0, newDocTop - mastheadHeight - 16);
+        if (lenis) {
+          lenis.scrollTo(targetY, { immediate: true });
+        } else {
+          window.scrollTo({ top: targetY, behavior: 'instant' as ScrollBehavior });
+        }
+      } else {
+        const delta = newDocTop - deskDocTop;
+        if (Math.abs(delta) > 1) {
+          const targetY = window.scrollY + delta;
+          if (lenis) {
+            lenis.scrollTo(targetY, { immediate: true });
+          } else {
+            window.scrollTo({ top: targetY, behavior: 'instant' as ScrollBehavior });
+          }
+        }
+      }
+    });
+  };
+
   // Stage Indicator Entrance on initial mount
   useEffect(() => {
     if (isReducedMotion()) return;
@@ -96,49 +132,44 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
     }
   }, []);
 
-  // Stage Transitions (1 -> 2 -> 3)
+  // Stage Transitions (1 -> 2 -> 3): restrained in-place opacity transitions
+  // NO translateY or scale shifts to prevent viewport jumping
   useEffect(() => {
     if (isReducedMotion()) return;
 
     if (currentStep === 1 && stage1Ref.current) {
-      const cards = stage1Ref.current.querySelectorAll('.stage-1-pass-card');
-      if (cards.length > 0) {
-        gsap.fromTo(
-          cards,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, stagger: 0.05, duration: 0.5, ease: 'power2.out' }
-        );
-      }
+      gsap.fromTo(
+        stage1Ref.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.25, ease: 'power1.out' }
+      );
     } else if (currentStep === 2 && stage2Ref.current) {
       gsap.fromTo(
         stage2Ref.current,
-        { opacity: 0, y: 22 },
-        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+        { opacity: 0 },
+        { opacity: 1, duration: 0.25, ease: 'power1.out' }
       );
-    } else if (currentStep === 3 && receiptRef.current) {
-      gsap.fromTo(
-        receiptRef.current,
-        { clipPath: 'inset(0 0 100% 0)', opacity: 0, y: 18 },
-        { clipPath: 'inset(0 0 0% 0)', opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }
-      );
-      if (stage3ActionsRef.current) {
-        gsap.fromTo(
-          stage3ActionsRef.current,
-          { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.45, delay: 0.2, ease: 'power2.out' }
-        );
+      // Programmatic keyboard focus: strictly preventScroll to avoid browser jump
+      if (fullNameInputRef.current) {
+        fullNameInputRef.current.focus({ preventScroll: true });
       }
+    } else if (currentStep === 3 && stage3ActionsRef.current) {
+      gsap.fromTo(
+        stage3ActionsRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.25, ease: 'power1.out' }
+      );
     }
   }, [currentStep]);
 
-  // Success State Regal Accent Reveal
+  // Success State In-Place Fade Reveal
   useEffect(() => {
     if (isReducedMotion()) return;
     if (submissionStatus === 'SUCCESS' && successBoxRef.current) {
       gsap.fromTo(
         successBoxRef.current,
-        { opacity: 0, scale: 0.96, y: 16 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.15)' }
+        { opacity: 0 },
+        { opacity: 1, duration: 0.35, ease: 'power1.out' }
       );
     }
   }, [submissionStatus]);
@@ -170,7 +201,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
     if (!sessionRequestId) {
       setSessionRequestId(generateBookingRequestId());
     }
-    setCurrentStep(3);
+    transitionToStep(3);
     setSubmissionStatus('IDLE');
     setSubmissionError('');
   };
@@ -206,6 +237,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
 
     const record: SubmittedBookingRecord = {
       bookingId,
+      passId: selectedPass.id,
       passType: selectedPass.name,
       quantity,
       unitPrice: selectedPass.price,
@@ -235,14 +267,32 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
     try {
       const response = await submitBookingRequest(payload);
       if (response.success) {
-        setSubmittedRecord({
+        const verifiedRecord: SubmittedBookingRecord = {
           ...record,
           bookingId: response.bookingId || bookingId,
           unitPrice: response.unitPrice ?? record.unitPrice,
           total: response.total ?? record.total,
-        });
+        };
+        setSubmittedRecord(verifiedRecord);
         setSubmissionResult(response);
         setSubmissionStatus('SUCCESS');
+
+        // Natural viewport alignment to top of booking desk if desk was scrolled off-screen
+        requestAnimationFrame(() => {
+          if (!bookingDeskRef.current) return;
+          const rect = bookingDeskRef.current.getBoundingClientRect();
+          if (rect.top < 0) {
+            const masthead = typeof document !== 'undefined' ? document.getElementById('main-masthead') : null;
+            const mastheadHeight = masthead ? masthead.offsetHeight : 80;
+            const targetY = Math.max(0, rect.top + window.scrollY - mastheadHeight - 16);
+            const lenis = typeof window !== 'undefined' ? (window as any).lenis : null;
+            if (lenis) {
+              lenis.scrollTo(targetY, { immediate: true });
+            } else {
+              window.scrollTo({ top: targetY, behavior: 'instant' as ScrollBehavior });
+            }
+          }
+        });
       } else {
         setSubmissionError(response.error || 'Unable to record your booking request in the reservation sheet.');
         setSubmissionStatus('ERROR');
@@ -256,7 +306,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
   };
 
   // Standardized WhatsApp Message payload for both Fallback and Expedite actions
-  const activeBookingId = submissionResult?.bookingId || 'RU26-REQ-PENDING';
+  const activeBookingId = submittedRecord?.bookingId || submissionResult?.bookingId || 'RU26-REQ-PENDING';
   const whatsappMessage = `*RAAS UTSAV 2026 — BOOKING REQUEST*\nRequest ID: ${activeBookingId}\nOrganizer: Event Point\nVenue: Upwan Lawn, Chanakya BNR Hotel, Ranchi\nDate: 16 October 2026 (5:00 PM – 11:00 PM)\n\n*BOOKING DETAILS:*\n• Pass Type: ${selectedPass.name}\n• Quantity: ${quantity}\n• Unit Price: ₹${selectedPass.price}\n• Total Amount: ₹${totalAmount.toLocaleString('en-IN')}\n\n*ATTENDEE DETAILS:*\n• Name: ${fullName}\n• Mobile / WhatsApp: ${phone}\n• Email: ${email || 'N/A'}\n• City: ${city || 'Ranchi'}\n\nPlease review my booking request and share pass confirmation instructions.`;
 
   const primaryPhone = eventData.contacts.phones[0].replace(/\D/g, '');
@@ -267,6 +317,8 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
   return (
     <div
       id="booking-desk"
+      ref={bookingDeskRef}
+      style={{ overflowAnchor: 'none' }}
       className="relative w-full max-w-4xl mx-auto rounded-3xl bg-card-surface border-2 border-antique-gold/40 shadow-2xl p-6 sm:p-10 overflow-hidden"
     >
       {/* Devotional Ambient Radial Glow */}
@@ -320,118 +372,127 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
       </div>
 
       {/* ====================================================================
-          STAGE 1: SELECT PASS & QUANTITY
+          STAGE SHELL: STABLE INNER CONTAINER PREVENTING LAYOUT JANK
           ==================================================================== */}
-      {currentStep === 1 && (
-        <div ref={stage1Ref} className="relative z-10 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {eventData.passes.map((pass) => {
-              const isSelected = selectedPassId === pass.id;
-              return (
-                <div
-                  key={pass.id}
-                  onClick={() => setSelectedPassId(pass.id)}
-                  className={`stage-1-pass-card relative p-5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? 'bg-royal-maroon/90 border-bright-gold shadow-[0_4px_24px_rgba(243,198,76,0.3)] scale-[1.02]'
-                      : 'bg-deep-plum/80 border-antique-gold/30 hover:border-antique-gold/60 hover:bg-deep-plum'
-                  }`}
-                >
-                  {pass.badge && (
-                    <div className="absolute -top-2.5 right-4 bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-antique-gold/60 shadow-sm">
-                      {pass.badge}
-                    </div>
-                  )}
+      <div
+        id="booking-stage-shell"
+        ref={stageShellRef}
+        style={{ overflowAnchor: 'none' }}
+        className="relative z-10 min-h-[520px]"
+      >
+        {/* ====================================================================
+            STAGE 1: SELECT PASS & QUANTITY
+            ==================================================================== */}
+        {currentStep === 1 && (
+          <div ref={stage1Ref} className="relative z-10 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {eventData.passes.map((pass) => {
+                const isSelected = selectedPassId === pass.id;
+                return (
+                  <div
+                    key={pass.id}
+                    onClick={() => setSelectedPassId(pass.id)}
+                    className={`stage-1-pass-card relative p-5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                      isSelected
+                        ? 'bg-royal-maroon/90 border-bright-gold shadow-[0_4px_24px_rgba(243,198,76,0.3)] scale-[1.02]'
+                        : 'bg-deep-plum/80 border-antique-gold/30 hover:border-antique-gold/60 hover:bg-deep-plum'
+                    }`}
+                  >
+                    {pass.badge && (
+                      <div className="absolute -top-2.5 right-4 bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-antique-gold/60 shadow-sm">
+                        {pass.badge}
+                      </div>
+                    )}
 
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Ticket className={`w-4 h-4 ${isSelected ? 'text-bright-gold' : 'text-antique-gold/60'}`} />
-                      <h3 className="font-display text-xl sm:text-2xl text-warm-cream uppercase tracking-wide">
-                        {pass.name}
-                      </h3>
-                    </div>
-                    <p className="font-body text-xs text-warm-cream/70 mb-4 line-clamp-2">
-                      {pass.description}
-                    </p>
-                  </div>
-
-                  <div className="pt-3 border-t border-antique-gold/20 flex items-baseline justify-between">
                     <div>
-                      <span className="font-display text-2xl text-bright-gold font-bold">
-                        {pass.priceDisplay}
-                      </span>
-                      <span className="text-[10px] text-warm-cream/50 ml-1 font-body">/ pass</span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Ticket className={`w-4 h-4 ${isSelected ? 'text-bright-gold' : 'text-antique-gold/60'}`} />
+                        <h3 className="font-display text-xl sm:text-2xl text-warm-cream uppercase tracking-wide">
+                          {pass.name}
+                        </h3>
+                      </div>
+                      <p className="font-body text-xs text-warm-cream/70 mb-4 line-clamp-2">
+                        {pass.description}
+                      </p>
                     </div>
-                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                      isSelected ? 'border-bright-gold bg-bright-gold text-deep-plum' : 'border-antique-gold/40'
-                    }`}>
-                      {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
+
+                    <div className="pt-3 border-t border-antique-gold/20 flex items-baseline justify-between">
+                      <div>
+                        <span className="font-display text-2xl text-bright-gold font-bold">
+                          {pass.priceDisplay}
+                        </span>
+                        <span className="text-[10px] text-warm-cream/50 ml-1 font-body">/ pass</span>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                        isSelected ? 'border-bright-gold bg-bright-gold text-deep-plum' : 'border-antique-gold/40'
+                      }`}>
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Quantity Selector */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-deep-plum/90 border border-antique-gold/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <span className="font-display text-lg text-warm-cream uppercase tracking-wide block">
-                Number of Attendees / Passes
-              </span>
-              <span className="font-body text-xs text-warm-cream/60">
-                Selected: {selectedPass.name} ({selectedPass.priceDisplay} each)
-              </span>
+                );
+              })}
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                disabled={quantity <= 1}
-                className="w-10 h-10 rounded-xl bg-royal-maroon border border-antique-gold/40 text-warm-cream hover:text-bright-gold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-lg cursor-pointer"
-              >
-                -
-              </button>
-              <span className="font-display text-2xl text-bright-gold w-8 text-center font-bold">
-                {quantity}
-              </span>
-              <button
-                type="button"
-                onClick={() => setQuantity((q) => Math.min(20, q + 1))}
-                disabled={quantity >= 20}
-                className="w-10 h-10 rounded-xl bg-royal-maroon border border-antique-gold/40 text-warm-cream hover:text-bright-gold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-lg cursor-pointer"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* Total & Continue */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-antique-gold/20">
-            <div>
-              <span className="text-[11px] font-body text-warm-cream/60 uppercase tracking-widest block">
-                ESTIMATED PASS TOTAL:
-              </span>
-              <div className="font-display text-3xl text-bright-gold font-bold">
-                ₹{totalAmount.toLocaleString('en-IN')}
-                <span className="text-xs font-body font-normal text-warm-cream/60 ml-2">
-                  ({quantity} {quantity === 1 ? 'pass' : 'passes'})
+            {/* Quantity Selector */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-deep-plum/90 border border-antique-gold/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <span className="font-display text-lg text-warm-cream uppercase tracking-wide block">
+                  Number of Attendees / Passes
                 </span>
+                <span className="font-body text-xs text-warm-cream/60">
+                  Selected: {selectedPass.name} ({selectedPass.priceDisplay} each)
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={quantity <= 1}
+                  className="w-10 h-10 rounded-xl bg-royal-maroon border border-antique-gold/40 text-warm-cream hover:text-bright-gold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-lg cursor-pointer"
+                >
+                  -
+                </button>
+                <span className="font-display text-2xl text-bright-gold w-8 text-center font-bold">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.min(20, q + 1))}
+                  disabled={quantity >= 20}
+                  className="w-10 h-10 rounded-xl bg-royal-maroon border border-antique-gold/40 text-warm-cream hover:text-bright-gold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-lg cursor-pointer"
+                >
+                  +
+                </button>
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setCurrentStep(2)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream font-display text-lg tracking-wider uppercase border border-antique-gold/70 shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-[transform,box-shadow] duration-200 cursor-pointer font-bold"
-            >
-              <span>ENTER ATTENDEE DETAILS</span>
-              <ArrowRight className="w-5 h-5 text-bright-gold" />
-            </button>
+            {/* Total & Continue */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-antique-gold/20">
+              <div>
+                <span className="text-[11px] font-body text-warm-cream/60 uppercase tracking-widest block">
+                  ESTIMATED PASS TOTAL:
+                </span>
+                <div className="font-display text-3xl text-bright-gold font-bold">
+                  ₹{totalAmount.toLocaleString('en-IN')}
+                  <span className="text-xs font-body font-normal text-warm-cream/60 ml-2">
+                    ({quantity} {quantity === 1 ? 'pass' : 'passes'})
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => transitionToStep(2)}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream font-display text-lg tracking-wider uppercase border border-antique-gold/70 shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-[transform,box-shadow] duration-200 cursor-pointer font-bold"
+              >
+                <span>ENTER ATTENDEE DETAILS</span>
+                <ArrowRight className="w-5 h-5 text-bright-gold" />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* ====================================================================
           STAGE 2: ATTENDEE DETAILS
@@ -472,6 +533,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
             <div className="relative">
               <User className="w-4 h-4 text-antique-gold/60 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
+                ref={fullNameInputRef}
                 id="fullName"
                 type="text"
                 value={fullName}
@@ -558,13 +620,14 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
           <div className="flex items-center justify-between pt-4">
             <button
               type="button"
-              onClick={() => setCurrentStep(1)}
+              onClick={() => transitionToStep(1)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-deep-plum border border-antique-gold/30 text-warm-cream/80 hover:text-bright-gold text-sm font-body font-medium transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back</span>
             </button>
             <button
+              id="stage-2-submit-btn"
               type="submit"
               className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream font-display text-lg tracking-wider uppercase border border-antique-gold/70 shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-[transform,box-shadow] duration-200 cursor-pointer font-bold"
             >
@@ -583,26 +646,27 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
           {/* ================================================================
               SUCCESS STATE: OFFICIAL BOOKING REQUEST RECEIPT
               ================================================================ */}
-          {submissionStatus === 'SUCCESS' ? (
+          {submissionStatus === 'SUCCESS' && submittedRecord ? (
             <div ref={successBoxRef} className="animate-fade-in">
               <BookingReceipt
-                bookingId={submittedRecord?.bookingId || submissionResult?.bookingId || activeBookingId}
-                passType={submittedRecord?.passType || selectedPass.name}
-                quantity={submittedRecord?.quantity || quantity}
-                unitPrice={submittedRecord?.unitPrice || selectedPass.price}
-                total={submittedRecord?.total || totalAmount}
-                fullName={submittedRecord?.fullName || fullName}
-                phone={submittedRecord?.phone || phone}
-                email={submittedRecord?.email || email}
-                city={submittedRecord?.city || city}
-                timestamp={submittedRecord?.timestamp}
+                bookingId={submittedRecord.bookingId}
+                passType={submittedRecord.passType}
+                quantity={submittedRecord.quantity}
+                unitPrice={submittedRecord.unitPrice}
+                total={submittedRecord.total}
+                fullName={submittedRecord.fullName}
+                phone={submittedRecord.phone}
+                email={submittedRecord.email}
+                city={submittedRecord.city}
+                timestamp={submittedRecord.timestamp}
                 onNewEnquiry={() => {
-                  setCurrentStep(1);
+                  transitionToStep(1);
                   setSubmissionStatus('IDLE');
                   setSubmissionResult(null);
                   setSubmittedRecord(null);
                 }}
               />
+              <BookingReceiptPrint record={submittedRecord} />
             </div>
           ) : (
             /* ================================================================
@@ -661,7 +725,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
               )}
 
               {/* Ticket Stub Summary */}
-              <div ref={receiptRef} className="p-6 rounded-2xl bg-deep-plum/95 border border-antique-gold/40 shadow-inner relative overflow-hidden font-body text-xs will-change-transform">
+              <div className="p-6 rounded-2xl bg-deep-plum/95 border border-antique-gold/40 shadow-inner relative overflow-hidden font-body text-xs will-change-transform">
                 {/* Cutout Notches */}
                 <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card-surface border border-antique-gold/40" />
                 <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card-surface border border-antique-gold/40" />
@@ -718,6 +782,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
               <div ref={stage3ActionsRef} className="space-y-3">
                 {/* 1. Primary Action: Submit to Google Sheet */}
                 <button
+                  id="stage-3-submit-btn"
                   type="button"
                   onClick={handleSubmitBooking}
                   disabled={submissionStatus === 'SUBMITTING'}
@@ -762,7 +827,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
                 <div className="flex items-center justify-between pt-1">
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(2)}
+                    onClick={() => transitionToStep(2)}
                     disabled={submissionStatus === 'SUBMITTING'}
                     className="inline-flex items-center gap-2 text-xs text-bright-gold/80 hover:text-bright-gold underline cursor-pointer font-body disabled:opacity-50"
                   >
@@ -772,7 +837,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
 
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(1)}
+                    onClick={() => transitionToStep(1)}
                     disabled={submissionStatus === 'SUBMITTING'}
                     className="text-xs text-warm-cream/60 hover:text-bright-gold cursor-pointer font-body disabled:opacity-50"
                   >
@@ -791,6 +856,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }

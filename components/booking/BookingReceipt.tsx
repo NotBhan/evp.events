@@ -52,7 +52,12 @@ export default function BookingReceipt({
     if (typeof document !== 'undefined') {
       const el = document.getElementById('booking-receipt-document');
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const lenis = typeof window !== 'undefined' ? (window as any).lenis : null;
+        if (lenis) {
+          lenis.scrollTo(el, { offset: -80 });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
     }
   };
