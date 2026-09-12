@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Radial Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#4e0d25"/>
+      <stop offset="65%" stop-color="#220610"/>
+      <stop offset="100%" stop-color="#0f0207"/>
+    </radialGradient>
+
+    <!-- Metallic Gold Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0aa"/>
+      <stop offset="25%" stop-color="#f5cc5a"/>
+      <stop offset="50%" stop-color="#d49b28"/>
+      <stop offset="75%" stop-color="#f9d86c"/>
+      <stop offset="100%" stop-color="#aa7412"/>
+    </linearGradient>
+
+    <!-- Light Gold Gradient -->
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff8d6"/>
+      <stop offset="50%" stop-color="#f5cc5a"/>
+      <stop offset="100%" stop-color="#c98a18"/>
+    </linearGradient>
+
+    <!-- Vermilion Red Gradient -->
+    <linearGradient id="vermilionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4a48"/>
+      <stop offset="50%" stop-color="#d92524"/>
+      <stop offset="100%" stop-color="#8c0e12"/>
+    </linearGradient>
+
+    <!-- Central Flash Glow -->
+    <radialGradient id="sparkGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="20%" stop-color="#fff2b2" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#f5c23a" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#d92524" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base Circular Jewel Medallion -->
+  <circle cx="256" cy="256" r="246" fill="url(#bgGrad)"/>
+
+  <!-- Outer Concentric Gold Border -->
+  <circle cx="256" cy="256" r="242" fill="none" stroke="url(#goldGrad)" stroke-width="14"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="#f5cc5a" stroke-width="3" stroke-dasharray="8 6" opacity="0.75"/>
+  <circle cx="256" cy="256" r="216" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.5"/>
+
+  <!-- Corner / Cardinal Devotional Beads -->
+  <circle cx="256" cy="22" r="7" fill="url(#goldGrad)"/>
+  <circle cx="256" cy="490" r="7" fill="url(#goldGrad)"/>
+  <circle cx="22" cy="256" r="7" fill="url(#goldGrad)"/>
+  <circle cx="490" cy="256" r="7" fill="url(#goldGrad)"/>
+
+  <!-- ============================================================== -->
+  <!-- DANDIYA STICKS GROUP                                            -->
+  <!-- ============================================================== -->
+  <g id="dandiya-pair">
+    <!-- Stick 1: Angled -45 deg (Top-Left to Bottom-Right) -->
+    <g transform="rotate(45 256 256)">
+      <!-- Drop Shadow on Stick -->
+      <rect x="238" y="60" width="36" height="392" rx="18" fill="#000000" opacity="0.35" transform="translate(4, 6)"/>
+
+      <!-- Main Shaft (Gold) -->
+      <rect x="238" y="60" width="36" height="392" rx="18" fill="url(#goldGrad)" stroke="#6b4507" stroke-width="2"/>
+
+      <!-- Vermilion Festive Spiral Wraps / Grips -->
+      <rect x="238" y="110" width="36" height="34" fill="url(#vermilionGrad)"/>
+      <rect x="238" y="160" width="36" height="24" fill="url(#vermilionGrad)"/>
+      <rect x="238" y="328" width="36" height="24" fill="url(#vermilionGrad)"/>
+      <rect x="238" y="368" width="36" height="34" fill="url(#vermilionGrad)"/>
+
+      <!-- Metallic Gold Ring Accents on Wraps -->
+      <line x1="238" y1="110" x2="274" y2="110" stroke="#fff0aa" stroke-width="3"/>
+      <line x1="238" y1="144" x2="274" y2="144" stroke="#7a4f09" stroke-width="3"/>
+      <line x1="238" y1="368" x2="274" y2="368" stroke="#fff0aa" stroke-width="3"/>
+      <line x1="238" y1="402" x2="274" y2="402" stroke="#7a4f09" stroke-width="3"/>
+
+      <!-- Finial Top Pommel -->
+      <circle cx="256" cy="62" r="16" fill="url(#goldLight)" stroke="#6b4507" stroke-width="2"/>
+      <circle cx="256" cy="62" r="7" fill="url(#vermilionGrad)"/>
+
+      <!-- Finial Bottom Pommel -->
+      <circle cx="256" cy="450" r="16" fill="url(#goldLight)" stroke="#6b4507" stroke-width="2"/>
+      <circle cx="256" cy="450" r="7" fill="url(#vermilionGrad)"/>
+    </g>
+
+    <!-- Stick 2: Angled +45 deg (Top-Right to Bottom-Left) -->
+    <g transform="rotate(-45 256 256)">
+      <!-- Drop Shadow on Stick -->
+      <rect x="238" y="60" width="36" height="392" rx="18" fill="#000000" opacity="0.4" transform="translate(4, 6)"/>
+
+      <!-- Main Shaft (Gold) -->
+      <rect x="238" y="60" width="36" height="392" rx="18" fill="url(#goldGrad)" stroke="#6b4507" stroke-width="2"/>
+
+      <!-- Vermilion Festive Spiral Wraps / Grips -->
+      <rect x="238" y="110" width="36" height="34" fill="url(#vermilionGrad)"/>
+      <rect x="238" y="160" width="36" height="24" fill="url(#vermilionGrad)"/>
+      <rect x="238" y="328" width="36" height="24" fill="url(#vermilionGrad)"/>
+      <rect x="238" y="368" width="36" height="34" fill="url(#vermilionGrad)"/>
+
+      <!-- Metallic Gold Ring Accents on Wraps -->
+      <line x1="238" y1="110" x2="274" y2="110" stroke="#fff0aa" stroke-width="3"/>
+      <line x1="238" y1="144" x2="274" y2="144" stroke="#7a4f09" stroke-width="3"/>
+      <line x1="238" y1="368" x2="274" y2="368" stroke="#fff0aa" stroke-width="3"/>
+      <line x1="238" y1="402" x2="274" y2="402" stroke="#7a4f09" stroke-width="3"/>
+
+      <!-- Finial Top Pommel -->
+      <circle cx="256" cy="62" r="16" fill="url(#goldLight)" stroke="#6b4507" stroke-width="2"/>
+      <circle cx="256" cy="62" r="7" fill="url(#vermilionGrad)"/>
+
+      <!-- Finial Bottom Pommel -->
+      <circle cx="256" cy="450" r="16" fill="url(#goldLight)" stroke="#6b4507" stroke-width="2"/>
+      <circle cx="256" cy="450" r="7" fill="url(#vermilionGrad)"/>
+    </g>
+  </g>
+
+  <!-- ============================================================== -->
+  <!-- CENTRAL CELEBRATION CLACK SPARK / RADIANT STAR                 -->
+  <!-- ============================================================== -->
+  <!-- Soft Ambient Flare -->
+  <circle cx="256" cy="256" r="100" fill="url(#sparkGlow)"/>
+
+  <!-- Golden 8-Point Diamond Star -->
+  <g transform="translate(256 256)">
+    <!-- Diagonal Diamond Rays -->
+    <path d="M 0 -72 Q 4 -16 64 0 Q 4 16 0 72 Q -4 16 -64 0 Q -4 -16 0 -72 Z" fill="url(#goldLight)" filter="drop-shadow(0 0 6px rgba(245,204,90,0.8))"/>
+    <path d="M 0 -54 Q 3 -12 48 0 Q 3 12 0 54 Q -3 12 -48 0 Q -3 -12 0 -54 Z" fill="url(#goldLight)" transform="rotate(45)"/>
+
+    <!-- Central Diamond Gem -->
+    <polygon points="0,-22 18,0 0,22 -18,0" fill="#ffffff"/>
+    <circle cx="0" cy="0" r="8" fill="#d92524"/>
+    <circle cx="0" cy="0" r="3.5" fill="#fff6d1"/>
+  </g>
+</svg>

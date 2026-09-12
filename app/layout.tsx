@@ -20,6 +20,15 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: `${eventData.eventName} ${eventData.year} | ${eventData.edition}`,
   description: `${eventData.organizer.name} presents ${eventData.eventName} ${eventData.year} on ${eventData.dateDisplay} at ${eventData.venueDisplay}. ${eventData.tagline}.`,
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
