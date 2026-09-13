@@ -61,10 +61,11 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
                 <Image
                   src="/images/client/raascdr/web/eventpoint-logo.webp"
                   alt="Event Point Official Insignia"
-                  width={48}
+                  width={64}
                   height={48}
                   className="print-logo-img"
                   priority
+                  unoptimized
                 />
               </div>
               <div>

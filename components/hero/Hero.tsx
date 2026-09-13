@@ -186,23 +186,31 @@ export default function Hero() {
 
         {/* ============================================================== */}
         {/* Layer 10: Dandiya Performers in Client Attire (Left & Right)   */}
-        {/* Form dynamic visual triangle with central Durga & Title        */}
-        {/* Positioned at z-20 to cleanly frame the typography from behind */}
+        {/* Visual relationship matches client poster: Female Left, Male Right */}
+        {/* Positioned at z-25 to sit above stage floor and frame title    */}
         {/* ============================================================== */}
-        {/* Left Dancer: Female Garba Performer (Twirling, reaching inward) */}
+        {/* Left Dancer: Female Garba Performer (Twirling, flared lehenga) */}
         <div
           ref={leftDancerRef}
-          className="absolute -left-8 sm:-left-4 md:left-2 lg:left-8 xl:left-12 -bottom-2 sm:bottom-0 z-20 pointer-events-none w-[190px] sm:w-[270px] md:w-[360px] lg:w-[440px] xl:w-[490px]"
+          className="absolute left-0 sm:left-2 md:left-4 lg:left-8 xl:left-12 bottom-0 z-25 pointer-events-none w-[180px] sm:w-[240px] md:w-[320px] lg:w-[410px] xl:w-[480px]"
         >
-          <HeroDancer placement="left" alt="Garba Performer Dancing with Dandiya" />
+          <HeroDancer
+            src="/images/client/raascdr/web/dancer-female.webp"
+            placement="left"
+            alt="Female Garba Performer Twirling in Flared Lehenga"
+          />
         </div>
 
         {/* Right Dancer: Male Dandiya Performer (Leaping, striking inward) */}
         <div
           ref={rightDancerRef}
-          className="absolute -right-8 sm:-right-4 md:right-2 lg:right-8 xl:right-12 -bottom-2 sm:bottom-0 z-20 pointer-events-none w-[190px] sm:w-[270px] md:w-[360px] lg:w-[440px] xl:w-[490px]"
+          className="absolute right-0 sm:right-2 md:right-4 lg:right-8 xl:right-12 bottom-0 z-25 pointer-events-none w-[150px] sm:w-[200px] md:w-[270px] lg:w-[340px] xl:w-[400px]"
         >
-          <HeroDancer placement="right" alt="Dandiya Raas Performer Striking Sticks" />
+          <HeroDancer
+            src="/images/client/raascdr/web/dancer-male.webp"
+            placement="right"
+            alt="Male Dandiya Performer Leaping with Dandiya Sticks"
+          />
         </div>
 
         {/* ============================================================== */}
@@ -221,9 +229,9 @@ export default function Hero() {
           <DandiyaSticks size={200} className="-rotate-12 scale-x-[-1]" />
         </div>
 
-        {/* Bottom Stage Depth Shadow / Transition Vignette */}
+        {/* Bottom Stage Depth Shadow / Transition Vignette (behind dancers at z-15) */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-deep-plum via-deep-plum/80 to-transparent z-40 pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-deep-plum via-deep-plum/80 to-transparent z-15 pointer-events-none"
           aria-hidden="true"
         />
       </div>

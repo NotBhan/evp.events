@@ -128,7 +128,7 @@ export default function VenueFeature() {
               <span className="text-vermilion">♦</span>
               <span>06 / THE FESTIVAL SETTING</span>
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-warm-cream tracking-tight uppercase leading-[1.02] font-black">
+            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-black tracking-tight uppercase leading-[1.02]">
               ROYAL SETTING. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-antique-gold to-bright-gold drop-shadow-[0_2px_18px_rgba(243,198,76,0.35)]">
                 RANCHI&apos;S NIGHT.

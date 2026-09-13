@@ -161,11 +161,12 @@ export default function BookingReceipt({
         <header className="border-b-2 border-dashed border-antique-gold/30 pb-6 mb-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 rounded-xl bg-deep-plum border border-antique-gold/50 p-1 shrink-0 shadow-md">
+              <div className="relative w-16 h-12 rounded-xl bg-deep-plum border border-antique-gold/50 p-1 shrink-0 shadow-md">
                 <Image
                   src="/images/client/raascdr/web/eventpoint-logo.webp"
                   alt="Event Point Official Logo"
                   fill
+                  unoptimized
                   className="object-contain"
                 />
               </div>

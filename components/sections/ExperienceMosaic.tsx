@@ -158,7 +158,7 @@ export default function ExperienceMosaic() {
               <span className="text-vermilion">♦</span>
               <span>02 / PLANNED ATTRACTIONS & EXPERIENCES</span>
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-warm-cream tracking-tight uppercase">
+            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-white font-bold tracking-tight uppercase">
               CURATED <span className="text-bright-gold drop-shadow-[0_2px_18px_rgba(243,198,76,0.35)]">FESTIVAL</span>{' '}
               DIMENSIONS
             </h2>

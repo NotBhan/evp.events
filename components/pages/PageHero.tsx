@@ -86,7 +86,7 @@ export default function PageHero({
         {/* Display Title */}
         <h1
           ref={titleRef}
-          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-warm-cream tracking-wider uppercase leading-none mb-4 drop-shadow-[0_4px_16px_rgba(217,37,36,0.4)]"
+          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-wider uppercase leading-none mb-4 drop-shadow-[0_4px_16px_rgba(217,37,36,0.4)]"
         >
           {title}
         </h1>

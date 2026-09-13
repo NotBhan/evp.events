@@ -50,7 +50,7 @@ export default function Footer() {
 
             {/* Official Organizer Provenance with Event Point Logo from RAASCDR */}
             <div className="flex items-center gap-3 px-3.5 py-2 rounded-lg bg-royal-maroon/70 border border-antique-gold/40 shadow-sm">
-              <div className="relative w-8 h-8 shrink-0">
+              <div className="relative w-11 h-8 shrink-0">
                 <Image
                   src="/images/client/raascdr/web/eventpoint-logo.webp"
                   alt="Event Point Official Organizer Logo"

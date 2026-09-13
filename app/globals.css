@@ -23,6 +23,30 @@
   /* Typography Fonts */
   --font-display: var(--font-bebas-neue), sans-serif;
   --font-body: var(--font-manrope), sans-serif;
+
+  /* Authoritative Client CDR Font Table Tokens (from fontTable.dat) */
+  --font-antiqua: "Book Antiqua", Palatino, "Palatino Linotype", "URW Bookman", serif;
+  --font-bangle: "Bangle", "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-futura: "Futura Md BT", "Futura", "Century Gothic", sans-serif;
+  --font-lucida: "Lucida Bright", Georgia, serif;
+  --font-avenir: "Avenir Medium", "Avenir", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+/* Client CDR Typography Utilities */
+.font-antiqua {
+  font-family: var(--font-antiqua);
+}
+.font-bangle {
+  font-family: var(--font-bangle);
+}
+.font-futura {
+  font-family: var(--font-futura);
+}
+.font-lucida {
+  font-family: var(--font-lucida);
+}
+.font-avenir {
+  font-family: var(--font-avenir);
 }
 
 :root {

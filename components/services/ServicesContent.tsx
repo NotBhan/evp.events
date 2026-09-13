@@ -235,7 +235,7 @@ export default function ServicesContent() {
               </div>
 
               {/* Main Headline */}
-              <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-warm-cream tracking-tight leading-[0.92] uppercase mb-6">
+              <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-tight leading-[0.92] uppercase mb-6">
                 MORE THAN <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-amber-glow to-vermilion">
                   A NIGHT OUT.
@@ -386,7 +386,7 @@ export default function ServicesContent() {
               <span className="text-vermilion text-xs" aria-hidden="true">♦</span>
               <span>SIX SIGNATURE DIMENSIONS</span>
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-warm-cream tracking-wide uppercase leading-tight">
+            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-white font-bold tracking-wide uppercase leading-tight">
               WHAT THE FESTIVAL HOLDS
             </h2>
             <p className="font-body text-sm sm:text-base text-warm-cream/80 max-w-xl mx-auto mt-3 leading-relaxed">
@@ -627,7 +627,7 @@ export default function ServicesContent() {
             THE ESSENCE OF RAAS UTSAV 2026
           </span>
 
-          <h2 className="font-display text-3xl sm:text-4xl text-warm-cream uppercase tracking-widest mb-10">
+          <h2 className="font-display text-3xl sm:text-4xl text-white font-bold uppercase tracking-widest mb-10">
             WHAT THE NIGHT HOLDS
           </h2>
 
@@ -680,7 +680,7 @@ export default function ServicesContent() {
               <Ticket className="w-3.5 h-3.5 text-vermilion" />
               <span>OFFICIAL TICKET CATALOGUE</span>
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-warm-cream tracking-wide uppercase leading-tight">
+            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-white font-bold tracking-wide uppercase leading-tight">
               CHOOSE YOUR PASS.
             </h2>
             <p className="font-body text-sm sm:text-base text-warm-cream/80 max-w-xl mx-auto mt-3 leading-relaxed">
@@ -787,7 +787,7 @@ export default function ServicesContent() {
               <span>OFFICIAL REGISTRATION TRANSITION</span>
             </div>
 
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-warm-cream tracking-wide uppercase mb-6 leading-tight">
+            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-white font-bold tracking-wide uppercase mb-6 leading-tight">
               READY FOR RAAS?
             </h2>
 
@@ -826,11 +826,12 @@ export default function ServicesContent() {
         <div className="max-w-6xl mx-auto">
           <div className="relative p-6 sm:p-8 rounded-2xl bg-card-surface border border-antique-gold/40 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
             <div className="flex items-center gap-4">
-              <div className="relative w-12 h-12 rounded-xl bg-deep-plum border border-antique-gold/40 p-1 shrink-0 shadow-md">
+              <div className="relative w-16 h-12 rounded-xl bg-deep-plum border border-antique-gold/40 p-1 shrink-0 shadow-md">
                 <Image
                   src="/images/client/raascdr/web/eventpoint-logo.webp"
                   alt="Event Point Organizer Logo"
                   fill
+                  unoptimized
                   className="object-contain"
                 />
               </div>

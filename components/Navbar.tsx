@@ -84,47 +84,31 @@ export default function Navbar() {
         aria-label="Festival Navigation Masthead"
       >
         {/* ============================================================== */}
-        {/* Zone A (Left): Authentic Event Point & Raas Utsav Branding      */}
+        {/* Zone A (Left): Authoritative Event Point Brand Mark            */}
         {/* ============================================================== */}
         <Link
           href="/"
           onClick={() => handleNavClick('/')}
-          className="group flex items-center gap-2.5 sm:gap-3.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-bright-gold rounded-lg py-1 pr-2 select-none shrink-0"
-          aria-label="Raas Utsav 2026 — Home"
+          className="group flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-bright-gold rounded-lg py-1 select-none shrink-0"
+          aria-label="Event Point — Home"
         >
-          {/* Authentic Client-Derived Event Point Emblem (Extracted from RAASCDR) */}
-          <div className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0">
+          {/* Authoritative Client Brand Asset (Emblem + Wordmark + Tagline) */}
+          <div className="relative h-8 sm:h-9 md:h-10 lg:h-12 w-[169px] sm:w-[190px] md:w-[211px] lg:w-[254px] shrink-0 transition-transform duration-200 group-hover:scale-[1.02]">
             <Image
-              src="/images/client/raascdr/web/eventpoint-logo-nav.webp"
-              alt="Event Point Official Insignia"
+              src="/images/client/raascdr/web/eventpoint-navbrand.webp"
+              alt="Event Point — A Shop for complete Event Solution"
               fill
-              sizes="36px"
-              className="object-contain"
+              sizes="(max-width: 640px) 169px, (max-width: 768px) 190px, (max-width: 1024px) 211px, 254px"
+              className="object-contain object-left"
               priority
             />
-          </div>
-
-          {/* Thin Antique-Gold Vertical Keyline Rule */}
-          <span className="hidden sm:block h-7 w-[1px] bg-antique-gold/35 shrink-0" aria-hidden="true" />
-
-          {/* Authentic Festival Masthead Typography */}
-          <div className="flex flex-col text-left leading-none">
-            <div className="flex items-center gap-1.5">
-              <span className="font-display text-lg sm:text-xl md:text-2xl text-warm-cream tracking-wide group-hover:text-bright-gold transition-colors">
-                {eventData.eventName}
-              </span>
-              <span className="text-vermilion text-[10px] sm:text-xs" aria-hidden="true">♦</span>
-            </div>
-            <span className="font-body text-[9px] sm:text-[10px] text-antique-gold tracking-[0.22em] uppercase mt-1 font-semibold">
-              {eventData.year} · RANCHI
-            </span>
           </div>
         </Link>
 
         {/* ============================================================== */}
         {/* Zone B (Center): Refined Editorial Navigation Links             */}
         {/* ============================================================== */}
-        <div className="hidden md:flex items-center gap-4 lg:gap-8 text-xs font-body font-semibold tracking-[0.18em] uppercase">
+        <div className="hidden md:flex items-center gap-2.5 lg:gap-6 xl:gap-8 text-[11px] lg:text-xs font-body font-semibold tracking-[0.12em] lg:tracking-[0.18em] uppercase">
           {navLinks.map((link, idx) => {
             const active = isActive(link.href);
             return (
@@ -137,7 +121,7 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   onClick={() => handleNavClick(link.href)}
-                  className={`relative py-1.5 px-2 transition-colors flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-bright-gold rounded-sm ${
+                  className={`relative py-1.5 px-1.5 lg:px-2 transition-colors flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-bright-gold rounded-sm ${
                     active
                       ? 'text-bright-gold font-bold'
                       : 'text-warm-cream/80 hover:text-bright-gold'
@@ -147,7 +131,7 @@ export default function Navbar() {
                   <span>{link.label}</span>
                   {active && (
                     <span
-                      className="absolute -bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-transparent via-bright-gold to-transparent rounded-full"
+                      className="absolute -bottom-0.5 left-1.5 right-1.5 lg:left-2 lg:right-2 h-[2px] bg-gradient-to-r from-transparent via-bright-gold to-transparent rounded-full"
                       aria-hidden="true"
                     />
                   )}
@@ -160,15 +144,15 @@ export default function Navbar() {
         {/* ============================================================== */}
         {/* Zone C (Right): Festival Ticket Campaign Action Button         */}
         {/* ============================================================== */}
-        <div className="hidden md:flex items-center gap-4 shrink-0">
+        <div className="hidden md:flex items-center gap-3 lg:gap-4 shrink-0">
           <Link
             href="/booking"
             id="navbar-booking-cta"
             onClick={() => handleNavClick('/booking')}
-            className="group relative inline-flex items-center justify-center gap-2 px-4 py-2 lg:px-5 lg:py-2.5 min-h-[44px] rounded-md bg-gradient-to-r from-vermilion via-amber-glow to-vermilion bg-[length:200%_auto] text-warm-cream font-display text-sm lg:text-base tracking-wider uppercase border border-antique-gold/80 shadow-[0_2px_14px_rgba(217,37,36,0.4)] transition-[border-color,box-shadow,background-position,color] duration-300 hover:border-bright-gold hover:shadow-[0_4px_20px_rgba(255,148,41,0.55)] hover:bg-right focus:outline-none focus-visible:ring-2 focus-visible:ring-bright-gold cursor-pointer"
+            className="group relative inline-flex items-center justify-center gap-1.5 lg:gap-2 px-3.5 py-1.5 lg:px-5 lg:py-2.5 min-h-[40px] lg:min-h-[44px] rounded-md bg-gradient-to-r from-vermilion via-amber-glow to-vermilion bg-[length:200%_auto] text-warm-cream font-display text-xs lg:text-base tracking-wider uppercase border border-antique-gold/80 shadow-[0_2px_14px_rgba(217,37,36,0.4)] transition-[border-color,box-shadow,background-position,color] duration-300 hover:border-bright-gold hover:shadow-[0_4px_20px_rgba(255,148,41,0.55)] hover:bg-right focus:outline-none focus-visible:ring-2 focus-visible:ring-bright-gold cursor-pointer"
             aria-label="Book festival pass for Raas Utsav 2026"
           >
-            <Ticket className="w-4 h-4 text-bright-gold transition-colors group-hover:text-warm-cream shrink-0" aria-hidden="true" />
+            <Ticket className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-bright-gold transition-colors group-hover:text-warm-cream shrink-0" aria-hidden="true" />
             <span className="font-bold whitespace-nowrap">{eventData.ctas.primary}</span>
           </Link>
         </div>
@@ -198,20 +182,17 @@ export default function Navbar() {
           id="mobile-navbar-drawer"
           className="md:hidden bg-[#12080D] border-b-2 border-antique-gold/40 px-6 py-6 flex flex-col gap-2 text-center shadow-2xl animate-in fade-in duration-150"
         >
-          {/* Authentic Organizer Provenance Line */}
-          <div className="flex items-center justify-center gap-2 mb-2 pb-2 border-b border-antique-gold/20">
-            <div className="relative w-5 h-5 shrink-0">
+          {/* Authoritative Event Point Brand Header */}
+          <div className="flex items-center justify-center mb-3 pb-3 border-b border-antique-gold/20">
+            <div className="relative h-10 w-[212px]">
               <Image
-                src="/images/client/raascdr/web/eventpoint-logo-nav.webp"
-                alt="Event Point Logo"
+                src="/images/client/raascdr/web/eventpoint-navbrand.webp"
+                alt="Event Point — A Shop for complete Event Solution"
                 fill
-                sizes="20px"
+                sizes="212px"
                 className="object-contain"
               />
             </div>
-            <span className="text-[10px] font-body text-antique-gold uppercase tracking-[0.2em] font-semibold">
-              EVENT POINT PRESENTS
-            </span>
           </div>
 
           {navLinks.map((link) => {

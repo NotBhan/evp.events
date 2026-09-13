@@ -355,8 +355,8 @@ export function initHeroScrollAnimation(refs: HeroAnimationRefs): () => void {
   // 3. Mobile Choreography (< 768px): Vertical adaptation, 0 horizontal drift
   // =========================================================================
   mm.add('(max-width: 767px) and (prefers-reduced-motion: no-preference)', () => {
-    gsap.set(leftDancer, { y: '10vh', x: 0, scale: 0.92, opacity: 0.95 });
-    gsap.set(rightDancer, { y: '12vh', x: 0, scale: 0.92, opacity: 0.95 });
+    gsap.set(leftDancer, { y: 0, x: 0, scale: 1, opacity: 1 });
+    gsap.set(rightDancer, { y: 0, x: 0, scale: 1, opacity: 1 });
     gsap.set(durgaAura, { y: 0, scale: 0.96, opacity: 1 });
     if (outerChakriEl) gsap.set(outerChakriEl, { rotation: 0, scale: 1 });
     if (innerChakriEl) gsap.set(innerChakriEl, { rotation: 0, scale: 1 });
@@ -373,13 +373,13 @@ export function initHeroScrollAnimation(refs: HeroAnimationRefs): () => void {
       },
     });
 
-    // 0-35%: Rise into position
+    // 0-35%: Subtle float with scroll
     tl.to(
       [leftDancer, rightDancer],
       {
-        y: '0vh',
+        y: '-1vh',
         opacity: 1,
-        scale: 0.95,
+        scale: 1,
         duration: 0.35,
         ease: 'power1.out',
       },

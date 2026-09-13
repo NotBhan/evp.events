@@ -234,14 +234,14 @@ export default function GrandestNightBanner() {
             />
           </div>
 
-          {/* Layer 4: Top-Left Event Point Branding */}
-          <div className="absolute top-[5%] left-[3.5%] z-30 flex items-center gap-2">
-            <div className="relative w-[95px] h-[76px] lg:w-[115px] lg:h-[92px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+          {/* Layer 4: Top-Left Event Point Branding — Elevated higher & borderless with internal black stroke */}
+          <div className="absolute top-[2.2%] left-[8.5%] lg:left-[9%] z-30 flex items-center">
+            <div className="relative w-[100px] h-[75px] lg:w-[120px] lg:h-[90px] drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
               <Image
                 src="/images/client/raascdr/web/eventpoint-badge.webp"
                 alt="Event Point Official Logo"
                 fill
-                className="object-contain object-left-top"
+                className="object-contain"
                 unoptimized
               />
             </div>
@@ -282,27 +282,30 @@ export default function GrandestNightBanner() {
           {/* Layer 6: LEFT REGION — "रास Utsav 2026" Title & Grandest Dandiya Night Lockup */}
           <div
             ref={titleGroupRef}
-            className="absolute left-[3.5%] top-[20%] w-[36%] z-30 flex flex-col items-start"
+            className="absolute left-[3.5%] top-[21.5%] w-[36%] z-30 flex flex-col items-start"
           >
-            {/* Authentic CorelDRAW Title Artwork */}
-            <div className="relative w-[85%] h-[80px] lg:h-[110px] xl:h-[125px] drop-shadow-[0_6px_20px_rgba(0,0,0,0.85)]">
+            {/* Authentic CorelDRAW Title Artwork — 4× upscaled for crisp rendering */}
+            <div className="relative w-full h-[100px] lg:h-[145px] xl:h-[175px] drop-shadow-[0_6px_20px_rgba(0,0,0,0.85)]">
               <Image
-                src="/images/client/raascdr/web/title-raas-utsav.webp"
+                src="/images/client/raascdr/web/title-raas-utsav-4x.webp"
                 alt="रास Utsav 2026"
                 fill
                 className="object-contain object-left"
+                
+                sizes="(max-width: 1024px) 450px, 650px"
                 priority
+                unoptimized
               />
             </div>
 
             {/* Monumental Headline Lockup matching Reference B */}
             <div className="mt-1 lg:mt-2 w-full">
-              <span className="block font-body text-[9px] lg:text-[11px] xl:text-xs text-warm-cream/90 tracking-[0.28em] uppercase font-bold">
+              <span className="block font-antiqua text-[9px] lg:text-[11px] xl:text-xs text-warm-cream/90 tracking-[0.28em] uppercase font-bold">
                 JHARKHAND&apos;S GRANDEST
               </span>
               <div className="flex items-center gap-1.5 lg:gap-2 text-bright-gold">
                 <span className="text-bright-gold text-xs lg:text-sm select-none" aria-hidden="true">❧</span>
-                <h2 className="font-display text-2xl lg:text-3xl xl:text-4xl text-bright-gold tracking-[0.06em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.35)] leading-none font-bold">
+                <h2 className="font-antiqua text-2xl lg:text-3xl xl:text-4xl text-bright-gold tracking-[0.06em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.35)] leading-none font-bold">
                   DANDIYA NIGHT
                 </h2>
                 <span className="text-bright-gold text-xs lg:text-sm select-none scale-x-[-1]" aria-hidden="true">❧</span>
@@ -310,10 +313,10 @@ export default function GrandestNightBanner() {
             </div>
 
             {/* Tagline & Pillars */}
-            <p className="font-body text-[10px] lg:text-xs xl:text-sm text-warm-cream font-medium italic tracking-wide mt-0.5 lg:mt-1">
+            <p className="font-bangle text-[10px] lg:text-xs xl:text-sm text-warm-cream font-medium italic tracking-wide mt-0.5 lg:mt-1">
               Navratri Celebration like never before
             </p>
-            <div className="flex items-center gap-2 text-[8px] lg:text-[10px] xl:text-[11px] text-amber-glow font-body tracking-[0.2em] uppercase font-semibold mt-0.5">
+            <div className="flex items-center gap-2 text-[8px] lg:text-[10px] xl:text-[11px] text-amber-glow font-bangle tracking-[0.2em] uppercase font-semibold mt-0.5">
               <span>Dance</span>
               <span className="text-antique-gold/60">|</span>
               <span>Devotion</span>
@@ -330,15 +333,16 @@ export default function GrandestNightBanner() {
           >
             <div className="relative w-full h-full flex items-center justify-center drop-shadow-[0_6px_20px_rgba(0,0,0,0.8)]">
               <Image
-                src="/images/client/raascdr/web/plaque-maroon.webp"
+                src="/images/client/raascdr/web/plaque-maroon-3x.webp"
                 alt="Event Features"
                 fill
                 className="object-contain"
+                sizes="(max-width: 1024px) 160px, 230px"
                 unoptimized
               />
               {/* Plaque Text Content */}
-              <div className="relative z-10 flex flex-col items-start justify-center pl-3 pr-2 text-left font-body">
-                <span className="text-bright-gold font-display text-[10px] lg:text-xs xl:text-sm tracking-wider font-bold mb-0.5">
+              <div className="relative z-10 flex flex-col items-start justify-center pl-3 pr-2 text-left font-futura">
+                <span className="text-bright-gold font-futura text-[10px] lg:text-xs xl:text-sm tracking-wider font-bold mb-0.5">
                   FEATURES :
                 </span>
                 {[
@@ -350,7 +354,7 @@ export default function GrandestNightBanner() {
                 ].map((feat) => (
                   <div key={feat} className="flex items-center gap-1 leading-tight my-[1px]">
                     <span className="text-bright-gold text-[7px] lg:text-[8px]">★</span>
-                    <span className="text-warm-cream text-[7px] lg:text-[8px] xl:text-[9.5px] font-bold tracking-tight">
+                    <span className="text-warm-cream text-[7px] lg:text-[8px] xl:text-[9.5px] font-bold tracking-tight font-futura">
                       {feat}
                     </span>
                   </div>
@@ -367,10 +371,12 @@ export default function GrandestNightBanner() {
             <div className="relative w-full h-full drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
               <Image
                 src="/images/client/raascdr/web/dancers-composite.webp"
-                alt="Male and Female Dandiya Dancers in Festive Attire"
+                alt="Female and Male Dandiya Dancers in Festive Attire"
                 fill
                 className="object-contain object-right-bottom"
-                sizes="(max-width: 1024px) 300px, 450px"
+                
+                sizes="(max-width: 1024px) 400px, 600px"
+                quality={100}
               />
             </div>
           </div>
@@ -380,7 +386,7 @@ export default function GrandestNightBanner() {
             ref={dateStripRef}
             className="absolute left-[3.5%] bottom-[9%] w-[58%] lg:w-[56%] z-30"
           >
-            <div className="flex items-center justify-between bg-gradient-to-r from-[#F7C647] via-[#E4A936] to-[#F7C647] text-[#19060F] px-3 lg:px-4 py-1.5 rounded-full border border-antique-gold shadow-[0_4px_16px_rgba(0,0,0,0.6)] font-body text-[9px] lg:text-[11px] xl:text-xs font-bold">
+            <div className="flex items-center justify-between bg-gradient-to-r from-[#F7C647] via-[#E4A936] to-[#F7C647] text-[#19060F] px-3 lg:px-4 py-1.5 rounded-full border border-antique-gold shadow-[0_4px_16px_rgba(0,0,0,0.6)] font-lucida text-[9px] lg:text-[11px] xl:text-xs font-bold">
               {/* Date */}
               <div className="flex items-center gap-1.5">
                 <span className="text-base leading-none" aria-hidden="true">📅</span>
@@ -413,17 +419,17 @@ export default function GrandestNightBanner() {
           {/* Layer 9: BOTTOM — Sponsorship & Contact Information */}
           <div
             ref={sponsorRef}
-            className="absolute left-[3.5%] bottom-[2%] w-[58%] lg:w-[56%] z-30 flex items-center justify-between text-[8px] lg:text-[9.5px] xl:text-[10.5px] text-warm-cream/90 font-body"
+            className="absolute left-[3.5%] bottom-[2%] w-[58%] lg:w-[56%] z-30 flex items-center justify-between text-[8px] lg:text-[9.5px] xl:text-[10.5px] text-warm-cream/90 font-avenir"
           >
             <div className="flex items-center gap-1.5">
-              <span className="px-2 py-0.5 rounded-full bg-royal-maroon/90 border border-antique-gold/60 text-bright-gold font-bold tracking-wider uppercase text-[7px] lg:text-[8px]">
+              <span className="px-2 py-0.5 rounded-full bg-royal-maroon/90 border border-antique-gold/60 text-bright-gold font-bold tracking-wider uppercase text-[7px] lg:text-[8px] font-serif">
                 FOR SPONSORSHIP CONTACT
               </span>
-              <span className="font-semibold text-warm-cream">
+              <span className="font-semibold text-warm-cream font-avenir">
                 📞 9931503960 | 8540006033 | 9430112440
               </span>
             </div>
-            <div className="hidden xl:flex items-center gap-1 text-warm-cream/80 text-[9px]">
+            <div className="hidden xl:flex items-center gap-1 text-warm-cream/80 text-[9px] font-avenir">
               <span>✉</span>
               <span>eventpoint42@gmail.com</span>
             </div>
@@ -456,9 +462,9 @@ export default function GrandestNightBanner() {
             />
           </div>
 
-          {/* Top Row: Event Point Branding + Eyebrow */}
-          <div className="relative z-20 flex items-center justify-between mb-4 pt-1">
-            <div className="relative w-[100px] h-[65px]">
+          {/* Top Row: Event Point Branding + Eyebrow — Elevated higher & borderless */}
+          <div className="relative z-20 flex items-center justify-between mb-3 pt-3 px-1">
+            <div className="relative w-[96px] h-[64px] drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]">
               <Image
                 src="/images/client/raascdr/web/eventpoint-badge.webp"
                 alt="Event Point Logo"
@@ -467,7 +473,7 @@ export default function GrandestNightBanner() {
                 unoptimized
               />
             </div>
-            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-royal-maroon border border-antique-gold/50 text-[9px] font-bold text-bright-gold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-royal-maroon/90 border border-antique-gold/50 text-[9px] font-bold text-bright-gold uppercase tracking-wider shadow-md">
               <span>✦</span>
               <span>16 OCT 2026</span>
             </div>
@@ -499,31 +505,34 @@ export default function GrandestNightBanner() {
             </div>
           </div>
 
-          {/* Authentic Title Artwork */}
+          {/* Authentic Title Artwork — 4× upscaled */}
           <div className="relative z-20 w-full flex flex-col items-center text-center mt-1 mb-3">
-            <div className="relative w-[240px] h-[75px] drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+            <div className="relative w-full max-w-[320px] h-[100px] sm:h-[120px] drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
               <Image
-                src="/images/client/raascdr/web/title-raas-utsav.webp"
+                src="/images/client/raascdr/web/title-raas-utsav-4x.webp"
                 alt="रास Utsav 2026"
                 fill
                 className="object-contain"
+                
+                sizes="320px"
                 priority
+                unoptimized
               />
             </div>
-            <span className="block font-body text-[10px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-1">
+            <span className="block font-antiqua text-[10px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-1">
               JHARKHAND&apos;S GRANDEST
             </span>
             <div className="flex items-center justify-center gap-1.5 text-bright-gold">
               <span className="text-bright-gold text-xs">❧</span>
-              <h2 className="font-display text-2xl sm:text-3xl text-bright-gold tracking-[0.06em] uppercase">
+              <h2 className="font-antiqua text-2xl sm:text-3xl text-bright-gold tracking-[0.06em] uppercase font-bold">
                 DANDIYA NIGHT
               </h2>
               <span className="text-bright-gold text-xs scale-x-[-1]">❧</span>
             </div>
-            <p className="font-body text-xs text-warm-cream font-medium italic mt-0.5">
+            <p className="font-bangle text-xs text-warm-cream font-medium italic mt-0.5">
               Navratri Celebration like never before
             </p>
-            <div className="flex items-center justify-center gap-2 text-[10px] text-amber-glow font-body tracking-wider uppercase font-semibold mt-1">
+            <div className="flex items-center justify-center gap-2 text-[10px] text-amber-glow font-bangle tracking-wider uppercase font-semibold mt-1">
               <span>Dance</span>
               <span className="text-antique-gold/60">|</span>
               <span>Devotion</span>

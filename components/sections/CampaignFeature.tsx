@@ -208,7 +208,7 @@ export default function CampaignFeature() {
               </div>
 
               {/* Layer 2: Hanging Diyas on Left & Right Borders */}
-              <div className="absolute top-0 left-[1.5%] w-[10%] h-[32%] pointer-events-none z-20 opacity-90">
+              <div className="absolute top-0 left-[1.5%] w-[8%] sm:w-[8.5%] h-[32%] pointer-events-none z-20 opacity-90">
                 <Image
                   src="/images/client/raascdr/web/hanging-diyas.webp"
                   alt=""
@@ -217,7 +217,7 @@ export default function CampaignFeature() {
                   unoptimized
                 />
               </div>
-              <div className="absolute top-0 right-[1.5%] w-[10%] h-[32%] pointer-events-none z-20 opacity-90 scale-x-[-1]">
+              <div className="absolute top-0 right-[1.5%] w-[8%] sm:w-[8.5%] h-[32%] pointer-events-none z-20 opacity-90 scale-x-[-1]">
                 <Image
                   src="/images/client/raascdr/web/hanging-diyas.webp"
                   alt=""
@@ -247,14 +247,14 @@ export default function CampaignFeature() {
                 />
               </div>
 
-              {/* Layer 4: Top Left Event Point Branding */}
-              <div className="absolute top-[3%] left-[4.5%] z-30">
-                <div className="relative w-[105px] h-[75px] sm:w-[125px] sm:h-[88px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+              {/* Layer 4: Top Left Event Point Branding — Shifted top & borderless with internal black stroke */}
+              <div className="absolute top-[2.5%] left-[11.5%] sm:left-[12%] z-30">
+                <div className="relative w-[96px] h-[72px] sm:w-[115px] sm:h-[86px] drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)]">
                   <Image
                     src="/images/client/raascdr/web/eventpoint-badge.webp"
                     alt="Event Point Official Logo"
                     fill
-                    className="object-contain object-left-top"
+                    className="object-contain"
                     unoptimized
                   />
                 </div>
@@ -332,34 +332,37 @@ export default function CampaignFeature() {
                 ref={titleLockupRef}
                 className="absolute left-0 right-0 top-[28%] sm:top-[31%] z-30 flex flex-col items-center text-center px-3 sm:px-4"
               >
-                {/* Authentic Title Artwork */}
-                <div className="relative w-[60%] sm:w-[65%] h-[44px] sm:h-[68px] md:h-[80px] drop-shadow-[0_6px_18px_rgba(0,0,0,0.9)]">
+                {/* Authentic Title Artwork — 4× upscaled */}
+                <div className="relative w-[70%] sm:w-[72%] h-[56px] sm:h-[82px] md:h-[100px] drop-shadow-[0_6px_18px_rgba(0,0,0,0.9)]">
                   <Image
-                    src="/images/client/raascdr/web/title-raas-utsav.webp"
+                    src="/images/client/raascdr/web/title-raas-utsav-4x.webp"
                     alt="रास Utsav 2026 Title Artwork"
                     fill
                     className="object-contain object-center"
+                    
+                    sizes="(max-width: 640px) 280px, (max-width: 1024px) 420px, 550px"
                     priority
+                    unoptimized
                   />
                 </div>
 
                 {/* Monumental Headline */}
-                <span className="block font-body text-[7px] sm:text-[9.5px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-0.5">
+                <span className="block font-antiqua text-[7px] sm:text-[9.5px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-0.5">
                   JHARKHAND&apos;S GRANDEST
                 </span>
                 <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-bright-gold mt-0.5">
                   <span className="text-bright-gold text-[10px] sm:text-xs select-none" aria-hidden="true">❧</span>
-                  <h3 className="font-display text-base sm:text-2xl lg:text-[26px] text-bright-gold tracking-[0.06em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.35)] leading-none font-bold">
+                  <h3 className="font-antiqua text-base sm:text-2xl lg:text-[26px] text-bright-gold tracking-[0.06em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.35)] leading-none font-bold">
                     DANDIYA NIGHT
                   </h3>
                   <span className="text-bright-gold text-[10px] sm:text-xs select-none scale-x-[-1]" aria-hidden="true">❧</span>
                 </div>
 
-                <p className="font-body text-[7.5px] sm:text-[11px] text-warm-cream font-medium italic mt-0.5">
+                <p className="font-bangle text-[7.5px] sm:text-[11px] text-warm-cream font-medium italic mt-0.5">
                   Navratri Celebration like never before
                 </p>
 
-                <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[6.5px] sm:text-[9px] text-amber-glow font-body tracking-[0.16em] uppercase font-semibold mt-0.5">
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[6.5px] sm:text-[9px] text-amber-glow font-bangle tracking-[0.16em] uppercase font-semibold mt-0.5">
                   <span>Dance</span>
                   <span className="text-antique-gold/60">|</span>
                   <span>Devotion</span>
@@ -411,7 +414,7 @@ export default function CampaignFeature() {
                 <div className="relative w-full h-full drop-shadow-[0_10px_35px_rgba(0,0,0,0.92)]">
                   <Image
                     src="/images/client/raascdr/web/dancers-composite.webp"
-                    alt="Male and Female Dandiya Dancers"
+                    alt="Female and Male Dandiya Dancers"
                     fill
                     className="object-contain object-bottom"
                     sizes="(max-width: 640px) 300px, 420px"
@@ -472,7 +475,7 @@ export default function CampaignFeature() {
               </div>
 
               {/* Headline */}
-              <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-warm-cream tracking-tighter uppercase leading-[1.02] mb-6 font-black">
+              <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white tracking-tighter uppercase leading-[1.02] mb-6 font-black">
                 A NIGHT MADE <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-antique-gold to-bright-gold drop-shadow-[0_2px_16px_rgba(243,198,76,0.4)]">
                   TO BE

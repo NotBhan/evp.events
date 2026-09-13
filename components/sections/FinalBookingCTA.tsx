@@ -174,7 +174,7 @@ export default function FinalBookingCTA() {
           {/* Monumental Concluding Typography */}
           <h2
             ref={headlineRef}
-            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-warm-cream tracking-tight uppercase mb-6 leading-none"
+            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-tight uppercase mb-6 leading-none"
           >
             LET&apos;S <span className="text-bright-gold drop-shadow-[0_2px_20px_rgba(243,198,76,0.4)]">CELEBRATE.</span>
           </h2>

@@ -411,7 +411,7 @@ export default function AboutContent() {
                 </div>
 
                 {/* Layer 2: Hanging Brass Diyas on Left & Right Borders */}
-                <div className="absolute top-0 left-[1.5%] w-[10%] h-[32%] pointer-events-none z-20 opacity-90">
+                <div className="absolute top-0 left-[1.5%] w-[8%] sm:w-[8.5%] h-[32%] pointer-events-none z-20 opacity-90">
                   <Image
                     src="/images/client/raascdr/web/hanging-diyas.webp"
                     alt=""
@@ -420,7 +420,7 @@ export default function AboutContent() {
                     unoptimized
                   />
                 </div>
-                <div className="absolute top-0 right-[1.5%] w-[10%] h-[32%] pointer-events-none z-20 opacity-90 scale-x-[-1]">
+                <div className="absolute top-0 right-[1.5%] w-[8%] sm:w-[8.5%] h-[32%] pointer-events-none z-20 opacity-90 scale-x-[-1]">
                   <Image
                     src="/images/client/raascdr/web/hanging-diyas.webp"
                     alt=""
@@ -450,14 +450,14 @@ export default function AboutContent() {
                   />
                 </div>
 
-                {/* Layer 4: Top-Left Authentic Event Point Branding */}
-                <div className="absolute top-[3%] left-[4.5%] z-30">
-                  <div className="relative w-[105px] h-[75px] sm:w-[125px] sm:h-[88px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+                {/* Layer 4: Top-Left Authentic Event Point Branding — Shifted top & borderless with internal black stroke */}
+                <div className="absolute top-[2.5%] left-[11.5%] sm:left-[12%] z-30">
+                  <div className="relative w-[96px] h-[72px] sm:w-[115px] sm:h-[86px] drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)]">
                     <Image
                       src="/images/client/raascdr/web/eventpoint-badge.webp"
                       alt="Event Point Official Logo"
                       fill
-                      className="object-contain object-left-top"
+                      className="object-contain"
                       unoptimized
                     />
                   </div>
@@ -535,34 +535,37 @@ export default function AboutContent() {
                   ref={titleLockupRef}
                   className="absolute left-0 right-0 top-[27.5%] sm:top-[29%] z-30 flex flex-col items-center text-center px-3 sm:px-4 pointer-events-none"
                 >
-                  {/* Authentic Title Artwork */}
-                  <div className="relative w-[56%] sm:w-[60%] h-[36px] sm:h-[52px] md:h-[62px] drop-shadow-[0_6px_18px_rgba(0,0,0,0.9)]">
+                  {/* Authentic Title Artwork — 4× upscaled */}
+                  <div className="relative w-[64%] sm:w-[68%] h-[46px] sm:h-[64px] md:h-[76px] drop-shadow-[0_6px_18px_rgba(0,0,0,0.9)]">
                     <Image
-                      src="/images/client/raascdr/web/title-raas-utsav.webp"
+                      src="/images/client/raascdr/web/title-raas-utsav-4x.webp"
                       alt="रास Utsav 2026 Title Artwork"
                       fill
                       className="object-contain object-center"
+                      
+                      sizes="(max-width: 640px) 260px, (max-width: 1024px) 380px, 500px"
                       priority
+                      unoptimized
                     />
                   </div>
 
                   {/* Monumental Headline Lockup matching Reference A */}
-                  <span className="block font-body text-[6px] sm:text-[8.5px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-0.5">
+                  <span className="block font-antiqua text-[6px] sm:text-[8.5px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-0.5">
                     JHARKHAND&apos;S GRANDEST
                   </span>
                   <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-bright-gold mt-0.5">
                     <span className="text-bright-gold text-[8px] sm:text-xs select-none" aria-hidden="true">❧</span>
-                    <h2 className="font-display text-xs sm:text-lg md:text-[22px] text-bright-gold tracking-[0.06em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.35)] leading-none font-bold">
+                    <h2 className="font-antiqua text-xs sm:text-lg md:text-[22px] text-bright-gold tracking-[0.06em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.35)] leading-none font-bold">
                       DANDIYA NIGHT
                     </h2>
                     <span className="text-bright-gold text-[8px] sm:text-xs select-none scale-x-[-1]" aria-hidden="true">❧</span>
                   </div>
 
-                  <p className="font-body text-[6.5px] sm:text-[9.5px] text-warm-cream font-medium italic mt-0.5">
+                  <p className="font-bangle text-[6.5px] sm:text-[9.5px] text-warm-cream font-medium italic mt-0.5">
                     Navratri Celebration like never before
                   </p>
 
-                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[5.5px] sm:text-[8px] text-amber-glow font-body tracking-[0.16em] uppercase font-semibold mt-0.5">
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[5.5px] sm:text-[8px] text-amber-glow font-bangle tracking-[0.16em] uppercase font-semibold mt-0.5">
                     <span>Dance</span>
                     <span className="text-antique-gold/60">•</span>
                     <span>Devotion</span>
@@ -614,7 +617,7 @@ export default function AboutContent() {
                   <div className="relative w-full h-full drop-shadow-[0_10px_35px_rgba(0,0,0,0.92)]">
                     <Image
                       src="/images/client/raascdr/web/dancers-composite.webp"
-                      alt="Male and Female Dandiya Dancers"
+                      alt="Female and Male Dandiya Dancers"
                       fill
                       className="object-contain object-bottom"
                       sizes="(max-width: 640px) 300px, 420px"
@@ -674,7 +677,7 @@ export default function AboutContent() {
               </div>
 
               {/* Primary Semantic H1 */}
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-4xl xl:text-5xl text-warm-cream tracking-tight uppercase leading-[1.08] mb-3.5 font-black">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-4xl xl:text-5xl text-white tracking-tight uppercase leading-[1.08] mb-3.5 font-black">
                 WHERE HERITAGE <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-antique-gold to-bright-gold drop-shadow-[0_2px_14px_rgba(243,198,76,0.35)]">
                   MEETS HIGH-ENERGY
@@ -775,7 +778,7 @@ export default function AboutContent() {
               <span className="text-vermilion text-xs" aria-hidden="true">♦</span>
               <span>02 / THE CULTURAL FOUNDATION</span>
             </div>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-wide uppercase leading-tight">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase leading-tight">
               THE SPIRIT OF RAAS &amp; DEVOTIONAL ROOTS
             </h2>
           </div>
@@ -897,7 +900,7 @@ export default function AboutContent() {
               <span className="text-vermilion text-xs" aria-hidden="true">♦</span>
               <span>03 / THE FESTIVAL SPIRIT</span>
             </div>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-wide mb-3 uppercase">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide mb-3 uppercase">
               PILLARS OF OUR CELEBRATION
             </h2>
             <p className="font-body text-sm sm:text-base text-warm-cream/80 max-w-xl mx-auto leading-relaxed font-light">
@@ -1055,7 +1058,7 @@ export default function AboutContent() {
                 <span className="text-vermilion">♦</span>
                 <span>04 / HISTORIC FESTIVAL GROUNDS</span>
               </div>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-tight uppercase leading-tight">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-tight uppercase leading-tight">
                 THE ICONIC GROUNDS OF <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-antique-gold to-bright-gold">
                   UPWAN LAWN
@@ -1156,7 +1159,7 @@ export default function AboutContent() {
             <span>05 / YOUR INVITATION</span>
           </div>
 
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-wide mb-4 leading-tight uppercase">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide mb-4 leading-tight uppercase">
             STEP INTO THE CELEBRATION
           </h2>
 

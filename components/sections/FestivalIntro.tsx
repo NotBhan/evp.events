@@ -28,7 +28,7 @@ export default function FestivalIntro() {
             <span>JHARKHAND&apos;S GRANDEST DANDIYA NIGHT</span>
           </div>
 
-          <h2 className="font-display text-4xl sm:text-6xl md:text-7xl text-warm-cream tracking-wide mb-4 uppercase">
+          <h2 className="font-display text-4xl sm:text-6xl md:text-7xl text-white font-bold tracking-wide mb-4 uppercase">
             A NIGHT OF <span className="text-vermilion">DEVOTION</span> & <span className="text-bright-gold">RAAS</span>
           </h2>
 

@@ -337,7 +337,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
           <span className="text-vermilion text-xs" aria-hidden="true">♦</span>
           <span>OFFICIAL FESTIVAL ENQUIRY DESK</span>
         </div>
-        <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-wide uppercase">
+        <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase">
           RESERVE YOUR FESTIVAL PASS
         </h2>
         <p className="font-body text-xs sm:text-sm text-warm-cream/75 max-w-lg mx-auto mt-2">

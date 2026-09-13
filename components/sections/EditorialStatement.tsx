@@ -263,7 +263,7 @@ export default function EditorialStatement() {
 
             <h2
               ref={headlineRef}
-              className="font-display text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[6.2rem] leading-[0.96] tracking-tight uppercase text-warm-cream"
+              className="font-display text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[6.2rem] leading-[0.96] tracking-tight uppercase text-white font-bold"
             >
               <span className="headline-line block">
                 WHERE{' '}
@@ -271,11 +271,11 @@ export default function EditorialStatement() {
                   HERITAGE
                 </span>
               </span>
-              <span className="headline-line block text-warm-cream/95">MEETS</span>
+              <span className="headline-line block text-white">MEETS</span>
               <span className="headline-line block text-transparent bg-clip-text bg-gradient-to-r from-vermilion via-amber-glow to-vermilion drop-shadow-[0_2px_20px_rgba(217,37,36,0.45)]">
                 HIGH-ENERGY
               </span>
-              <span className="headline-line block text-warm-cream">CELEBRATION</span>
+              <span className="headline-line block text-white">CELEBRATION</span>
             </h2>
 
             {/* Substantial Gold Filigree Dividing Rule */}

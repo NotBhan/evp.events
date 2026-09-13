@@ -213,7 +213,7 @@ export default function ContactContent() {
                 <span>01 / OFFICIAL COORDINATION DESK</span>
               </div>
 
-              <h1 className="animate-hero-item font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-warm-cream tracking-tight uppercase leading-[0.92] mb-6">
+              <h1 className="animate-hero-item font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-tight uppercase leading-[0.92] mb-6">
                 LET&apos;S<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-warm-cream to-bright-gold">
                   TALK.
@@ -244,12 +244,13 @@ export default function ContactContent() {
                 <span className="absolute bottom-3 right-3 text-bright-gold text-[10px] select-none pointer-events-none">♦</span>
 
                 <div className="relative z-10 flex flex-col items-center text-center">
-                  <div className="relative w-40 h-20 sm:w-48 sm:h-24 mb-4">
+                  <div className="relative w-44 h-32 sm:w-52 sm:h-38 mb-4">
                     <Image
                       src="/images/client/raascdr/web/eventpoint-logo.webp"
                       alt="Event Point Organizer Logo"
                       fill
                       priority
+                      unoptimized
                       className="object-contain"
                     />
                   </div>
@@ -285,7 +286,7 @@ export default function ContactContent() {
             <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-2">
               DIRECT COMMUNICATION
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-wide uppercase">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase">
               OFFICIAL COORDINATION DESK
             </h2>
             <div className="h-0.5 max-w-xs mx-auto bg-gradient-to-r from-transparent via-antique-gold to-transparent mt-4 mb-3" />
@@ -436,7 +437,7 @@ export default function ContactContent() {
               <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-2">
                 TRANSPARENT PASS PROCESS
               </span>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-wide uppercase">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase">
                 NEED HELP WITH YOUR PASS?
               </h2>
               <div className="h-0.5 max-w-xs mx-auto bg-gradient-to-r from-transparent via-antique-gold to-transparent mt-4 mb-4" />
@@ -529,7 +530,7 @@ export default function ContactContent() {
                   <span>CORPORATE &amp; BRAND OPPORTUNITIES</span>
                 </div>
 
-                <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-tight uppercase mb-4">
+                <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-tight uppercase mb-4">
                   PARTNER WITH<br />
                   <span className="text-bright-gold">RAAS UTSAV.</span>
                 </h2>
@@ -584,7 +585,7 @@ export default function ContactContent() {
             <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-2">
               FESTIVAL DESTINATION
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-wide uppercase">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase">
               MEET US AT<br />
               <span className="text-bright-gold">UPWAN LAWN.</span>
             </h2>
@@ -682,7 +683,7 @@ export default function ContactContent() {
                 JOIN THE CELEBRATION
               </span>
 
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream tracking-tight uppercase mb-4">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-tight uppercase mb-4">
                 READY TO MAKE IT A NIGHT?
               </h2>
 
