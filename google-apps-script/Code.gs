@@ -161,7 +161,14 @@ function doPost(e) {
     var submissionStatus = String(data.submissionStatus || data.status || 'CONFIRMED').trim();
 
     // 4. Append or Update in Authoritative Destination Sheet (Upsert by Booking ID in Column B)
-    var sheet = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID).getSheetByName(BOOKING_SHEET_TAB_NAME);
+    var ss = null;
+    try {
+      ss = SpreadsheetApp.getActiveSpreadsheet();
+    } catch (activeErr) {}
+    if (!ss) {
+      ss = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID);
+    }
+    var sheet = ss.getSheetByName(BOOKING_SHEET_TAB_NAME) || ss.getActiveSheet();
     if (!sheet) {
       return responseJSON({ status: 'error', message: 'Target sheet tab not found: ' + BOOKING_SHEET_TAB_NAME });
     }
@@ -249,12 +256,47 @@ function responseJSON(obj) {
 }
 
 /**
- * Health-check GET handler
+ * Health-check GET handler with sheet connectivity probe
  */
 function doGet(e) {
+  var sheetStatus = 'unknown';
+  var sheetName = null;
+  var sheetError = null;
+  try {
+    var ss = null;
+    try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+    if (!ss) {
+      ss = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID);
+    }
+    var sheet = ss.getSheetByName(BOOKING_SHEET_TAB_NAME) || ss.getActiveSheet();
+    if (sheet) {
+      sheetStatus = 'connected';
+      sheetName = sheet.getName();
+    } else {
+      sheetStatus = 'sheet_tab_not_found';
+    }
+  } catch (err) {
+    sheetStatus = 'error';
+    sheetError = err.toString();
+  }
+
   return responseJSON({
     status: 'ok',
     service: 'Raas Utsav 2026 Booking Web App',
+    sheetStatus: sheetStatus,
+    sheetName: sheetName,
+    sheetError: sheetError,
     timestamp: new Date().toISOString()
   });
+}
+
+/**
+ * Manual test function to authorize permissions in Apps Script editor
+ */
+function testAuth() {
+  var ss = null;
+  try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+  if (!ss) { ss = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID); }
+  var sheet = ss.getSheetByName(BOOKING_SHEET_TAB_NAME) || ss.getActiveSheet();
+  Logger.log('Connected sheet: ' + sheet.getName() + ', total rows: ' + sheet.getLastRow());
 }
