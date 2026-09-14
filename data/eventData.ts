@@ -48,7 +48,12 @@ export interface EventConfig {
   };
   business: {
     name: string;
+    tradeName: string;
+    legalName: string;
     individualName: string;
+    constitution: string;
+    proprietor: string;
+    gstin: string;
     email: string;
     phone: string;
     address: {
@@ -140,17 +145,22 @@ export const eventData: EventConfig = {
   },
   business: {
     name: "PUJA TENT AGENCY",
+    tradeName: "PUJA TENT AGENCY",
+    legalName: "KUMARI PUJA VISHWAKARMA",
     individualName: "KUMARI PUJA VISHWAKARMA",
+    constitution: "Proprietorship",
+    proprietor: "KUMARI PUJA VISHWAKARMA",
+    gstin: "20ARLPV7298K1ZZ",
     email: "eventpointranchi18@gmail.com",
     phone: "+91 94301 12440",
     address: {
       plot: "KHATA NO 103, PLOT NO 1726",
-      street: "Harmu Road, Argoa Chowk",
-      area: "Argoa",
+      street: "Harmu Road, Argora Chowk",
+      area: "Argora",
       city: "Ranchi",
       state: "Jharkhand",
       pincode: "834002",
-      display: "KHATA NO 103, PLOT NO 1726, Argoa Chowk, Harmu Road, Argoa, Ranchi, Jharkhand 834002",
+      display: "KHATA NO 103, PLOT NO 1726, Argora Chowk, Harmu Road, Argora, Ranchi, Jharkhand 834002",
     },
   },
 
@@ -425,7 +435,7 @@ export const eventData: EventConfig = {
     alternateEmail: "eventpoint42@gmail.com",
     helplineNumber: "+91 94301 12440",
     phoneNumbers: ["+91 94301 12440", "+91 99315 03960", "+91 85400 06033"],
-    officeLocation: "KHATA NO 103, PLOT NO 1726, Argoa Chowk, Harmu Road, Argoa, Ranchi, Jharkhand 834002",
+    officeLocation: "KHATA NO 103, PLOT NO 1726, Argora Chowk, Harmu Road, Argora, Ranchi, Jharkhand 834002",
     note: "For pass enquiries, group bookings, and sponsorship opportunities, contact our coordination desk.",
   },
 

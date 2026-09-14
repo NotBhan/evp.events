@@ -266,13 +266,16 @@ export default function ContactContent() {
 
                   <div className="text-[11px] font-body text-warm-cream/80 space-y-0.5">
                     <span className="block text-bright-gold font-semibold uppercase tracking-wider">
-                      Business Name: {eventData.business.name}
+                      Business: {eventData.business.name}
                     </span>
                     <span className="block text-warm-cream/90 text-[10px]">
-                      Individual Name: {eventData.business.individualName}
+                      Proprietor: {eventData.business.legalName} ({eventData.business.constitution})
+                    </span>
+                    <span className="block text-bright-gold/80 text-[10px]">
+                      GSTIN: {eventData.business.gstin}
                     </span>
                     <span className="block text-warm-cream/60 text-[10px]">
-                      {eventData.business.address.plot}, Argoa, Ranchi 834002
+                      {eventData.business.address.plot}, Argora, Ranchi 834002
                     </span>
                   </div>
                 </div>
@@ -444,25 +447,25 @@ export default function ContactContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs font-body text-warm-cream/85">
                   <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
                     <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
-                      BUSINESS NAME
+                      TRADE NAME
                     </span>
                     <span className="font-semibold text-warm-cream text-sm block">
                       {eventData.business.name}
                     </span>
                     <span className="text-[11px] text-warm-cream/65 block">
-                      Commercial &amp; Billing Entity
+                      Commercial &amp; Billing Entity ({eventData.business.constitution})
                     </span>
                   </div>
 
                   <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
                     <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
-                      INDIVIDUAL NAME
+                      LEGAL NAME &amp; PROPRIETOR
                     </span>
                     <span className="font-semibold text-warm-cream text-sm block">
-                      {eventData.business.individualName}
+                      {eventData.business.legalName}
                     </span>
-                    <span className="text-[11px] text-warm-cream/65 block">
-                      {eventData.business.name}
+                    <span className="text-[11px] text-bright-gold/90 block font-semibold">
+                      GSTIN: {eventData.business.gstin}
                     </span>
                   </div>
 
@@ -486,10 +489,10 @@ export default function ContactContent() {
 
                   <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
                     <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
-                      BUSINESS ADDRESS
+                      PRINCIPAL PLACE OF BUSINESS
                     </span>
                     <p className="text-[11px] text-warm-cream/90 leading-relaxed">
-                      {eventData.business.address.plot}, {eventData.business.address.street}, {eventData.business.address.area}, {eventData.business.address.city}, {eventData.business.address.state} – {eventData.business.address.pincode}
+                      {eventData.business.address.display}
                     </p>
                   </div>
                 </div>
@@ -753,7 +756,7 @@ export default function ContactContent() {
                     <p className="text-[11px] text-warm-cream/85 leading-relaxed">
                       <strong>Celebration Grounds:</strong> Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi 834001.
                       <br />
-                      <strong>Business Address:</strong> {eventData.business.name}, {eventData.business.address.plot}, {eventData.business.address.street}, {eventData.business.address.area}, Ranchi {eventData.business.address.pincode}.
+                      <strong>Business Address:</strong> {eventData.business.name}, {eventData.business.address.display}.
                     </p>
                   </div>
                 </div>
@@ -824,7 +827,7 @@ export default function ContactContent() {
 
               {/* Business & Event Contacts Summary */}
               <div className="pt-6 border-t border-antique-gold/20 flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-2 text-xs font-body text-warm-cream/75 text-center">
-                <span>Business Name: <strong>{eventData.business.name}</strong> (Individual Name: {eventData.business.individualName})</span>
+                <span>Business: <strong>{eventData.business.name}</strong> · Legal Name / Proprietor: <strong>{eventData.business.legalName}</strong> ({eventData.business.constitution}) · GSTIN: <strong>{eventData.business.gstin}</strong></span>
                 <span className="hidden sm:inline">•</span>
                 <span>Helpline: {eventData.business.phone}</span>
                 <span className="hidden sm:inline">•</span>

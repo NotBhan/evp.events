@@ -40,9 +40,7 @@ async function run() {
       '5–7 working days',
       'Ranchi court',
       'exclusive jurisdiction',
-      'GST included',
       'GST excluded',
-      'taxes included',
       'taxes extra',
       'Daily 10:00 AM',
       'GDPR',
@@ -51,15 +49,12 @@ async function run() {
       'Pvt Ltd',
       'Private Limited',
       'LLP',
-      'Sole Proprietorship',
-      'GSTIN',
       'CIN:',
       'Registered Business Office',
       'Registered Business Address',
       'Registered Office',
       'Authorized Representative',
       'Authorized Signatory',
-      'Proprietor',
       'admission verification',
       'entry verification',
     ];
@@ -75,10 +70,21 @@ async function run() {
       throw new Error(`MISSING "PUJA TENT AGENCY" on ${route}`);
     }
     if (!text.includes('834002')) {
-      throw new Error(`MISSING "834002" (Argoa PIN) on ${route}`);
+      throw new Error(`MISSING "834002" (Argora PIN) on ${route}`);
+    }
+    if (!text.includes('Argora')) {
+      throw new Error(`MISSING "Argora" on ${route}`);
     }
     if (!text.includes('KUMARI PUJA VISHWAKARMA')) {
       throw new Error(`MISSING "KUMARI PUJA VISHWAKARMA" on ${route}`);
+    }
+    if (route === '/pricing') {
+      if (!text.includes('All listed pass prices are inclusive of applicable GST.')) {
+        throw new Error(`MISSING exact GST-inclusive statement on /pricing`);
+      }
+      if (!text.includes('20ARLPV7298K1ZZ')) {
+        throw new Error(`MISSING GSTIN "20ARLPV7298K1ZZ" on /pricing`);
+      }
     }
     if (!text.includes('Upwan Lawn') && !text.includes('Chanakya BNR')) {
       throw new Error(`MISSING event venue on ${route}`);

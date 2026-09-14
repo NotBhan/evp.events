@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "./scripts/run-with-ipv4.sh next dev",
-    "build": "./scripts/run-with-ipv4.sh next build",
-    "start": "./scripts/run-with-ipv4.sh next start",
+    "build": "next build",
+    "start": "next start",
+    "postinstall": "prisma generate",
     "lint": "eslint",
     "prisma": "./scripts/run-with-ipv4.sh dotenv -e .env.local -- prisma",
     "db:migrate": "./scripts/run-with-ipv4.sh dotenv -e .env.local -- prisma migrate dev",

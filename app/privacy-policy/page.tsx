@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
               <span>1. INTRODUCTION</span>
             </h2>
             <p>
-              This Privacy Policy describes how <strong>{eventData.business.name}</strong> (Individual Name: <strong>{eventData.business.individualName}</strong>), presenting <strong>{eventData.eventName} {eventData.year}</strong> under event brand <strong>{eventData.organizer.name}</strong>, collects, uses, and protects information when you use our website or submit a pass reservation.
+              This Privacy Policy describes how <strong>{eventData.business.name}</strong> (Legal Name / Proprietor: <strong>{eventData.business.legalName}</strong>, {eventData.business.constitution}, GSTIN: <strong>{eventData.business.gstin}</strong>), presenting <strong>{eventData.eventName} {eventData.year}</strong> under event brand <strong>{eventData.organizer.name}</strong>, collects, uses, and protects information when you use our website or submit a pass reservation.
             </p>
           </section>
 
@@ -154,9 +154,11 @@ export default function PrivacyPolicyPage() {
               For questions regarding your reservation details or data privacy, please contact:
             </p>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs space-y-1.5">
-              <p><strong>Business Name:</strong> {eventData.business.name} (Individual Name: {eventData.business.individualName})</p>
+              <p><strong>Trade Name:</strong> {eventData.business.name}</p>
+              <p><strong>Legal Name / Proprietor:</strong> {eventData.business.legalName} ({eventData.business.constitution})</p>
+              <p><strong>GSTIN:</strong> {eventData.business.gstin}</p>
               <p><strong>Event Presentation:</strong> {eventData.organizer.name}</p>
-              <p><strong>Business Address:</strong> {eventData.business.address.display}</p>
+              <p><strong>Principal Place of Business:</strong> {eventData.business.address.display}</p>
               <p><strong>Helpline:</strong> {eventData.contacts.phones.join(' / ')}</p>
               <p><strong>Email:</strong> {eventData.contacts.emails.join(' / ')}</p>
               <p><strong>Event Celebration Grounds:</strong> Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001 (Distinct from business address)</p>

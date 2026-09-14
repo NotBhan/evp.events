@@ -69,7 +69,7 @@ export default function Footer() {
                 </div>
               </div>
               <div className="pt-2 border-t border-antique-gold/20 text-[10px] text-warm-cream/70 leading-tight">
-                <span className="text-bright-gold font-semibold uppercase">Business:</span> {eventData.business.name} (Individual Name: {eventData.business.individualName}) · Harmu Road, Argoa, Ranchi 834002
+                <span className="text-bright-gold font-semibold uppercase">Business:</span> {eventData.business.name} (Proprietor: {eventData.business.legalName}) · GSTIN: {eventData.business.gstin} · Harmu Road, Argora, Ranchi 834002
               </div>
             </div>
           </div>

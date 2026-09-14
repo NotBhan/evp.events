@@ -1019,9 +1019,12 @@ export default function BookingDesk({
                   </div>
 
                   <div className="pt-3 border-t border-dashed border-antique-gold/30 flex items-center justify-between">
-                    <span className="font-bold uppercase tracking-wider text-warm-cream/80">
-                      TOTAL AMOUNT:
-                    </span>
+                    <div>
+                      <span className="font-bold uppercase tracking-wider text-warm-cream/80 block">
+                        TOTAL AMOUNT:
+                      </span>
+                      <span className="text-[10px] text-warm-cream/60">Inclusive of applicable GST</span>
+                    </div>
                     <span className="font-display text-3xl text-bright-gold font-bold">
                       ₹{totalAmount.toLocaleString('en-IN')}
                     </span>

@@ -100,14 +100,23 @@ export default function RefundAndCancellationPage() {
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-bright-gold shrink-0" />
-              <span>4. CONFIRMED PASSES &amp; CANCELLATION TERMS</span>
+              <span>4. PASS CANCELLATION &amp; REFUND TERMS</span>
             </h2>
             <p>
-              When payment is successfully confirmed, the reservation transitions to <code>CONFIRMED</code>, and the pass quota is allocated to the booking.
+              When online pass payment is successfully completed, the reservation transitions to <code>CONFIRMED</code>, and admission quota is allocated to the booking.
             </p>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2">
+              <p className="text-xs text-warm-cream/90 leading-relaxed font-semibold text-bright-gold">
+                Cancellation &amp; Refund Request Process:
+              </p>
               <p className="text-xs text-warm-cream/85 leading-relaxed">
-                Voluntary cancellation terms, refund eligibility, and ticket transferability are subject to the organizer&apos;s published event policy. Attendees should review their pass selections before completing checkout. Any inquiries regarding booking modifications must be directed to Event Point coordination.
+                A cancellation and refund option is available for pass holders. Attendees wishing to cancel a confirmed booking may submit a request by contacting the official festival coordination desk with their Request ID / Booking Reference at <code>{eventData.business.email}</code> or via phone at <code>{eventData.business.phone}</code>.
+              </p>
+              <p className="text-xs text-warm-cream/85 leading-relaxed">
+                Where a cancellation or refund request is approved, the refund is disbursed exclusively back to the original source/payment method used during checkout. In accordance with the organizer&apos;s refund policy, applicable statutory deductions (including GST) and processing deductions apply to the refunded amount.
+              </p>
+              <p className="text-xs text-warm-cream/70 italic leading-relaxed">
+                Note: Specific cancellation timelines, applicable deduction formulas, and any supplementary cancellation fees remain subject to the organizer&apos;s event operations policy. Inquiries should be directed to the event support team prior to the festival date.
               </p>
             </div>
           </section>
@@ -118,7 +127,7 @@ export default function RefundAndCancellationPage() {
               <span>5. REFUND METHOD &amp; DISBURSEMENT</span>
             </h2>
             <p>
-              Where refunds or duplicate payment reversals are approved and initiated, the funds are credited directly back to the original source of payment (Credit/Debit Card, Netbanking, or UPI). Cash refunds are not provided.
+              All approved refunds, duplicate payment reversals, and technical settlement adjustments are returned directly to the original payment method (Credit Card, Debit Card, Netbanking, or UPI). Cash refunds are not provided under any circumstances.
             </p>
           </section>
 
@@ -128,12 +137,14 @@ export default function RefundAndCancellationPage() {
               <span>6. REFUND &amp; BILLING ASSISTANCE</span>
             </h2>
             <p>
-              For inquiries regarding pending transactions, duplicate charges, or reservation records:
+              For inquiries regarding pass cancellations, refund status, pending transactions, or duplicate charges:
             </p>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs space-y-1.5">
-              <p><strong>Business Name:</strong> {eventData.business.name} (Individual Name: {eventData.business.individualName})</p>
+              <p><strong>Trade Name:</strong> {eventData.business.name}</p>
+              <p><strong>Legal Name / Proprietor:</strong> {eventData.business.legalName} ({eventData.business.constitution})</p>
+              <p><strong>GSTIN:</strong> {eventData.business.gstin}</p>
               <p><strong>Event Presentation:</strong> {eventData.organizer.name}</p>
-              <p><strong>Business Address:</strong> {eventData.business.address.display}</p>
+              <p><strong>Principal Place of Business:</strong> {eventData.business.address.display}</p>
               <p><strong>Helpline:</strong> {eventData.contacts.phones.join(' / ')}</p>
               <p><strong>Email:</strong> {eventData.contacts.emails.join(' / ')}</p>
               <p><strong>Event Celebration Grounds:</strong> Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001 (Distinct from business address)</p>

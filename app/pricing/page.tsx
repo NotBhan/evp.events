@@ -34,6 +34,12 @@ export default function PricingPage() {
           <p className="font-body text-sm sm:text-base text-warm-cream/80 max-w-2xl mx-auto leading-relaxed">
             Direct, server-authoritative rates for {eventData.eventName} {eventData.year}. Held at {eventData.venueDisplay} on {eventData.dateDisplay}.
           </p>
+
+          <div className="mt-6 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-royal-maroon/80 border border-antique-gold/50 text-xs sm:text-sm font-body text-bright-gold font-semibold shadow-lg">
+            <span>✦</span>
+            <span>All listed pass prices are inclusive of applicable GST.</span>
+            <span>✦</span>
+          </div>
         </div>
 
         {/* Pricing Cards Grid */}
@@ -149,18 +155,20 @@ export default function PricingPage() {
 
             <div className="space-y-3">
               <h3 className="font-bold text-bright-gold uppercase text-xs tracking-wider">
-                Published Ticket Rates
+                GST-Inclusive Ticket Rates
               </h3>
               <p>
-                Pass prices displayed represent the official admission rates established for {eventData.eventName} {eventData.year}. Final payable amounts are confirmed on the booking summary before payment completion.
+                All listed pass prices are inclusive of applicable GST. Pass rates (Solo ₹999, VIP ₹1,499, Couple ₹1,999, Family ₹3,599, Group ₹4,999) represent the complete customer payable amount. No additional tax is charged at checkout.
               </p>
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-antique-gold/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-body text-warm-cream/70">
-            <span>Business Name: <strong className="text-warm-cream">{eventData.business.name}</strong> (Individual Name: {eventData.business.individualName})</span>
+          <div className="mt-8 pt-6 border-t border-antique-gold/20 flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-body text-warm-cream/70 text-center md:text-left">
+            <span>
+              Business: <strong className="text-warm-cream">{eventData.business.name}</strong> · Legal Name / Proprietor: <strong className="text-warm-cream">{eventData.business.legalName}</strong> ({eventData.business.constitution}) · GSTIN: <strong className="text-bright-gold">{eventData.business.gstin}</strong>
+            </span>
             <span>Helpline: {eventData.business.phone}</span>
-            <span>Venue: Upwan Lawn, Chanakya BNR Hotel, Ranchi (Distinct from business address)</span>
+            <span>Venue: Upwan Lawn, Chanakya BNR Hotel, Ranchi</span>
           </div>
         </section>
 

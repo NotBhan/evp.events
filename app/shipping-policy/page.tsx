@@ -128,9 +128,11 @@ export default function ShippingPolicyPage() {
               For pass fulfillment inquiries, group bookings, or venue guidance:
             </p>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs space-y-1.5">
-              <p><strong>Business Name:</strong> {eventData.business.name} (Individual Name: {eventData.business.individualName})</p>
+              <p><strong>Trade Name:</strong> {eventData.business.name}</p>
+              <p><strong>Legal Name / Proprietor:</strong> {eventData.business.legalName} ({eventData.business.constitution})</p>
+              <p><strong>GSTIN:</strong> {eventData.business.gstin}</p>
               <p><strong>Event Presentation:</strong> {eventData.organizer.name}</p>
-              <p><strong>Business Address:</strong> {eventData.business.address.display}</p>
+              <p><strong>Principal Place of Business:</strong> {eventData.business.address.display}</p>
               <p><strong>Helpline:</strong> {eventData.contacts.phones.join(' / ')}</p>
               <p><strong>Email:</strong> {eventData.contacts.emails.join(' / ')}</p>
               <p><strong>Event Celebration Grounds:</strong> Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001 (Distinct from business address)</p>

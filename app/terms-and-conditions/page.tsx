@@ -50,7 +50,7 @@ export default function TermsAndConditionsPage() {
               &ldquo;Event&rdquo; refers to <strong>{eventData.eventName} {eventData.year}</strong> scheduled to take place on <strong>{eventData.dateDisplay}</strong> from <strong>{eventData.timeDisplay}</strong> at <strong>{eventData.venueDisplay}</strong>.
             </p>
             <p>
-              &ldquo;Business&rdquo; or &ldquo;Organizer&rdquo; refers to <strong>{eventData.business.name}</strong> (Individual Name: <strong>{eventData.business.individualName}</strong>) for event <strong>{eventData.eventName} {eventData.year}</strong> presented by <strong>{eventData.organizer.name}</strong> (&ldquo;{eventData.organizer.tagline}&rdquo;), with business address at {eventData.business.address.plot}, {eventData.business.address.street}, {eventData.business.address.area}, Ranchi, Jharkhand {eventData.business.address.pincode}.
+              &ldquo;Business&rdquo; or &ldquo;Organizer&rdquo; refers to <strong>{eventData.business.name}</strong> (Legal Name / Proprietor: <strong>{eventData.business.legalName}</strong>, {eventData.business.constitution}, GSTIN: <strong>{eventData.business.gstin}</strong>) for event <strong>{eventData.eventName} {eventData.year}</strong> presented by <strong>{eventData.organizer.name}</strong> (&ldquo;{eventData.organizer.tagline}&rdquo;), with principal place of business at {eventData.business.address.display}.
             </p>
             <p>
               &ldquo;Attendee&rdquo; or &ldquo;Customer&rdquo; refers to any person who reserves, purchases, or holds an entry pass for the Event.
@@ -98,10 +98,13 @@ export default function TermsAndConditionsPage() {
           {/* 4. Payment Terms */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>4. PAYMENT TERMS</span>
+              <span>4. PAYMENT TERMS &amp; PRICING TRANSPARENCY</span>
             </h2>
             <p>
               Payments for passes are handled online via authorized payment gateways or coordinated directly with the official Event Point team.
+            </p>
+            <p>
+              All listed pass prices are inclusive of applicable GST. Pass rates displayed represent the final customer payable rate; no additional tax is charged at checkout.
             </p>
             <p>
               Passes are considered confirmed only when the payment transaction is successfully completed and verified by the booking system. For detailed cancellation, failed payment reversal, and duplicate payment resolution guidelines, refer to our dedicated{' '}
@@ -146,9 +149,11 @@ export default function TermsAndConditionsPage() {
               For questions regarding these Terms &amp; Conditions or pass reservations, please contact:
             </p>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs space-y-1.5">
-              <p><strong>Business Name:</strong> {eventData.business.name} (Individual Name: {eventData.business.individualName})</p>
+              <p><strong>Trade Name:</strong> {eventData.business.name}</p>
+              <p><strong>Legal Name / Proprietor:</strong> {eventData.business.legalName} ({eventData.business.constitution})</p>
+              <p><strong>GSTIN:</strong> {eventData.business.gstin}</p>
               <p><strong>Event Presentation:</strong> {eventData.organizer.name}</p>
-              <p><strong>Business Address:</strong> {eventData.business.address.display}</p>
+              <p><strong>Principal Place of Business:</strong> {eventData.business.address.display}</p>
               <p><strong>Helpline:</strong> {eventData.contacts.phones.join(' / ')}</p>
               <p><strong>Email:</strong> {eventData.contacts.emails.join(' / ')}</p>
               <p><strong>Event Celebration Grounds:</strong> Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001 (Distinct from business address)</p>
