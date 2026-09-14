@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { eventData } from '@/data/eventData';
+import { calculateGstAndRefund, RefundCalculation } from '@/lib/cancellation-constants';
 
 export interface SubmittedBookingRecord {
   bookingId: string;
@@ -22,6 +23,8 @@ export interface SubmittedBookingRecord {
   expiresAt?: string;
   recoveryToken?: string;
   confirmedAt?: string | null;
+  cancelledAt?: string | null;
+  refundBreakdown?: RefundCalculation;
 }
 
 interface BookingReceiptPrintProps {
@@ -53,6 +56,8 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
         timeStyle: 'short',
       });
 
+  const refundCalc = record.status === 'CANCELLED' ? calculateGstAndRefund(record.total) : null;
+
   const printContent = (
     <div id="print-receipt-root" className="print-receipt-root" aria-hidden="true">
       <div className="print-card">
@@ -81,7 +86,15 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
             </div>
 
             <div className="print-id-group">
-              <div className="print-badge">REQUEST SUBMITTED</div>
+              <div className="print-badge">
+                {record.status === 'CANCELLED'
+                  ? 'CANCELLED'
+                  : record.status === 'CONFIRMED'
+                  ? 'CONFIRMED PASS'
+                  : record.status === 'EXPIRED'
+                  ? 'EXPIRED'
+                  : 'REQUEST SUBMITTED'}
+              </div>
               <div className="print-req-id">{record.bookingId}</div>
               <div className="print-date">{formattedDate}</div>
             </div>
@@ -89,10 +102,32 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
 
           {/* Non-Ticket Legal Callout Banner */}
           <div className="print-disclaimer-callout">
-            <div className="print-disclaimer-title">BOOKING REQUEST — NOT A CONFIRMED TICKET</div>
-            <div className="print-disclaimer-body">
-              This receipt confirms submission of a booking request only. It is not a confirmed ticket or proof of payment. Final pass allocation and payment confirmation are handled directly through the Event Point booking system.
-            </div>
+            {record.status === 'CANCELLED' ? (
+              <>
+                <div className="print-disclaimer-title" style={{ color: '#8c1d40' }}>
+                  BOOKING CANCELLED — REFUND HANDLED SEPARATELY
+                </div>
+                <div className="print-disclaimer-body">
+                  This booking has been cancelled on the website and festival pass allocation has been released back to event inventory. Refund requests and processing are handled separately via official support channels. The 18% GST included in the gross pass price is deducted from any approved refund.
+                </div>
+              </>
+            ) : record.status === 'CONFIRMED' ? (
+              <>
+                <div className="print-disclaimer-title" style={{ color: '#1e7e34' }}>
+                  OFFICIAL CONFIRMED PASS ADMISSION STUB
+                </div>
+                <div className="print-disclaimer-body">
+                  This receipt confirms verified payment and confirmed festival pass admission with Event Point. Present this receipt or your Request ID at the venue gate for admission.
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="print-disclaimer-title">BOOKING REQUEST — NOT A CONFIRMED TICKET</div>
+                <div className="print-disclaimer-body">
+                  This receipt confirms submission of a booking request only. It is not a confirmed ticket or proof of payment. Final pass allocation and payment confirmation are handled directly through the Event Point booking system.
+                </div>
+              </>
+            )}
           </div>
         </header>
 
@@ -139,9 +174,34 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
               </div>
             </div>
             <div className="print-total-box">
-              <span className="print-total-label">REQUEST TOTAL:</span>
+              <span className="print-total-label">
+                {record.status === 'CANCELLED' ? 'ORIGINAL AMOUNT PAID:' : 'REQUEST TOTAL:'}
+              </span>
               <span className="print-total-val">₹{record.total.toLocaleString('en-IN')}</span>
             </div>
+            {refundCalc && (
+              <div
+                style={{
+                  marginTop: '4pt',
+                  padding: '4pt 6pt',
+                  background: '#fffdf5',
+                  border: '1pt dotted #b38f24',
+                  borderRadius: '3pt',
+                  fontSize: '7.5pt',
+                  lineHeight: 1.35,
+                }}
+              >
+                <div>
+                  <strong>GST Component (18% Deducted):</strong> -₹{refundCalc.gstFormatted}
+                </div>
+                <div style={{ color: '#8c1d40', fontWeight: 'bold' }}>
+                  <strong>Expected Refund Amount:</strong> ₹{refundCalc.refundFormatted}
+                </div>
+                <div style={{ fontSize: '7pt', color: '#666666', marginTop: '1pt' }}>
+                  Status: Refund handled separately (not automatically credited).
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -181,7 +241,7 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
         {/* ============================================================== */}
         <footer className="print-footer">
           <p className="print-footer-text">
-            Important Protocol: Submitting this form records an official pass reservation with Event Point. No online payment was deducted yet. Pass allocation and booking confirmation will be verified directly by the Event Point coordination team. For expedited assistance, contact the coordination desk via phone or WhatsApp.
+            Important Protocol: Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. Cancellation is performed directly on the website; refund requests and disbursements are handled separately via official support channels.
           </p>
         </footer>
       </div>

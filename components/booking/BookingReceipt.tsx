@@ -19,7 +19,9 @@ import {
   AlertTriangle,
   CreditCard,
   Loader2,
+  XCircle,
 } from 'lucide-react';
+import { calculateGstAndRefund, RefundCalculation } from '@/lib/cancellation-constants';
 
 export interface BookingReceiptProps {
   bookingId: string;
@@ -36,6 +38,8 @@ export interface BookingReceiptProps {
   paymentStatus?: 'NOT_STARTED' | 'PENDING' | 'FAILED' | 'PAID';
   expiresAt?: string;
   recoveryToken?: string;
+  cancelledAt?: string | null;
+  refundBreakdown?: RefundCalculation;
   onNewEnquiry?: () => void;
   onProceedToPayment?: () => void;
 }
@@ -55,6 +59,8 @@ export default function BookingReceipt({
   paymentStatus = 'NOT_STARTED',
   expiresAt,
   recoveryToken,
+  cancelledAt,
+  refundBreakdown,
   onNewEnquiry,
   onProceedToPayment,
 }: BookingReceiptProps) {
@@ -113,8 +119,12 @@ export default function BookingReceipt({
     }
   };
 
+  const refundCalc = (status === 'CANCELLED' || refundBreakdown) ? calculateGstAndRefund(total) : null;
+
   const primaryPhone = eventData.contacts.phones[0].replace(/\D/g, '');
-  const whatsappMessage = `*RAAS UTSAV 2026 — BOOKING REQUEST RECEIPT*\nRequest ID: ${bookingId}\nStatus: Request Submitted\nOrganizer: Event Point\nVenue: Upwan Lawn, Chanakya BNR Hotel, Ranchi\nDate: 16 October 2026 (5:00 PM – 11:00 PM)\n\n*REQUEST DETAILS:*\n• Pass: ${passType}\n• Quantity: ${quantity}\n• Unit Price: ₹${unitPrice.toLocaleString('en-IN')}\n• Total: ₹${total.toLocaleString('en-IN')}\n\n*ATTENDEE:*\n• Name: ${fullName}\n• Phone: ${phone}\n• Email: ${email || 'N/A'}\n• City: ${city || 'Ranchi'}\n\nPlease review my booking request and provide pass allocation instructions.`;
+  const whatsappMessage = status === 'CANCELLED'
+    ? `*RAAS UTSAV 2026 — CANCELLED BOOKING / REFUND ASSISTANCE*\nRequest ID: ${bookingId}\nStatus: CANCELLED\nPass: ${passType} (Qty: ${quantity})\nOriginal Paid: ₹${total.toLocaleString('en-IN')}\nExpected Refund: ₹${refundCalc ? refundCalc.refundFormatted : 'N/A'}\n\nMy booking has been cancelled on the website. Please assist with my refund processing.`
+    : `*RAAS UTSAV 2026 — BOOKING REQUEST RECEIPT*\nRequest ID: ${bookingId}\nStatus: ${status === 'CONFIRMED' ? 'Confirmed & Paid' : 'Request Submitted'}\nOrganizer: Event Point\nVenue: Upwan Lawn, Chanakya BNR Hotel, Ranchi\nDate: 16 October 2026 (5:00 PM – 11:00 PM)\n\n*REQUEST DETAILS:*\n• Pass: ${passType}\n• Quantity: ${quantity}\n• Unit Price: ₹${unitPrice.toLocaleString('en-IN')}\n• Total: ₹${total.toLocaleString('en-IN')}\n\n*ATTENDEE:*\n• Name: ${fullName}\n• Phone: ${phone}\n• Email: ${email || 'N/A'}\n• City: ${city || 'Ranchi'}\n\nPlease review my booking request and provide pass allocation instructions.`;
   const whatsappUrl = `https://api.whatsapp.com/send?phone=${primaryPhone}&text=${encodeURIComponent(
     whatsappMessage
   )}`;
@@ -135,7 +145,9 @@ export default function BookingReceipt({
           TOP CONTEXT BANNER (ON SCREEN ONLY)
           ==================================================================== */}
       <div className={`no-print p-5 rounded-2xl border-2 text-center flex flex-col items-center shadow-2xl ${
-        status === 'EXPIRED'
+        status === 'CANCELLED'
+          ? 'bg-deep-plum/95 border-vermilion/80'
+          : status === 'EXPIRED'
           ? 'bg-deep-plum/95 border-vermilion'
           : status === 'CONFIRMED'
           ? 'bg-deep-plum/95 border-emerald-400'
@@ -146,14 +158,18 @@ export default function BookingReceipt({
           <span className="font-bold text-warm-cream">{bookingId}</span>
         </div>
         <h2 className="font-display text-2xl sm:text-3xl text-warm-cream tracking-wide uppercase">
-          {status === 'EXPIRED'
+          {status === 'CANCELLED'
+            ? 'BOOKING CANCELLED'
+            : status === 'EXPIRED'
             ? 'RESERVATION EXPIRED'
             : status === 'CONFIRMED'
             ? 'OFFICIAL PASS CONFIRMED'
             : 'BOOKING REQUEST SUBMITTED'}
         </h2>
         <p className="font-body text-xs sm:text-sm text-warm-cream/80 max-w-lg mt-1 leading-relaxed">
-          {status === 'EXPIRED'
+          {status === 'CANCELLED'
+            ? 'Your booking has been cancelled and festival pass allocation has been released. Refund requests and processing are handled separately.'
+            : status === 'EXPIRED'
             ? 'This 24-hour pass reservation window has elapsed. Reserved allocation was returned to the festival pool.'
             : status === 'CONFIRMED'
             ? `Your festival pass allocation is officially confirmed with ${eventData.organizer.name}. Present this receipt at the venue counter.`
@@ -186,7 +202,7 @@ export default function BookingReceipt({
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#25D366] text-deep-plum text-xs font-body uppercase font-bold tracking-wider hover:bg-[#20ba59]"
             >
               <MessageCircle className="w-3.5 h-3.5 text-deep-plum" />
-              <span>EXPEDITE VIA WHATSAPP</span>
+              <span>{status === 'CANCELLED' ? 'REFUND ASSISTANCE VIA WHATSAPP' : 'EXPEDITE VIA WHATSAPP'}</span>
             </a>
           )}
           <a
@@ -258,6 +274,8 @@ export default function BookingReceipt({
               <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-bold tracking-wider uppercase mb-1 ${
                 status === 'CONFIRMED'
                   ? 'bg-emerald-950/80 border-emerald-400 text-emerald-300'
+                  : status === 'CANCELLED'
+                  ? 'bg-vermilion/25 border-vermilion text-vermilion'
                   : status === 'EXPIRED'
                   ? 'bg-vermilion/30 border-vermilion text-vermilion'
                   : 'bg-deep-plum/90 border-bright-gold/60 text-bright-gold'
@@ -266,6 +284,11 @@ export default function BookingReceipt({
                   <>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                     <span>CONFIRMED &amp; PAID</span>
+                  </>
+                ) : status === 'CANCELLED' ? (
+                  <>
+                    <XCircle className="w-3.5 h-3.5 text-vermilion" />
+                    <span>BOOKING CANCELLED</span>
                   </>
                 ) : status === 'EXPIRED' ? (
                   <>
@@ -289,7 +312,19 @@ export default function BookingReceipt({
           </div>
 
           {/* Status-Specific Distinction Callout */}
-          {status === 'EXPIRED' ? (
+          {status === 'CANCELLED' ? (
+            <div className="mt-5 p-3.5 rounded-xl bg-vermilion/20 border border-vermilion/60 flex items-start gap-3 text-left">
+              <XCircle className="w-5 h-5 text-vermilion shrink-0 mt-0.5" />
+              <div>
+                <span className="font-display text-xs sm:text-sm text-vermilion uppercase tracking-wider font-bold block">
+                  BOOKING CANCELLED — REFUND HANDLED SEPARATELY
+                </span>
+                <p className="font-body text-[11px] sm:text-xs text-warm-cream/90 leading-relaxed mt-0.5">
+                  This booking has been cancelled and festival pass allocation has been released back to event inventory. <strong>Refund requests and processing are handled separately.</strong> In accordance with client and statutory tax policy, the 18% GST component included in the gross pass price is deducted.
+                </p>
+              </div>
+            </div>
+          ) : status === 'EXPIRED' ? (
             <div className="mt-5 p-3.5 rounded-xl bg-vermilion/20 border border-vermilion/60 flex items-start gap-3 text-left">
               <AlertTriangle className="w-5 h-5 text-vermilion shrink-0 mt-0.5" />
               <div>
@@ -432,12 +467,32 @@ export default function BookingReceipt({
             {/* Total Section */}
             <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/30 mt-4 flex items-center justify-between">
               <span className="font-body text-xs font-bold uppercase tracking-wider text-warm-cream/80">
-                REQUEST TOTAL:
+                {status === 'CANCELLED' ? 'ORIGINAL AMOUNT PAID:' : 'REQUEST TOTAL:'}
               </span>
               <span className="font-display text-2xl sm:text-3xl text-bright-gold font-bold">
                 ₹{total.toLocaleString('en-IN')}
               </span>
             </div>
+
+            {status === 'CANCELLED' && refundCalc && (
+              <div className="p-3.5 rounded-xl bg-royal-maroon/70 border border-antique-gold/30 mt-2 text-xs font-body space-y-1.5">
+                <div className="flex justify-between text-warm-cream/80">
+                  <span>Gross Paid Amount (GST-inclusive):</span>
+                  <span className="font-mono">₹{refundCalc.grossFormatted}</span>
+                </div>
+                <div className="flex justify-between text-warm-cream/80">
+                  <span>GST Component Deducted (18%):</span>
+                  <span className="font-mono text-vermilion">-₹{refundCalc.gstFormatted}</span>
+                </div>
+                <div className="flex justify-between font-bold text-bright-gold pt-1 border-t border-antique-gold/20 text-sm">
+                  <span>Expected Refund Amount:</span>
+                  <span className="font-mono text-base">₹{refundCalc.refundFormatted}</span>
+                </div>
+                <p className="text-[10px] text-warm-cream/70 italic pt-0.5">
+                  * Refund status: Refund handled separately. For assistance with refund disbursement to your original payment method, contact our coordination desk.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -487,9 +542,13 @@ export default function BookingReceipt({
             MANDATORY FORMAL NOTICE
             ------------------------------------------------------------------ */}
         <footer className="mt-6 pt-4 border-t border-antique-gold/20 text-center space-y-2">
-          {status === 'CONFIRMED' ? (
+          {status === 'CANCELLED' ? (
+            <p className="font-body text-[10px] sm:text-[11px] text-vermilion leading-relaxed max-w-xl mx-auto">
+              Your booking has been cancelled. Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. Refund requests and processing are handled separately.
+            </p>
+          ) : status === 'CONFIRMED' ? (
             <p className="font-body text-[10px] sm:text-[11px] text-emerald-300 font-medium leading-relaxed max-w-xl mx-auto">
-              ✓ Verified Confirmed Pass Receipt. Retain this digital receipt displaying your confirmed Request ID for booking reference and support.
+              ✓ Verified Confirmed Pass Receipt. Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. Retain this digital receipt for festival entry.
             </p>
           ) : status === 'EXPIRED' ? (
             <p className="font-body text-[10px] sm:text-[11px] text-vermilion leading-relaxed max-w-xl mx-auto">

@@ -17,12 +17,36 @@ export const metadata: Metadata = {
 };
 
 interface BookingPageProps {
-  searchParams: Promise<{ pass?: string; bookingId?: string }>;
+  searchParams: Promise<{
+    pass?: string;
+    bookingId?: string;
+    booking_id?: string;
+    status?: string;
+    session_id?: string;
+  }>;
 }
 
-async function BookingDeskWrapper({ searchParams }: { searchParams: Promise<{ pass?: string; bookingId?: string }> }) {
+async function BookingDeskWrapper({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    pass?: string;
+    bookingId?: string;
+    booking_id?: string;
+    status?: string;
+    session_id?: string;
+  }>;
+}) {
   const resolvedParams = await searchParams;
-  return <BookingDesk initialPassId={resolvedParams.pass} initialBookingId={resolvedParams.bookingId} />;
+  const effectiveBookingId = resolvedParams.booking_id || resolvedParams.bookingId;
+  return (
+    <BookingDesk
+      initialPassId={resolvedParams.pass}
+      initialBookingId={effectiveBookingId}
+      initialStatus={resolvedParams.status}
+      initialSessionId={resolvedParams.session_id}
+    />
+  );
 }
 
 export default function BookingPage({ searchParams }: BookingPageProps) {

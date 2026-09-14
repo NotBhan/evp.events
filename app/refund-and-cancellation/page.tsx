@@ -100,23 +100,110 @@ export default function RefundAndCancellationPage() {
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-bright-gold shrink-0" />
-              <span>4. PASS CANCELLATION &amp; REFUND TERMS</span>
+              <span>4. PASS CANCELLATION &amp; STATUTORY GST REFUND TERMS</span>
             </h2>
             <p>
-              When online pass payment is successfully completed, the reservation transitions to <code>CONFIRMED</code>, and admission quota is allocated to the booking.
+              When pass payment is confirmed, the reservation transitions to <code>CONFIRMED</code>, and admission quota is allocated to the booking. Attendees may cancel a confirmed booking directly through our website subject to the confirmed client policies below:
             </p>
-            <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2">
-              <p className="text-xs text-warm-cream/90 leading-relaxed font-semibold text-bright-gold">
-                Cancellation &amp; Refund Request Process:
+
+            <div className="p-4 sm:p-5 rounded-2xl bg-deep-plum/80 border border-antique-gold/25 space-y-3 text-xs">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
+                <div>
+                  <strong>Website Self-Service Cancellation:</strong> Confirmed bookings can be cancelled directly through the existing <strong>Booking Lookup / Find Reservation</strong> interface on the website until the official cancellation cutoff.
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
+                <div>
+                  <strong>Strict Cancellation Deadline:</strong> Cancellation is permitted only until <strong>6 October 2026, 11:59:59 PM IST</strong>. After 6 October 2026, website cancellation is permanently closed and bookings cannot be cancelled.
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
+                <div>
+                  <strong>Immediate Server-Side Cancellation:</strong> Cancellation takes effect immediately upon submission. Pass allocations are atomically released back to the general festival pool.
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
+                <div>
+                  <strong>Refund Process Handled Separately:</strong> Website cancellation and refund processing are distinct operations. Cancelling a booking immediately marks the reservation as <code>CANCELLED</code>. Refund requests and disbursements are handled separately by our accounts desk. Initial support handling is typically acknowledged within 6 business hours.
+                </div>
+              </div>
+            </div>
+
+            {/* GST Deduction & Refund Calculation Formula */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-royal-maroon/60 border border-antique-gold/30 space-y-3 text-xs">
+              <h3 className="font-display text-sm sm:text-base text-bright-gold uppercase tracking-wider">
+                18% GST DEDUCTION &amp; REFUND CALCULATION
+              </h3>
+              <p className="text-warm-cream/90 leading-relaxed">
+                All advertised pass prices are <strong>GST-inclusive at the applicable statutory rate of 18%</strong>. Because customer payments include this statutory tax, the non-refundable GST component is extracted from the gross paid amount before calculating any approved refund.
               </p>
-              <p className="text-xs text-warm-cream/85 leading-relaxed">
-                A cancellation and refund option is available for pass holders. Attendees wishing to cancel a confirmed booking may submit a request by contacting the official festival coordination desk with their Request ID / Booking Reference at <code>{eventData.business.email}</code> or via phone at <code>{eventData.business.phone}</code>.
-              </p>
-              <p className="text-xs text-warm-cream/85 leading-relaxed">
-                Where a cancellation or refund request is approved, the refund is disbursed exclusively back to the original source/payment method used during checkout. In accordance with the organizer&apos;s refund policy, applicable statutory deductions (including GST) and processing deductions apply to the refunded amount.
-              </p>
-              <p className="text-xs text-warm-cream/70 italic leading-relaxed">
-                Note: Specific cancellation timelines, applicable deduction formulas, and any supplementary cancellation fees remain subject to the organizer&apos;s event operations policy. Inquiries should be directed to the event support team prior to the festival date.
+
+              <div className="p-3 rounded-xl bg-deep-plum/90 border border-antique-gold/30 font-mono text-[11px] sm:text-xs text-bright-gold space-y-1">
+                <div>GST Component = Gross Paid Amount × 18 / 118</div>
+                <div>Net Refund Amount = Gross Paid Amount - GST Component = Gross Paid Amount × 100 / 118</div>
+              </div>
+
+              {/* Exact Tier Breakdown Table */}
+              <div className="overflow-x-auto pt-2">
+                <table className="w-full text-left border-collapse font-body text-xs">
+                  <thead>
+                    <tr className="border-b border-antique-gold/30 text-bright-gold text-[10px] sm:text-xs uppercase tracking-wider">
+                      <th className="py-2 pr-3">Pass Category</th>
+                      <th className="py-2 px-3 text-right">Gross Paid (Incl. GST)</th>
+                      <th className="py-2 px-3 text-right text-vermilion">18% GST Deducted</th>
+                      <th className="py-2 pl-3 text-right text-emerald-300">Expected Net Refund</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-antique-gold/15 font-mono text-[11px] sm:text-xs text-warm-cream/90">
+                    <tr>
+                      <td className="py-2 pr-3 font-body font-medium">Solo Pass – Female</td>
+                      <td className="py-2 px-3 text-right">₹999.00</td>
+                      <td className="py-2 px-3 text-right text-vermilion">₹152.39</td>
+                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹846.61</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-3 font-body font-medium">VIP Pass</td>
+                      <td className="py-2 px-3 text-right">₹1,499.00</td>
+                      <td className="py-2 px-3 text-right text-vermilion">₹228.66</td>
+                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹1,270.34</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-3 font-body font-medium">Couple Pass</td>
+                      <td className="py-2 px-3 text-right">₹1,999.00</td>
+                      <td className="py-2 px-3 text-right text-vermilion">₹304.93</td>
+                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹1,694.07</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-3 font-body font-medium">Family Pass</td>
+                      <td className="py-2 px-3 text-right">₹3,599.00</td>
+                      <td className="py-2 px-3 text-right text-vermilion">₹549.00</td>
+                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹3,050.00</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-3 font-body font-medium">Group Pass</td>
+                      <td className="py-2 px-3 text-right">₹4,999.00</td>
+                      <td className="py-2 px-3 text-right text-vermilion">₹762.56</td>
+                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹4,236.44</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Transfer-by-Possession Notice */}
+            <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-1.5 text-xs">
+              <h3 className="font-display text-xs sm:text-sm text-bright-gold uppercase tracking-wider">
+                PASS VALIDITY &amp; TRANSFER-BY-POSSESSION
+              </h3>
+              <p className="text-warm-cream/85 leading-relaxed">
+                Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. There is no separate ticket transfer feature or attendee re-assignment workflow; admission is granted upon presentation of a valid, uncancelled pass up to the defined category capacity.
               </p>
             </div>
           </section>

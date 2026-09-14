@@ -9,6 +9,7 @@ import {
   AmountMismatchError,
   PaymentError,
 } from './types';
+import { syncBookingToSheets } from '@/lib/sheets';
 import type { Booking, PaymentAttempt } from '@prisma/client';
 
 export class InventoryInconsistencyError extends PaymentError {
@@ -53,7 +54,7 @@ export async function confirmBookingPayment(
     paymentAttemptId,
   } = params;
 
-  return await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // 1. Resolve target PaymentAttempt
     let attempt: PaymentAttempt | null = null;
     if (paymentAttemptId) {
@@ -188,12 +189,14 @@ export async function confirmBookingPayment(
       },
     });
 
-    // B. Update Booking -> CONFIRMED, PAID
+    // B. Update Booking -> CONFIRMED, PAID, sheet_sync_status -> PENDING
     const bookingUpdateCount = await tx.$executeRaw`
       UPDATE bookings
       SET status = 'CONFIRMED'::"BookingStatus",
           payment_status = 'PAID'::"PaymentStatus",
           confirmed_at = NOW(),
+          sheet_sync_status = 'PENDING'::"SheetSyncStatus",
+          sheet_last_error = NULL,
           updated_at = NOW()
       WHERE id = ${booking.id}
         AND status = 'PENDING'::"BookingStatus"
@@ -233,6 +236,18 @@ export async function confirmBookingPayment(
       paymentAttempt: updatedAttempt,
     };
   });
+
+  // Post-commit: trigger Google Sheets registration mirror sync
+  // Critical Invariant: Sheets failure must NEVER throw or rollback confirmed booking/payment
+  if (!result.alreadyProcessed || result.booking.sheetSyncStatus !== 'SYNCED') {
+    try {
+      await syncBookingToSheets(result.booking.id);
+    } catch (syncErr) {
+      console.error('[Sheets Sync Post-Commit Unhandled Error]', syncErr);
+    }
+  }
+
+  return result;
 }
 
 /**

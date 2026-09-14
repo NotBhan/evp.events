@@ -31,6 +31,12 @@ enum PaymentAttemptStatus {
   SUCCEEDED
 }
 
+enum SheetSyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+}
+
 model Pass {
   id               String    @id @default(cuid())
   passType         String    @unique @map("pass_type")
@@ -68,6 +74,11 @@ model Booking {
   recoveryTokenHash String?        @map("recovery_token_hash")
   source            String         @default("web")
 
+  sheetSyncStatus   SheetSyncStatus? @map("sheet_sync_status")
+  sheetSyncedAt     DateTime?        @map("sheet_synced_at")
+  sheetSyncAttempts Int              @default(0) @map("sheet_sync_attempts")
+  sheetLastError    String?          @map("sheet_last_error")
+
   pass            Pass           @relation(fields: [passId], references: [id])
   paymentAttempts PaymentAttempt[]
 
@@ -76,6 +87,7 @@ model Booking {
   @@index([passId])
   @@index([phone, email])
   @@index([email])
+  @@index([sheetSyncStatus])
   @@map("bookings")
 }
 

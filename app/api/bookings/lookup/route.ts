@@ -2,6 +2,12 @@ import 'server-only';
 import { prisma } from '@/lib/db';
 import { expireStaleBookingsForQuery } from '@/lib/expiry';
 import { setLookupSessionCookie } from '@/lib/session';
+import {
+  calculateGstAndRefund,
+  isCancellationAllowed,
+  CANCELLATION_DEADLINE_ISO,
+  CANCELLATION_DEADLINE_DISPLAY,
+} from '@/lib/cancellation';
 
 /**
  * Validates and normalizes an Indian mobile phone number.
@@ -111,26 +117,37 @@ export async function POST(req: Request) {
     const publicIds = bookings.map((b) => b.publicId);
     await setLookupSessionCookie(publicIds);
 
+    const cancellationAllowed = isCancellationAllowed();
+
     // 5. Return sanitized booking details
-    const sanitizedBookings = bookings.map((b) => ({
-      bookingId: b.publicId,
-      publicId: b.publicId,
-      passType: b.pass.name,
-      passId: b.pass.passType,
-      quantity: b.quantity,
-      unitPrice: b.unitPrice,
-      totalAmount: b.totalAmount,
-      total: b.totalAmount,
-      fullName: b.fullName,
-      phone: maskPhone(b.phone),
-      email: maskEmail(b.email),
-      city: b.city || 'Ranchi',
-      status: b.status,
-      paymentStatus: b.paymentStatus,
-      createdAt: b.createdAt.toISOString(),
-      expiresAt: b.expiresAt.toISOString(),
-      confirmedAt: b.confirmedAt ? b.confirmedAt.toISOString() : null,
-    }));
+    const sanitizedBookings = bookings.map((b) => {
+      const refundBreakdown = calculateGstAndRefund(b.totalAmount);
+      return {
+        bookingId: b.publicId,
+        publicId: b.publicId,
+        passType: b.pass.name,
+        passId: b.pass.passType,
+        quantity: b.quantity,
+        unitPrice: b.unitPrice,
+        totalAmount: b.totalAmount,
+        total: b.totalAmount,
+        fullName: b.fullName,
+        phone: maskPhone(b.phone),
+        email: maskEmail(b.email),
+        city: b.city || 'Ranchi',
+        status: b.status,
+        paymentStatus: b.paymentStatus,
+        createdAt: b.createdAt.toISOString(),
+        expiresAt: b.expiresAt.toISOString(),
+        confirmedAt: b.confirmedAt ? b.confirmedAt.toISOString() : null,
+        cancelledAt: b.status === 'CANCELLED' ? b.updatedAt.toISOString() : null,
+        cancellationAllowed: b.status === 'CONFIRMED' && cancellationAllowed,
+        cancellationDeadline: CANCELLATION_DEADLINE_ISO,
+        cancellationDeadlineDisplay: CANCELLATION_DEADLINE_DISPLAY,
+        refundBreakdown,
+        refundStatus: b.status === 'CANCELLED' ? 'Refund handled separately.' : null,
+      };
+    });
 
     return Response.json({
       success: true,

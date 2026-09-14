@@ -69,9 +69,14 @@ export default function TermsAndConditionsPage() {
               <li><strong>Family Pass (₹3,599):</strong> Grants entry for up to four family members.</li>
               <li><strong>Group Pass (₹4,999):</strong> Grants entry for up to six attendees.</li>
             </ul>
-            <p className="pt-2">
-              All passes are valid for the designated event date on 16 October 2026.
-            </p>
+            <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs text-warm-cream/90 space-y-1 mt-2">
+              <span className="font-bold text-bright-gold uppercase tracking-wider block">
+                Transfer by Possession (Pass Validity):
+              </span>
+              <p className="leading-relaxed">
+                Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. No separate ticket transfer feature or attendee re-assignment is required or provided; presentation of an active, confirmed pass grants admission up to the pass&apos;s specified capacity.
+              </p>
+            </div>
           </section>
 
           {/* 3. Booking Lifecycle & 24-Hour Reservation */}
@@ -104,10 +109,10 @@ export default function TermsAndConditionsPage() {
               Payments for passes are handled online via authorized payment gateways or coordinated directly with the official Event Point team.
             </p>
             <p>
-              All listed pass prices are inclusive of applicable GST. Pass rates displayed represent the final customer payable rate; no additional tax is charged at checkout.
+              All listed pass prices are inclusive of applicable GST at 18%. Pass rates displayed represent the final customer payable rate; no additional tax is charged at checkout.
             </p>
             <p>
-              Passes are considered confirmed only when the payment transaction is successfully completed and verified by the booking system. For detailed cancellation, failed payment reversal, and duplicate payment resolution guidelines, refer to our dedicated{' '}
+              Passes are considered confirmed only when the payment transaction is successfully completed and verified by the booking system. Confirmed bookings can be cancelled through the website Booking Lookup flow until <strong>6 October 2026 (11:59:59 PM IST)</strong>. After 6 October 2026, cancellation is closed. When cancelled, the 18% GST component included in the gross ticket price is deducted (Refund = Gross Paid × 100 / 118). Refund processing is handled separately from cancellation. For complete terms, view our{' '}
               <Link href="/refund-and-cancellation" className="text-bright-gold underline hover:text-warm-cream font-semibold">
                 Cancellation &amp; Refund Policy
               </Link>.

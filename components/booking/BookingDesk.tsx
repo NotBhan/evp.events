@@ -44,6 +44,8 @@ export type { SubmittedBookingRecord };
 interface BookingDeskProps {
   initialPassId?: string;
   initialBookingId?: string;
+  initialStatus?: string;
+  initialSessionId?: string;
 }
 
 export type BookingDeskStage =
@@ -59,6 +61,8 @@ type SubmissionState = 'IDLE' | 'SUBMITTING' | 'ERROR';
 export default function BookingDesk({
   initialPassId,
   initialBookingId,
+  initialStatus,
+  initialSessionId,
 }: BookingDeskProps = {}) {
   // View mode: 'RESERVE' = standard booking flow, 'LOOKUP' = search and recover past bookings
   const [viewMode, setViewMode] = useState<'RESERVE' | 'LOOKUP'>('RESERVE');
@@ -93,6 +97,11 @@ export default function BookingDesk({
   const [paymentError, setPaymentError] = useState<string>('');
   const [copiedBookingId, setCopiedBookingId] = useState<boolean>(false);
 
+  // Bounded Polling State for Return & Confirmation (Max 10 attempts @ 1.5s)
+  const [isPollingConfirmation, setIsPollingConfirmation] = useState<boolean>(false);
+  const [pollingAttempts, setPollingAttempts] = useState<number>(0);
+  const [pollingTimedOut, setPollingTimedOut] = useState<boolean>(false);
+
   // Countdown timer for 24-hour reservation hold
   const [remainingTime, setRemainingTime] = useState<{
     hours: number;
@@ -125,50 +134,184 @@ export default function BookingDesk({
     loadRazorpayCheckoutScript().catch(() => {});
   }, []);
 
-  // Check URL / initialBookingId for existing reservation recovery
-  useEffect(() => {
-    const checkTargetId =
-      initialBookingId ||
-      (typeof window !== 'undefined'
-        ? new URLSearchParams(window.location.search).get('bookingId')
-        : null);
+  // Bounded Polling for Authoritative Booking Confirmation (Max 10 retries at 1.5s intervals)
+  const pollBookingConfirmation = useCallback(async (targetId: string, maxAttempts = 10) => {
+    setDeskStage('CONFIRMING');
+    setIsPollingConfirmation(true);
+    setPollingTimedOut(false);
+    setPollingAttempts(0);
 
-    if (!checkTargetId || submittedRecord) return;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      setPollingAttempts(attempt);
+      try {
+        const res = await fetch(`/api/bookings/${encodeURIComponent(targetId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.success && data.booking) {
+            const b = data.booking;
+            const record: SubmittedBookingRecord = {
+              bookingId: b.publicId || b.bookingId,
+              passId: b.passId,
+              passType: b.passType,
+              quantity: b.quantity,
+              unitPrice: b.unitPrice,
+              total: b.total || b.totalAmount,
+              fullName: b.fullName,
+              phone: b.phone,
+              email: b.email || '',
+              city: b.city || 'Ranchi',
+              timestamp: b.createdAt,
+              status: b.status,
+              paymentStatus: b.paymentStatus,
+              expiresAt: b.expiresAt,
+              confirmedAt: b.confirmedAt,
+              recoveryToken: b.recoveryToken,
+              cancelledAt: b.cancelledAt,
+              refundBreakdown: b.refundBreakdown,
+            };
+            setSubmittedRecord(record);
 
-    fetch(`/api/bookings/${encodeURIComponent(checkTargetId)}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.success && data.booking) {
-          const b = data.booking;
-          const recovered: SubmittedBookingRecord = {
-            bookingId: b.publicId || b.bookingId,
-            passId: b.passId,
-            passType: b.passType,
-            quantity: b.quantity,
-            unitPrice: b.unitPrice,
-            total: b.total || b.totalAmount,
-            fullName: b.fullName,
-            phone: b.phone,
-            email: b.email || '',
-            city: b.city || 'Ranchi',
-            timestamp: b.createdAt,
-            status: b.status,
-            paymentStatus: b.paymentStatus,
-            expiresAt: b.expiresAt,
-          };
-          setSubmittedRecord(recovered);
+            if (b.status === 'CONFIRMED' && b.paymentStatus === 'PAID') {
+              setDeskStage('SUCCESS');
+              setIsPollingConfirmation(false);
+              setPollingTimedOut(false);
+              if (typeof window !== 'undefined') {
+                window.history.replaceState(null, '', `?bookingId=${encodeURIComponent(record.bookingId)}`);
+              }
+              return;
+            }
 
-          if (b.status === 'CONFIRMED' && b.paymentStatus === 'PAID') {
-            setDeskStage('SUCCESS');
-          } else if (b.status === 'PENDING') {
-            setDeskStage('PAYMENT');
-          } else {
-            setDeskStage('SUCCESS'); // Renders expired notice inside BookingReceipt
+            if (b.status === 'EXPIRED' || b.status === 'CANCELLED') {
+              setDeskStage('SUCCESS');
+              setIsPollingConfirmation(false);
+              setPollingTimedOut(false);
+              if (typeof window !== 'undefined') {
+                window.history.replaceState(null, '', `?bookingId=${encodeURIComponent(record.bookingId)}`);
+              }
+              return;
+            }
           }
         }
-      })
-      .catch(() => {});
-  }, [initialBookingId, submittedRecord]);
+      } catch (err) {
+        console.warn(`[Polling confirmation attempt ${attempt} failed]`, err);
+      }
+
+      if (attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
+    }
+
+    // Polling window elapsed without confirmation -> Show non-error pending state
+    setIsPollingConfirmation(false);
+    setPollingTimedOut(true);
+  }, []);
+
+  // Handle URL parameters, Stripe return redirect, and reservation recovery
+  useEffect(() => {
+    let targetBookingId = initialBookingId;
+    let targetStatus = initialStatus;
+    let targetSessionId = initialSessionId;
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (!targetBookingId) {
+        targetBookingId = params.get('booking_id') || params.get('bookingId') || undefined;
+      }
+      if (!targetStatus) {
+        targetStatus = params.get('status') || undefined;
+      }
+      if (!targetSessionId) {
+        targetSessionId = params.get('session_id') || undefined;
+      }
+    }
+
+    if (!targetBookingId) return;
+
+    if (targetStatus === 'success') {
+      // Return from Stripe with status=success -> Bounded server-authoritative polling
+      pollBookingConfirmation(targetBookingId, 10);
+    } else if (targetStatus === 'cancelled') {
+      // Return from Stripe with status=cancelled -> Fetch record and enter PAYMENT_PENDING
+      fetch(`/api/bookings/${encodeURIComponent(targetBookingId)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.success && data.booking) {
+            const b = data.booking;
+            const record: SubmittedBookingRecord = {
+              bookingId: b.publicId || b.bookingId,
+              passId: b.passId,
+              passType: b.passType,
+              quantity: b.quantity,
+              unitPrice: b.unitPrice,
+              total: b.total || b.totalAmount,
+              fullName: b.fullName,
+              phone: b.phone,
+              email: b.email || '',
+              city: b.city || 'Ranchi',
+              timestamp: b.createdAt,
+              status: b.status,
+              paymentStatus: b.paymentStatus,
+              expiresAt: b.expiresAt,
+              confirmedAt: b.confirmedAt,
+              recoveryToken: b.recoveryToken,
+              cancelledAt: b.cancelledAt,
+              refundBreakdown: b.refundBreakdown,
+            };
+            setSubmittedRecord(record);
+            if (b.status === 'CONFIRMED' && b.paymentStatus === 'PAID') {
+              setDeskStage('SUCCESS');
+            } else if (b.status === 'PENDING') {
+              setDeskStage('PAYMENT_PENDING');
+              setPaymentError('Checkout was cancelled or dismissed. Your 24-hour pass reservation is still safely held.');
+            } else {
+              setDeskStage('SUCCESS');
+            }
+            if (typeof window !== 'undefined') {
+              window.history.replaceState(null, '', `?bookingId=${encodeURIComponent(targetBookingId!)}`);
+            }
+          }
+        })
+        .catch(() => {});
+    } else {
+      // Normal booking recovery / browser refresh
+      fetch(`/api/bookings/${encodeURIComponent(targetBookingId)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.success && data.booking) {
+            const b = data.booking;
+            const record: SubmittedBookingRecord = {
+              bookingId: b.publicId || b.bookingId,
+              passId: b.passId,
+              passType: b.passType,
+              quantity: b.quantity,
+              unitPrice: b.unitPrice,
+              total: b.total || b.totalAmount,
+              fullName: b.fullName,
+              phone: b.phone,
+              email: b.email || '',
+              city: b.city || 'Ranchi',
+              timestamp: b.createdAt,
+              status: b.status,
+              paymentStatus: b.paymentStatus,
+              expiresAt: b.expiresAt,
+              confirmedAt: b.confirmedAt,
+              recoveryToken: b.recoveryToken,
+              cancelledAt: b.cancelledAt,
+              refundBreakdown: b.refundBreakdown,
+            };
+            setSubmittedRecord(record);
+            if (b.status === 'CONFIRMED' && b.paymentStatus === 'PAID') {
+              setDeskStage('SUCCESS');
+            } else if (b.status === 'PENDING') {
+              setDeskStage('PAYMENT');
+            } else {
+              setDeskStage('SUCCESS');
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialBookingId, initialStatus, initialSessionId, pollBookingConfirmation]);
 
   // Remaining Hold Countdown Ticker
   useEffect(() => {
@@ -1267,36 +1410,126 @@ export default function BookingDesk({
             )}
 
             {/* ================================================================
-                INTERMEDIATE CONFIRMING STATE
+                INTERMEDIATE CONFIRMING / PROCESSING STATE
                 ================================================================ */}
-            {deskStage === 'CONFIRMING' && submittedRecord && (
+            {deskStage === 'CONFIRMING' && (
               <div
                 ref={confirmingRef}
-                className="relative z-10 max-w-md mx-auto p-8 rounded-3xl bg-royal-maroon/95 border-2 border-bright-gold shadow-2xl text-center space-y-5 animate-fade-in"
+                className="relative z-10 max-w-lg mx-auto p-6 sm:p-8 rounded-3xl bg-royal-maroon/95 border-2 border-bright-gold shadow-2xl text-center space-y-5 animate-fade-in"
               >
-                <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-antique-gold/30 animate-ping opacity-30" />
-                  <Loader2 className="w-12 h-12 animate-spin text-bright-gold" />
-                </div>
+                {!pollingTimedOut ? (
+                  <>
+                    <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+                      <div className="absolute inset-0 rounded-full border-4 border-antique-gold/30 animate-ping opacity-30" />
+                      <Loader2 className="w-12 h-12 animate-spin text-bright-gold" />
+                    </div>
 
-                <div>
-                  <h3 className="font-display text-2xl text-warm-cream tracking-wider uppercase mb-1">
-                    CONFIRMING YOUR PAYMENT...
-                  </h3>
-                  <p className="font-body text-xs text-warm-cream/80 leading-relaxed">
-                    Verifying transaction authorization with banking gateway and locking your official festival admission passes in Neon.
-                  </p>
-                </div>
+                    <div>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-deep-plum border border-bright-gold/40 text-bright-gold font-body text-[11px] font-bold uppercase tracking-wider mb-2">
+                        <Clock className="w-3.5 h-3.5 text-bright-gold" />
+                        <span>PAYMENT VERIFICATION IN PROGRESS</span>
+                      </div>
+                      <h3 className="font-display text-2xl sm:text-3xl text-warm-cream tracking-wider uppercase mb-1">
+                        CONFIRMING YOUR PAYMENT...
+                      </h3>
+                      <p className="font-body text-xs sm:text-sm text-warm-cream/80 leading-relaxed">
+                        Verifying transaction authorization with banking gateway and locking your official festival admission passes in Neon.
+                      </p>
+                    </div>
 
-                <div className="p-4 rounded-xl bg-deep-plum/90 border border-antique-gold/40 text-xs font-mono text-bright-gold">
-                  <span>BOOKING ID: {submittedRecord.bookingId}</span>
-                  <br />
-                  <span>AMOUNT: ₹{submittedRecord.total.toLocaleString('en-IN')}</span>
-                </div>
+                    {(submittedRecord || initialBookingId) && (
+                      <div className="p-4 rounded-xl bg-deep-plum/90 border border-antique-gold/40 text-xs font-mono text-bright-gold space-y-1">
+                        <div>BOOKING ID: {submittedRecord?.bookingId || initialBookingId}</div>
+                        {submittedRecord?.total ? (
+                          <div>AMOUNT: ₹{submittedRecord.total.toLocaleString('en-IN')}</div>
+                        ) : null}
+                        {pollingAttempts > 0 && (
+                          <div className="text-[11px] text-warm-cream/60 font-body">
+                            Verifying status (Attempt {pollingAttempts} of 10)...
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                <p className="text-[11px] font-body text-warm-cream/60 italic">
-                  *Please do not close or refresh this browser window while verification is in progress.
-                </p>
+                    <p className="text-[11px] font-body text-warm-cream/60 italic">
+                      *Please do not close or refresh this browser window while verification is in progress.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-amber-glow/20 border-2 border-bright-gold flex items-center justify-center mx-auto text-bright-gold">
+                      <Clock className="w-8 h-8 text-bright-gold" />
+                    </div>
+
+                    <div>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-deep-plum border border-bright-gold/40 text-bright-gold font-body text-[11px] font-bold uppercase tracking-wider mb-2">
+                        <AlertTriangle className="w-3.5 h-3.5 text-bright-gold" />
+                        <span>PAYMENT PROCESSING</span>
+                      </div>
+                      <h3 className="font-display text-2xl sm:text-3xl text-warm-cream tracking-wider uppercase mb-1">
+                        CONFIRMATION STILL IN PROGRESS
+                      </h3>
+                      <p className="font-body text-xs sm:text-sm text-warm-cream/80 leading-relaxed">
+                        Your payment was submitted to Stripe, but banking confirmation is taking a few moments to sync with our database. Your 24-hour pass reservation remains safely active.
+                      </p>
+                    </div>
+
+                    {(submittedRecord || initialBookingId) && (
+                      <div className="p-4 rounded-xl bg-deep-plum/90 border border-antique-gold/40 text-xs font-mono text-bright-gold space-y-1 text-left">
+                        <div className="flex justify-between">
+                          <span className="text-warm-cream/60 font-body">BOOKING ID:</span>
+                          <span>{submittedRecord?.bookingId || initialBookingId}</span>
+                        </div>
+                        {submittedRecord?.passType && (
+                          <div className="flex justify-between">
+                            <span className="text-warm-cream/60 font-body">PASS:</span>
+                            <span>{submittedRecord.passType} ({submittedRecord.quantity})</span>
+                          </div>
+                        )}
+                        {submittedRecord?.total && (
+                          <div className="flex justify-between">
+                            <span className="text-warm-cream/60 font-body">AMOUNT:</span>
+                            <span>₹{submittedRecord.total.toLocaleString('en-IN')}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="space-y-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const target = submittedRecord?.bookingId || initialBookingId;
+                          if (target) pollBookingConfirmation(target, 5);
+                        }}
+                        className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-vermilion via-amber-glow to-vermilion text-warm-cream font-display text-base tracking-wider uppercase border border-antique-gold/80 shadow-lg flex items-center justify-center gap-2 cursor-pointer font-bold hover:scale-[1.01] active:scale-[0.99]"
+                      >
+                        <RefreshCw className="w-4 h-4 text-bright-gold" />
+                        <span>CHECK CONFIRMATION STATUS</span>
+                      </button>
+
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3 px-6 rounded-xl bg-[#25D366]/90 hover:bg-[#25D366] text-deep-plum font-display text-xs sm:text-sm tracking-wider uppercase shadow-md flex items-center justify-center gap-2 font-bold"
+                      >
+                        <MessageCircle className="w-4 h-4 fill-deep-plum" />
+                        <span>CONFIRM VIA WHATSAPP WITH EVENT DESK</span>
+                      </a>
+
+                      {submittedRecord && (
+                        <button
+                          type="button"
+                          onClick={() => setDeskStage('PAYMENT_PENDING')}
+                          className="text-xs text-warm-cream/60 hover:text-bright-gold underline cursor-pointer font-body pt-1"
+                        >
+                          View 24-hour reservation hold details
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -1320,6 +1553,8 @@ export default function BookingDesk({
                   paymentStatus={submittedRecord.paymentStatus}
                   expiresAt={submittedRecord.expiresAt}
                   recoveryToken={submittedRecord.recoveryToken}
+                  cancelledAt={submittedRecord.cancelledAt}
+                  refundBreakdown={submittedRecord.refundBreakdown}
                   onNewEnquiry={() => {
                     setDeskStage('RESERVE');
                     setCurrentStep(1);

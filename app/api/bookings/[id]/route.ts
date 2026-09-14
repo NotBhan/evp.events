@@ -2,6 +2,12 @@ import 'server-only';
 import { prisma } from '@/lib/db';
 import { checkAndExpireBooking } from '@/lib/expiry';
 import { getAuthorizedBookingIdsFromCookie } from '@/lib/session';
+import {
+  calculateGstAndRefund,
+  isCancellationAllowed,
+  CANCELLATION_DEADLINE_ISO,
+  CANCELLATION_DEADLINE_DISPLAY,
+} from '@/lib/cancellation';
 
 function maskEmail(emailStr: string | null): string | null {
   if (!emailStr) return null;
@@ -73,6 +79,8 @@ export async function GET(
       );
     }
 
+    const refundBreakdown = calculateGstAndRefund(booking.totalAmount);
+
     return Response.json({
       success: true,
       booking: {
@@ -93,6 +101,12 @@ export async function GET(
         createdAt: booking.createdAt.toISOString(),
         expiresAt: booking.expiresAt.toISOString(),
         confirmedAt: booking.confirmedAt ? booking.confirmedAt.toISOString() : null,
+        cancelledAt: booking.status === 'CANCELLED' ? booking.updatedAt.toISOString() : null,
+        cancellationAllowed: booking.status === 'CONFIRMED' && isCancellationAllowed(),
+        cancellationDeadline: CANCELLATION_DEADLINE_ISO,
+        cancellationDeadlineDisplay: CANCELLATION_DEADLINE_DISPLAY,
+        refundBreakdown,
+        refundStatus: booking.status === 'CANCELLED' ? 'Refund handled separately.' : null,
       },
     });
   } catch (err: unknown) {

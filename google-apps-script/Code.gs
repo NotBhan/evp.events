@@ -12,7 +12,7 @@
  * 8. Set "Who has access": "Anyone".
  * 9. Click "Deploy" and authorize permissions.
  * 10. Copy the Web App URL (e.g. https://script.google.com/macros/s/.../exec)
- *     and set it as NEXT_PUBLIC_BOOKING_SHEETS_ENDPOINT in your .env.local file.
+ *     and set it as BOOKING_SHEETS_ENDPOINT in your .env.local file (server-side only).
  */
 
 // Authoritative Pass Catalog matching official Raas Utsav passes from eventData.ts
@@ -146,32 +146,46 @@ function doPost(e) {
     var authoritativeUnitPrice = passConfig.price;
     var authoritativeTotal = authoritativeUnitPrice * quantity;
 
-    // Booking Request ID validation
-    var bookingId = String(data.bookingId || '').trim();
-    if (!bookingId || bookingId.indexOf('RU26-REQ-') !== 0) {
+    // Authoritative Booking ID validation
+    var bookingId = String(data.bookingId || data.publicId || '').trim();
+    if (!bookingId) {
       bookingId = 'RU26-REQ-' + Math.floor(1000 + Math.random() * 9000);
     }
 
     var timestamp = data.timestamp && !isNaN(Date.parse(data.timestamp)) ? data.timestamp : new Date().toISOString();
     var source = (data.source || 'Web Booking Desk (/booking)').trim();
+    var submissionStatus = String(data.submissionStatus || data.status || 'CONFIRMED').trim();
 
-    // 4. Append to Active Sheet
+    // 4. Append or Update in Active Sheet (Upsert by Booking ID in Column B)
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var lastRow = sheet.getLastRow();
 
     // Automatically create fixed header row if sheet is brand new / empty
-    if (sheet.getLastRow() === 0) {
+    if (lastRow === 0) {
       sheet.appendRow(SHEET_HEADERS);
       var headerRange = sheet.getRange(1, 1, 1, SHEET_HEADERS.length);
       headerRange.setFontWeight('bold');
       headerRange.setBackground('#1D1237');
       headerRange.setFontColor('#F3C64C');
+      lastRow = 1;
     }
 
-    // Append authoritative row with "'" prefix for Column 8 (WhatsApp / Mobile)
-    // In Google Sheets, prefixing a value with an apostrophe ("'") is the official,
-    // universal way to store a value as plain text. It preserves +91, avoids
-    // formula/numeric evaluation, and never throws "typed column" formatting errors.
-    sheet.appendRow([
+    // Search Column B for existing bookingId (Column 2, rows 2 to lastRow)
+    var targetRow = -1;
+    if (lastRow > 1) {
+      var idValues = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+      for (var i = 0; i < idValues.length; i++) {
+        if (String(idValues[i][0]).trim() === bookingId) {
+          targetRow = i + 2; // Convert 0-indexed loop to 1-indexed sheet row
+          break;
+        }
+      }
+    }
+
+    // Row values exactly matching 11-column SHEET_HEADERS layout:
+    // [0] Timestamp, [1] Booking ID, [2] Pass Type, [3] Quantity, [4] Unit Price,
+    // [5] Total, [6] Full Name, [7] WhatsApp / Mobile, [8] Email, [9] Submission Status, [10] Source
+    var rowValues = [
       timestamp,
       bookingId,
       passConfig.name,
@@ -181,24 +195,32 @@ function doPost(e) {
       fullName,
       "'" + formattedPhone,
       email,
-      'Pending Event Team Review',
+      submissionStatus,
       source
-    ]);
+    ];
 
-    // Explicitly ensure Column 8 on the appended row contains the apostrophe-prefixed text
-    var lastRow = sheet.getLastRow();
-    sheet.getRange(lastRow, 8).setValue("'" + formattedPhone);
+    if (targetRow > 1) {
+      // Upsert: Update existing row with authoritative values
+      sheet.getRange(targetRow, 1, 1, rowValues.length).setValues([rowValues]);
+      sheet.getRange(targetRow, 8).setValue("'" + formattedPhone);
+    } else {
+      // Upsert: Append new row
+      sheet.appendRow(rowValues);
+      var newRow = sheet.getLastRow();
+      sheet.getRange(newRow, 8).setValue("'" + formattedPhone);
+    }
 
-    // Return success response
+    // Return success response preserving contract
     return responseJSON({
       status: 'success',
+      action: targetRow > 1 ? 'updated' : 'inserted',
       bookingId: bookingId,
       passType: passConfig.name,
       quantity: quantity,
       unitPrice: authoritativeUnitPrice,
       total: authoritativeTotal,
       phone: formattedPhone,
-      message: 'Booking request recorded successfully'
+      message: targetRow > 1 ? 'Booking registration updated successfully' : 'Booking request recorded successfully'
     });
 
   } catch (err) {
