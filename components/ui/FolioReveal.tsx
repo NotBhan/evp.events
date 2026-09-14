@@ -188,11 +188,11 @@ export default function FolioReveal({
         >
           {/* Top Folio Ribbon Header */}
           <div className="w-full flex items-center justify-between border-b border-ochre-gold/30 pb-3">
-            <span className="text-[10px] text-ochre-gold font-body tracking-[0.25em] uppercase font-bold">
+            <span className="text-[10px] text-ochre-gold font-body tracking-[0.14em] uppercase font-bold">
               EST. 2026
             </span>
             <span className="text-festival-pink text-xs">✦ ✦ ✦</span>
-            <span className="text-[10px] text-ochre-gold font-body tracking-[0.25em] uppercase font-bold">
+            <span className="text-[10px] text-ochre-gold font-body tracking-[0.14em] uppercase font-bold">
               NAVRATRI FOLIO
             </span>
           </div>
@@ -208,10 +208,10 @@ export default function FolioReveal({
               <div className="w-14 h-14 rounded-full border-2 border-ochre-gold/80 bg-royal-purple/60 flex items-center justify-center mb-2 shadow-lg">
                 <span className="text-ochre-gold text-lg font-display">✦</span>
               </div>
-              <h4 className="font-display text-2xl text-warm-cream tracking-widest uppercase mb-1">
+              <h4 className="font-display text-2xl text-warm-cream tracking-wider uppercase mb-1">
                 FESTIVAL ARCHIVES
               </h4>
-              <span className="font-body text-[11px] text-ochre-gold tracking-[0.2em] uppercase font-semibold">
+              <span className="font-body text-[11px] text-ochre-gold tracking-[0.12em] uppercase font-semibold">
                 GARBA RAAS • MOMENTS
               </span>
             </div>

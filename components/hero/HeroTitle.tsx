@@ -27,7 +27,7 @@ export default function HeroTitle() {
         <span className="text-antique-gold text-[9px] sm:text-[11px]">✦</span>
         <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-0.5 rounded-full bg-deep-plum/95 border border-antique-gold/60 shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
           <span className="text-vermilion text-[8px] sm:text-[9px]">♦</span>
-          <span className="font-avenir text-[9px] sm:text-xs tracking-[0.25em] text-warm-cream uppercase font-semibold">
+          <span className="font-avenir text-[9px] sm:text-xs tracking-[0.12em] text-warm-cream uppercase font-semibold">
             {eventData.organizer.name} PRESENTS
           </span>
           <span className="text-vermilion text-[8px] sm:text-[9px]">♦</span>
@@ -81,7 +81,7 @@ export default function HeroTitle() {
       </div>
 
       {/* 5. Campaign Motto: DANCE • DEVOTION • CELEBRATION (tertiary level) */}
-      <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-[10px] sm:text-xs md:text-sm text-warm-cream font-bangle tracking-[0.22em] uppercase font-semibold mb-3 sm:mb-4 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+      <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 text-[10px] sm:text-xs md:text-sm text-warm-cream font-bangle tracking-[0.1em] uppercase font-semibold mb-3 sm:mb-4 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
         <span>DANCE</span>
         <span className="text-antique-gold/80">❖</span>
         <span>DEVOTION</span>
@@ -90,7 +90,7 @@ export default function HeroTitle() {
       </div>
 
       {/* 6. Standardized Date, Time, Venue Details Ribbon (opaque surface, zero blur, high contrast) */}
-      <div className="inline-flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-4 gap-y-1.5 text-[11px] sm:text-xs md:text-sm text-warm-cream font-lucida border border-antique-gold/60 py-1.5 sm:py-2 px-3.5 sm:px-6 bg-[#220D1A] rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.7)] mt-1.5 sm:mt-2">
+      <div className="inline-flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-4 gap-y-1.5 text-[11px] sm:text-xs md:text-sm text-warm-cream font-lucida border border-antique-gold/60 py-1.5 sm:py-2 px-3.5 sm:px-6 bg-[#220D1A] rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.7)] mt-1.5 sm:mt-2 max-w-full">
         <span className="text-bright-gold font-bold tracking-wider flex items-center gap-1.5">
           <span className="text-vermilion text-[10px]">♦</span> {eventData.dateDisplay}
         </span>

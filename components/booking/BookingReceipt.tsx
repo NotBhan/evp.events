@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { eventData } from '@/data/eventData';
 import {
@@ -13,6 +14,11 @@ import {
   Calendar,
   ShieldAlert,
   FileText,
+  Key,
+  CheckCircle2,
+  AlertTriangle,
+  CreditCard,
+  Loader2,
 } from 'lucide-react';
 
 export interface BookingReceiptProps {
@@ -26,6 +32,10 @@ export interface BookingReceiptProps {
   email?: string;
   city?: string;
   timestamp?: string;
+  status?: 'PENDING' | 'CONFIRMED' | 'EXPIRED' | 'CANCELLED';
+  paymentStatus?: 'NOT_STARTED' | 'PENDING' | 'FAILED' | 'PAID';
+  expiresAt?: string;
+  recoveryToken?: string;
   onNewEnquiry?: () => void;
 }
 
@@ -40,8 +50,43 @@ export default function BookingReceipt({
   email,
   city,
   timestamp,
+  status = 'PENDING',
+  paymentStatus = 'NOT_STARTED',
+  expiresAt,
+  recoveryToken,
   onNewEnquiry,
 }: BookingReceiptProps) {
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const handleOnlineCheckout = async () => {
+    setIsRedirecting(true);
+    setPaymentError(null);
+
+    try {
+      const res = await fetch('/api/payments/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to initialize payment session.');
+      }
+
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error('No checkout URL received from payment server.');
+      }
+    } catch (err: unknown) {
+      setPaymentError(err instanceof Error ? err.message : 'Payment initialization failed.');
+      setIsRedirecting(false);
+    }
+  };
+
   const handlePrint = () => {
     if (typeof window !== 'undefined') {
       window.print();
@@ -83,16 +128,30 @@ export default function BookingReceipt({
       {/* ====================================================================
           TOP CONTEXT BANNER (ON SCREEN ONLY)
           ==================================================================== */}
-      <div className="no-print p-5 rounded-2xl bg-royal-maroon/90 border-2 border-bright-gold text-center flex flex-col items-center shadow-2xl">
+      <div className={`no-print p-5 rounded-2xl border-2 text-center flex flex-col items-center shadow-2xl ${
+        status === 'EXPIRED'
+          ? 'bg-deep-plum/95 border-vermilion'
+          : status === 'CONFIRMED'
+          ? 'bg-deep-plum/95 border-emerald-400'
+          : 'bg-royal-maroon/90 border-bright-gold'
+      }`}>
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-deep-plum/90 border border-antique-gold/50 text-bright-gold text-xs font-mono tracking-widest uppercase mb-2">
           <span>REQUEST ID:</span>
           <span className="font-bold text-warm-cream">{bookingId}</span>
         </div>
         <h2 className="font-display text-2xl sm:text-3xl text-warm-cream tracking-wide uppercase">
-          BOOKING REQUEST SUBMITTED
+          {status === 'EXPIRED'
+            ? 'RESERVATION EXPIRED'
+            : status === 'CONFIRMED'
+            ? 'OFFICIAL PASS CONFIRMED'
+            : 'BOOKING REQUEST SUBMITTED'}
         </h2>
         <p className="font-body text-xs sm:text-sm text-warm-cream/80 max-w-lg mt-1 leading-relaxed">
-          Your request has been securely recorded with the {eventData.organizer.name} coordination desk. Review your official booking request receipt below.
+          {status === 'EXPIRED'
+            ? 'This 24-hour pass reservation window has elapsed. Reserved allocation was returned to the festival pool.'
+            : status === 'CONFIRMED'
+            ? `Your festival pass allocation is officially confirmed with ${eventData.organizer.name}. Present this receipt at the venue counter.`
+            : `Your request has been securely recorded with the ${eventData.organizer.name} coordination desk. Review your official booking request receipt below.`}
         </p>
 
         {/* Quick Receipt Action Bar in Banner */}
@@ -113,15 +172,17 @@ export default function BookingReceipt({
             <Printer className="w-3.5 h-3.5 text-deep-plum" />
             <span>PRINT / SAVE PDF</span>
           </button>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#25D366] text-deep-plum text-xs font-body uppercase font-bold tracking-wider hover:bg-[#20ba59]"
-          >
-            <MessageCircle className="w-3.5 h-3.5 text-deep-plum" />
-            <span>EXPEDITE VIA WHATSAPP</span>
-          </a>
+          {status !== 'EXPIRED' && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#25D366] text-deep-plum text-xs font-body uppercase font-bold tracking-wider hover:bg-[#20ba59]"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-deep-plum" />
+              <span>EXPEDITE VIA WHATSAPP</span>
+            </a>
+          )}
           <a
             href={`tel:${eventData.contacts.phones[0].replace(/\s+/g, '')}`}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-royal-maroon border border-antique-gold/40 text-warm-cream text-xs font-body uppercase font-bold tracking-wider hover:border-bright-gold"
@@ -171,22 +232,46 @@ export default function BookingReceipt({
                 />
               </div>
               <div>
-                <span className="font-body text-[10px] text-bright-gold uppercase tracking-[0.25em] font-bold block">
-                  OFFICIAL COORDINATION RECEIPT
+                <span className="font-body text-[10px] text-bright-gold uppercase tracking-[0.14em] font-bold block">
+                  {status === 'CONFIRMED' ? 'OFFICIAL PASS ADMISSION STUB' : 'OFFICIAL COORDINATION RECEIPT'}
                 </span>
                 <h3 className="font-display text-2xl sm:text-3xl text-warm-cream tracking-wider uppercase leading-none">
                   RAAS UTSAV 2026
                 </h3>
                 <span className="font-body text-[11px] text-warm-cream/70 uppercase tracking-widest block mt-0.5">
-                  BOOKING REQUEST RECEIPT
+                  {status === 'CONFIRMED'
+                    ? 'CONFIRMED PASS RECEIPT'
+                    : status === 'EXPIRED'
+                    ? 'EXPIRED RESERVATION STUB'
+                    : 'BOOKING REQUEST RECEIPT'}
                 </span>
               </div>
             </div>
 
             <div className="text-center sm:text-right">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-deep-plum/90 border border-bright-gold/60 text-bright-gold text-[11px] font-bold tracking-wider uppercase mb-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>REQUEST SUBMITTED</span>
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-bold tracking-wider uppercase mb-1 ${
+                status === 'CONFIRMED'
+                  ? 'bg-emerald-950/80 border-emerald-400 text-emerald-300'
+                  : status === 'EXPIRED'
+                  ? 'bg-vermilion/30 border-vermilion text-vermilion'
+                  : 'bg-deep-plum/90 border-bright-gold/60 text-bright-gold'
+              }`}>
+                {status === 'CONFIRMED' ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>CONFIRMED &amp; PAID</span>
+                  </>
+                ) : status === 'EXPIRED' ? (
+                  <>
+                    <AlertTriangle className="w-3.5 h-3.5 text-vermilion" />
+                    <span>BOOKING EXPIRED</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>REQUEST SUBMITTED · PAYMENT PENDING</span>
+                  </>
+                )}
               </div>
               <div className="font-mono text-sm sm:text-base text-bright-gold font-bold tracking-wider">
                 {bookingId}
@@ -197,18 +282,62 @@ export default function BookingReceipt({
             </div>
           </div>
 
-          {/* Prominent Formal Distinction Callout */}
-          <div className="mt-5 p-3.5 rounded-xl bg-royal-maroon/70 border border-vermilion/60 flex items-start gap-3 text-left">
-            <ShieldAlert className="w-5 h-5 text-bright-gold shrink-0 mt-0.5" />
-            <div>
-              <span className="font-display text-xs sm:text-sm text-bright-gold uppercase tracking-wider font-bold block">
-                BOOKING REQUEST — NOT A CONFIRMED TICKET
-              </span>
-              <p className="font-body text-[11px] sm:text-xs text-warm-cream/90 leading-relaxed mt-0.5">
-                Your request has been recorded and sent to the Event Point team. Final pass allocation, payment and collection details are handled directly by the event team.
-              </p>
+          {/* Status-Specific Distinction Callout */}
+          {status === 'EXPIRED' ? (
+            <div className="mt-5 p-3.5 rounded-xl bg-vermilion/20 border border-vermilion/60 flex items-start gap-3 text-left">
+              <AlertTriangle className="w-5 h-5 text-vermilion shrink-0 mt-0.5" />
+              <div>
+                <span className="font-display text-xs sm:text-sm text-vermilion uppercase tracking-wider font-bold block">
+                  BOOKING EXPIRED — RESERVATION WINDOW ELAPSED
+                </span>
+                <p className="font-body text-[11px] sm:text-xs text-warm-cream/90 leading-relaxed mt-0.5">
+                  This 24-hour pass reservation window has passed without payment completion. The reserved passes have been automatically released back to the general inventory. Please create a new booking request if passes remain available.
+                </p>
+              </div>
             </div>
-          </div>
+          ) : status === 'CONFIRMED' ? (
+            <div className="mt-5 p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/60 flex items-start gap-3 text-left">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-display text-xs sm:text-sm text-emerald-300 uppercase tracking-wider font-bold block">
+                  CONFIRMED PASS RECEIPT — PROOF OF ADMISSION
+                </span>
+                <p className="font-body text-[11px] sm:text-xs text-warm-cream/90 leading-relaxed mt-0.5">
+                  Your festival pass reservation is officially confirmed and paid. Keep this verified digital booking receipt for event entry on 16 October 2026.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-5 p-3.5 rounded-xl bg-royal-maroon/70 border border-vermilion/60 flex items-start gap-3 text-left">
+              <ShieldAlert className="w-5 h-5 text-bright-gold shrink-0 mt-0.5" />
+              <div>
+                <span className="font-display text-xs sm:text-sm text-bright-gold uppercase tracking-wider font-bold block">
+                  BOOKING REQUEST — PAYMENT PENDING
+                </span>
+                <p className="font-body text-[11px] sm:text-xs text-warm-cream/90 leading-relaxed mt-0.5">
+                  Your reservation is held for 24 hours. Pass allocation is finalized upon payment completion with our coordination team.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Recovery Key Callout (for email-less booking creations) */}
+          {recoveryToken && (
+            <div className="mt-4 p-3.5 rounded-xl bg-deep-plum/95 border border-bright-gold/70 flex items-start gap-3 text-left">
+              <Key className="w-5 h-5 text-bright-gold shrink-0 mt-0.5" />
+              <div className="w-full">
+                <span className="font-display text-xs sm:text-sm text-bright-gold uppercase tracking-wider font-bold block">
+                  RECOVERY KEY (SAVE THIS KEY)
+                </span>
+                <div className="font-mono text-xs sm:text-sm text-white font-bold tracking-wider my-1.5 select-all bg-card-surface px-3 py-1.5 rounded-lg border border-antique-gold/50 inline-block">
+                  {recoveryToken}
+                </div>
+                <p className="font-body text-[11px] text-warm-cream/80 leading-relaxed">
+                  Because this reservation was created without an email address, save this recovery key along with your Request ID ({bookingId}) to retrieve or verify your booking status later.
+                </p>
+              </div>
+            </div>
+          )}
         </header>
 
         {/* ------------------------------------------------------------------
@@ -351,10 +480,27 @@ export default function BookingReceipt({
         {/* ------------------------------------------------------------------
             MANDATORY FORMAL NOTICE
             ------------------------------------------------------------------ */}
-        <footer className="mt-6 pt-4 border-t border-antique-gold/20 text-center">
-          <p className="font-body text-[10px] sm:text-[11px] text-warm-cream/70 leading-relaxed italic max-w-xl mx-auto">
-            This receipt confirms submission of a booking request only. It is not a confirmed ticket and is not proof of payment. Final pass allocation and payment/collection details are handled by the Event Point team.
-          </p>
+        <footer className="mt-6 pt-4 border-t border-antique-gold/20 text-center space-y-2">
+          {status === 'CONFIRMED' ? (
+            <p className="font-body text-[10px] sm:text-[11px] text-emerald-300 font-medium leading-relaxed max-w-xl mx-auto">
+              ✓ Verified Confirmed Pass Receipt. Retain this digital receipt displaying your confirmed Request ID for booking reference and support.
+            </p>
+          ) : status === 'EXPIRED' ? (
+            <p className="font-body text-[10px] sm:text-[11px] text-vermilion leading-relaxed max-w-xl mx-auto">
+              Reservation expired. The 24-hour payment hold has elapsed and the passes have returned to the general inventory.
+            </p>
+          ) : (
+            <p className="font-body text-[10px] sm:text-[11px] text-warm-cream/70 leading-relaxed italic max-w-xl mx-auto">
+              24-Hour Temporary Hold: This receipt records a pending pass reservation. Complete online payment or coordinate with the Event Point team to confirm your booking.
+            </p>
+          )}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-body text-antique-gold/70 pt-1">
+            <Link href="/terms-and-conditions" className="hover:underline hover:text-bright-gold">Terms &amp; Conditions</Link>
+            <span>•</span>
+            <Link href="/refund-and-cancellation" className="hover:underline hover:text-bright-gold">Cancellation Policy</Link>
+            <span>•</span>
+            <Link href="/shipping-policy" className="hover:underline hover:text-bright-gold">Fulfillment Policy</Link>
+          </div>
         </footer>
       </article>
 
@@ -362,6 +508,38 @@ export default function BookingReceipt({
           RECEIPT ACTIONS BAR (ON SCREEN ONLY)
           ==================================================================== */}
       <div className="no-print space-y-3 pt-2">
+        {/* Primary Payment Action for PENDING Bookings */}
+        {status === 'PENDING' && (
+          <div className="space-y-2">
+            <button
+              id="receipt-pay-online-btn"
+              type="button"
+              onClick={handleOnlineCheckout}
+              disabled={isRedirecting}
+              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-amber-glow via-bright-gold to-amber-glow hover:brightness-110 text-deep-plum font-display text-lg sm:text-xl tracking-wider uppercase shadow-2xl flex items-center justify-center gap-3 font-bold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-bright-gold"
+            >
+              {isRedirecting ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin text-deep-plum" />
+                  <span>REDIRECTING TO STRIPE...</span>
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-6 h-6 text-deep-plum" />
+                  <span>PAY ₹{total.toLocaleString('en-IN')} ONLINE (STRIPE TEST)</span>
+                </>
+              )}
+            </button>
+
+            {paymentError && (
+              <div className="p-3 rounded-xl bg-vermilion/20 border border-vermilion text-xs text-warm-cream flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-vermilion shrink-0" />
+                <span>{paymentError}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             type="button"

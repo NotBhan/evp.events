@@ -143,7 +143,7 @@ export default function HeritageNightBanner() {
 
             {/* Right Col: Heritage & Booking Content (8 cols) */}
             <div className="md:col-span-8 flex flex-col items-start text-left">
-              <span className="font-body text-[11px] sm:text-xs text-antique-gold tracking-[0.25em] uppercase font-bold mb-2">
+              <span className="font-body text-[11px] sm:text-xs text-antique-gold tracking-[0.12em] uppercase font-bold mb-2">
                 HERITAGE • DEVOTION • GRANDEUR
               </span>
 
@@ -175,7 +175,7 @@ export default function HeritageNightBanner() {
               {/* Action Button to /booking */}
               <Link
                 href="/booking"
-                className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3 rounded-md bg-gradient-to-r from-royal-maroon via-vermilion to-royal-maroon text-warm-cream font-body text-xs sm:text-sm font-bold tracking-[0.16em] uppercase border border-antique-gold/80 shadow-[0_4px_16px_rgba(217,37,36,0.35)] hover:shadow-[0_4px_24px_rgba(243,198,76,0.45)] transition-[border-color,box-shadow] duration-200"
+                className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3 rounded-md bg-gradient-to-r from-royal-maroon via-vermilion to-royal-maroon text-warm-cream font-body text-xs sm:text-sm font-bold tracking-[0.1em] uppercase border border-antique-gold/80 shadow-[0_4px_16px_rgba(217,37,36,0.35)] hover:shadow-[0_4px_24px_rgba(243,198,76,0.45)] transition-[border-color,box-shadow] duration-200"
               >
                 <span>RESERVE YOUR PASS</span>
                 <span className="text-bright-gold">→</span>

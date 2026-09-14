@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import gsap from 'gsap';
 import { eventData, PassTier } from '@/data/eventData';
 import { isReducedMotion } from '@/components/animations/interiorAnimations';
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react';
 import BookingReceipt from './BookingReceipt';
 import BookingReceiptPrint, { SubmittedBookingRecord } from './BookingReceiptPrint';
+import BookingLookupDesk from './BookingLookupDesk';
 
 export type { SubmittedBookingRecord };
 
@@ -36,6 +38,9 @@ interface BookingDeskProps {
 type SubmissionState = 'IDLE' | 'SUBMITTING' | 'SUCCESS' | 'ERROR';
 
 export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
+  // View mode: 'RESERVE' = standard pass creation, 'LOOKUP' = search and recover past bookings
+  const [viewMode, setViewMode] = useState<'RESERVE' | 'LOOKUP'>('RESERVE');
+
   // Stage state: 1 = Select Pass, 2 = Attendee Info, 3 = Review & Submit
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
@@ -272,6 +277,10 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
           bookingId: response.bookingId || bookingId,
           unitPrice: response.unitPrice ?? record.unitPrice,
           total: response.total ?? record.total,
+          recoveryToken: response.recoveryToken,
+          status: response.status || 'PENDING',
+          paymentStatus: response.paymentStatus || 'NOT_STARTED',
+          expiresAt: response.expiresAt,
         };
         setSubmittedRecord(verifiedRecord);
         setSubmissionResult(response);
@@ -294,12 +303,12 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
           }
         });
       } else {
-        setSubmissionError(response.error || 'Unable to record your booking request in the reservation sheet.');
+        setSubmissionError(response.error || 'Unable to record your booking request in the reservation system. Please try again.');
         setSubmissionStatus('ERROR');
       }
     } catch (err: unknown) {
       setSubmissionError(
-        err instanceof Error ? err.message : 'Network error occurred while connecting to the reservation sheet.'
+        err instanceof Error ? err.message : 'Network error occurred while connecting to the reservation system.'
       );
       setSubmissionStatus('ERROR');
     }
@@ -344,31 +353,63 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
           Direct desk reservation for {eventData.eventName} at {eventData.venueDisplay}. Follow the 3 quick steps below to record your pass enquiry.
         </p>
 
-        {/* 3 Step Indicator */}
-        <div ref={stageIndicatorRef} className="flex items-center justify-center gap-2 sm:gap-4 mt-6 max-w-md mx-auto">
-          {[
-            { step: 1, title: '1. Select Pass' },
-            { step: 2, title: '2. Attendee Details' },
-            { step: 3, title: '3. Submit Request' },
-          ].map((item) => {
-            const isActive = currentStep === item.step;
-            const isCompleted = currentStep > item.step;
-            return (
-              <div
-                key={item.step}
-                className={`flex-1 py-1.5 px-2 rounded-lg text-center font-body text-xs font-semibold uppercase tracking-wider transition-all ${
-                  isActive
-                    ? 'bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream shadow-md'
-                    : isCompleted
-                    ? 'bg-royal-maroon/90 text-bright-gold border border-antique-gold/40'
-                    : 'bg-deep-plum/60 text-warm-cream/40 border border-antique-gold/15'
-                }`}
-              >
-                {item.title}
-              </div>
-            );
-          })}
+        {/* Top View Mode Switcher */}
+        <div className="flex items-center justify-center gap-3 mt-4">
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode('RESERVE');
+              setSubmissionStatus('IDLE');
+              setSubmittedRecord(null);
+            }}
+            className={`px-4 py-1.5 rounded-full text-xs font-body font-bold uppercase tracking-wider transition-all cursor-pointer ${
+              viewMode === 'RESERVE'
+                ? 'bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream shadow-md'
+                : 'bg-deep-plum/80 text-warm-cream/60 hover:text-bright-gold border border-antique-gold/20'
+            }`}
+          >
+            New Pass Reservation
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('LOOKUP')}
+            className={`px-4 py-1.5 rounded-full text-xs font-body font-bold uppercase tracking-wider transition-all cursor-pointer ${
+              viewMode === 'LOOKUP'
+                ? 'bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream shadow-md'
+                : 'bg-deep-plum/80 text-warm-cream/60 hover:text-bright-gold border border-antique-gold/20'
+            }`}
+          >
+            Find / Recover Reservation
+          </button>
         </div>
+
+        {/* 3 Step Indicator (Visible only in RESERVE mode) */}
+        {viewMode === 'RESERVE' && (
+          <div ref={stageIndicatorRef} className="flex items-center justify-center gap-2 sm:gap-4 mt-6 max-w-md mx-auto">
+            {[
+              { step: 1, title: '1. Select Pass' },
+              { step: 2, title: '2. Attendee Details' },
+              { step: 3, title: '3. Submit Request' },
+            ].map((item) => {
+              const isActive = currentStep === item.step;
+              const isCompleted = currentStep > item.step;
+              return (
+                <div
+                  key={item.step}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-center font-body text-xs font-semibold uppercase tracking-wider transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream shadow-md'
+                      : isCompleted
+                      ? 'bg-royal-maroon/90 text-bright-gold border border-antique-gold/40'
+                      : 'bg-deep-plum/60 text-warm-cream/40 border border-antique-gold/15'
+                  }`}
+                >
+                  {item.title}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ====================================================================
@@ -380,6 +421,19 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
         style={{ overflowAnchor: 'none' }}
         className="relative z-10 min-h-[520px]"
       >
+        {/* LOOKUP SUBVIEW */}
+        {viewMode === 'LOOKUP' ? (
+          <BookingLookupDesk
+            onViewReceipt={(record) => {
+              setSubmittedRecord(record);
+              setSubmissionStatus('SUCCESS');
+              setViewMode('RESERVE');
+              setCurrentStep(3);
+            }}
+            onExitLookup={() => setViewMode('RESERVE')}
+          />
+        ) : (
+          <>
         {/* ====================================================================
             STAGE 1: SELECT PASS & QUANTITY
             ==================================================================== */}
@@ -483,6 +537,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
               </div>
 
               <button
+                id="stage-1-continue-btn"
                 type="button"
                 onClick={() => transitionToStep(2)}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream font-display text-lg tracking-wider uppercase border border-antique-gold/70 shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-[transform,box-shadow] duration-200 cursor-pointer font-bold"
@@ -539,7 +594,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Priya Sharma"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border text-warm-cream placeholder-warm-cream/30 text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold ${
+                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border text-warm-cream placeholder-warm-cream/30 text-base sm:text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold ${
                   errors.fullName ? 'border-vermilion' : 'border-antique-gold/30'
                 }`}
               />
@@ -564,7 +619,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="e.g. 9931503960"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border text-warm-cream placeholder-warm-cream/30 text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold ${
+                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border text-warm-cream placeholder-warm-cream/30 text-base sm:text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold ${
                   errors.phone ? 'border-vermilion' : 'border-antique-gold/30'
                 }`}
               />
@@ -589,7 +644,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. priya@example.com"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border text-warm-cream placeholder-warm-cream/30 text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold ${
+                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border text-warm-cream placeholder-warm-cream/30 text-base sm:text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold ${
                   errors.email ? 'border-vermilion' : 'border-antique-gold/30'
                 }`}
               />
@@ -612,7 +667,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="Ranchi"
-              className="w-full px-4 py-3 rounded-xl bg-deep-plum/90 border border-antique-gold/30 text-warm-cream placeholder-warm-cream/30 text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold"
+              className="w-full px-4 py-3 rounded-xl bg-deep-plum/90 border border-antique-gold/30 text-warm-cream placeholder-warm-cream/30 text-base sm:text-sm font-body focus:outline-none focus:ring-2 focus:ring-bright-gold"
             />
           </div>
 
@@ -659,6 +714,10 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
                 email={submittedRecord.email}
                 city={submittedRecord.city}
                 timestamp={submittedRecord.timestamp}
+                status={submittedRecord.status}
+                paymentStatus={submittedRecord.paymentStatus}
+                expiresAt={submittedRecord.expiresAt}
+                recoveryToken={submittedRecord.recoveryToken}
                 onNewEnquiry={() => {
                   transitionToStep(1);
                   setSubmissionStatus('IDLE');
@@ -679,10 +738,20 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <span className="font-display text-2xl text-bright-gold tracking-wider uppercase">
-                  REVIEW BOOKING REQUEST
+                  REVIEW PASS RESERVATION
                 </span>
                 <p className="font-body text-xs text-warm-cream/80 max-w-md mt-1">
-                  Please review your details below. Clicking submit will log your pass request directly into our event team&apos;s Google Sheets reservation desk.
+                  Please review your pass details below. Submitting will place your requested passes on a <strong>24-hour hold</strong> and generate your printable receipt with online checkout access.
+                </p>
+                <p className="text-[11px] font-body text-antique-gold/90 mt-2">
+                  By reserving, you agree to the{' '}
+                  <Link href="/terms-and-conditions" target="_blank" className="underline hover:text-warm-cream font-semibold">
+                    Terms &amp; Conditions
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/refund-and-cancellation" target="_blank" className="underline hover:text-warm-cream font-semibold">
+                    Cancellation Policy
+                  </Link>.
                 </p>
               </div>
 
@@ -698,7 +767,7 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
                     <span className="uppercase tracking-wider">Submission Notice</span>
                   </div>
                   <p className="leading-relaxed text-warm-cream/95 font-medium">
-                    {submissionError || 'The reservation sheet could not be reached right now.'}
+                    {submissionError || 'The reservation system could not be reached right now.'}
                   </p>
                   <p className="text-[11px] text-warm-cream/80">
                     Your details and Request ID (<span className="font-mono text-bright-gold font-bold">{sessionRequestId || activeBookingId}</span>) are preserved. You can retry submission or continue directly on WhatsApp.
@@ -849,13 +918,15 @@ export default function BookingDesk({ initialPassId }: BookingDeskProps = {}) {
               {/* Scope & Reassurance Disclaimer */}
               <div className="text-center pt-1">
                 <p className="font-body text-[11px] text-warm-cream/60 leading-relaxed italic">
-                  *Notice: Submitting records an enquiry request in the event team&apos;s reservation sheet. No payment was deducted. Pass confirmation and official wristband collection details will be coordinated directly by Event Point coordinators.
+                  *Notice: Submitting reserves your passes for up to 24 hours. You can complete online checkout immediately after submission or coordinate with the Event Point team. A verified digital booking receipt is generated upon payment confirmation.
                 </p>
               </div>
             </div>
           )}
         </div>
       )}
+          </>
+        )}
       </div>
     </div>
   );

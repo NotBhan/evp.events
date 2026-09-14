@@ -80,7 +80,7 @@ export default function Navbar() {
       }`}
     >
       <nav
-        className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-18 lg:h-20 flex items-center justify-between"
+        className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-[72px] lg:h-20 flex items-center justify-between"
         aria-label="Festival Navigation Masthead"
       >
         {/* ============================================================== */}
@@ -108,7 +108,7 @@ export default function Navbar() {
         {/* ============================================================== */}
         {/* Zone B (Center): Refined Editorial Navigation Links             */}
         {/* ============================================================== */}
-        <div className="hidden md:flex items-center gap-2.5 lg:gap-6 xl:gap-8 text-[11px] lg:text-xs font-body font-semibold tracking-[0.12em] lg:tracking-[0.18em] uppercase">
+        <div className="hidden md:flex items-center gap-2.5 lg:gap-6 xl:gap-8 text-[11px] lg:text-xs font-body font-semibold tracking-[0.08em] lg:tracking-[0.1em] uppercase">
           {navLinks.map((link, idx) => {
             const active = isActive(link.href);
             return (

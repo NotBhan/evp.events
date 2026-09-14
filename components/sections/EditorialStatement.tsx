@@ -203,7 +203,7 @@ export default function EditorialStatement() {
       >
         <div className="animate-marquee flex items-center whitespace-nowrap">
           {/* Track 1 */}
-          <div className="flex items-center gap-6 sm:gap-8 shrink-0 font-display text-xs sm:text-sm tracking-[0.22em] uppercase text-bright-gold pr-6 sm:pr-8">
+          <div className="flex items-center gap-6 sm:gap-8 shrink-0 font-display text-xs sm:text-sm tracking-[0.1em] uppercase text-bright-gold pr-6 sm:pr-8">
             <span className="text-vermilion animate-pulse">✦</span>
             <span className="text-bright-gold font-bold">{eventData.eventName} 2026</span>
             <span className="text-antique-gold/50">♦</span>
@@ -223,7 +223,7 @@ export default function EditorialStatement() {
           </div>
 
           {/* Track 2 (Identical duplicate for seamless 0-gap infinite loop) */}
-          <div className="flex items-center gap-6 sm:gap-8 shrink-0 font-display text-xs sm:text-sm tracking-[0.22em] uppercase text-bright-gold pr-6 sm:pr-8" aria-hidden="true">
+          <div className="flex items-center gap-6 sm:gap-8 shrink-0 font-display text-xs sm:text-sm tracking-[0.1em] uppercase text-bright-gold pr-6 sm:pr-8" aria-hidden="true">
             <span className="text-vermilion animate-pulse">✦</span>
             <span className="text-bright-gold font-bold">{eventData.eventName} 2026</span>
             <span className="text-antique-gold/50">♦</span>
@@ -251,7 +251,7 @@ export default function EditorialStatement() {
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-start">
             <div
               ref={eyebrowRef}
-              className="inline-flex items-center gap-2 mb-5 text-bright-gold text-xs sm:text-sm font-body tracking-[0.3em] uppercase font-bold"
+              className="inline-flex items-center gap-2 mb-5 text-bright-gold text-xs sm:text-sm font-body tracking-[0.15em] uppercase font-bold"
             >
               <span className="text-vermilion">♦</span>
               <span>01 / THE FESTIVAL STATEMENT</span>
@@ -282,7 +282,7 @@ export default function EditorialStatement() {
             <div ref={goldRuleRef} className="flex items-center gap-4 mt-10 mb-8 max-w-xl">
               <div className="h-[2px] flex-1 bg-gradient-to-r from-antique-gold via-bright-gold to-transparent" />
               <span className="text-bright-gold text-sm animate-pulse">✦</span>
-              <span className="font-body text-xs uppercase tracking-[0.3em] text-bright-gold font-bold">
+              <span className="font-body text-xs uppercase tracking-[0.15em] text-bright-gold font-bold">
                 RANCHI · 16 OCTOBER 2026
               </span>
               <div className="h-[1px] w-12 bg-gradient-to-l from-antique-gold to-transparent hidden sm:block" />

@@ -165,7 +165,7 @@ export default function FinalBookingCTA() {
           {/* Eyebrow */}
             <div
               ref={eyebrowRef}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-deep-plum border border-bright-gold/50 text-bright-gold text-xs font-body uppercase tracking-[0.25em] font-semibold mb-8 shadow-md"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-deep-plum border border-bright-gold/50 text-bright-gold text-xs font-body uppercase tracking-[0.12em] font-semibold mb-8 shadow-md"
             >
               <span className="text-vermilion text-xs" aria-hidden="true">♦</span>
               <span>JHARKHAND&apos;S GRANDEST DANDIYA NIGHT</span>
@@ -174,7 +174,7 @@ export default function FinalBookingCTA() {
           {/* Monumental Concluding Typography */}
           <h2
             ref={headlineRef}
-            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-tight uppercase mb-6 leading-none"
+            className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-tight uppercase mb-6 leading-none break-words"
           >
             LET&apos;S <span className="text-bright-gold drop-shadow-[0_2px_20px_rgba(243,198,76,0.4)]">CELEBRATE.</span>
           </h2>

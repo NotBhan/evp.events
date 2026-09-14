@@ -149,11 +149,11 @@ export default function GrandestNightBanner() {
       <div className="relative max-w-[1560px] mx-auto px-3 sm:px-6 lg:px-8">
         {/* Section Editorial Header Tag */}
         <div className="flex items-center justify-between gap-4 mb-4 sm:mb-6 px-1">
-          <div className="inline-flex items-center gap-2 text-bright-gold text-xs sm:text-sm font-body tracking-[0.25em] uppercase font-bold">
+          <div className="inline-flex items-center gap-2 text-bright-gold text-xs sm:text-sm font-body tracking-[0.12em] uppercase font-bold">
             <span className="text-vermilion">♦</span>
             <span>02 / OFFICIAL PANORAMIC CAMPAIGN BANNER</span>
           </div>
-          <span className="text-warm-cream/50 text-[11px] font-body tracking-widest hidden sm:inline uppercase">
+          <span className="text-warm-cream/50 text-[11px] font-body tracking-wider hidden sm:inline uppercase">
             REFERENCE B • 1600 × 639
           </span>
         </div>
@@ -300,7 +300,7 @@ export default function GrandestNightBanner() {
 
             {/* Monumental Headline Lockup matching Reference B */}
             <div className="mt-1 lg:mt-2 w-full">
-              <span className="block font-antiqua text-[9px] lg:text-[11px] xl:text-xs text-warm-cream/90 tracking-[0.28em] uppercase font-bold">
+              <span className="block font-antiqua text-[9px] lg:text-[11px] xl:text-xs text-warm-cream/90 tracking-[0.14em] uppercase font-bold">
                 JHARKHAND&apos;S GRANDEST
               </span>
               <div className="flex items-center gap-1.5 lg:gap-2 text-bright-gold">
@@ -316,7 +316,7 @@ export default function GrandestNightBanner() {
             <p className="font-bangle text-[10px] lg:text-xs xl:text-sm text-warm-cream font-medium italic tracking-wide mt-0.5 lg:mt-1">
               Navratri Celebration like never before
             </p>
-            <div className="flex items-center gap-2 text-[8px] lg:text-[10px] xl:text-[11px] text-amber-glow font-bangle tracking-[0.2em] uppercase font-semibold mt-0.5">
+            <div className="flex items-center gap-2 text-[8px] lg:text-[10px] xl:text-[11px] text-amber-glow font-bangle tracking-[0.1em] uppercase font-semibold mt-0.5">
               <span>Dance</span>
               <span className="text-antique-gold/60">|</span>
               <span>Devotion</span>
@@ -519,7 +519,7 @@ export default function GrandestNightBanner() {
                 unoptimized
               />
             </div>
-            <span className="block font-antiqua text-[10px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-1">
+            <span className="block font-antiqua text-[10px] text-warm-cream/90 tracking-[0.12em] uppercase font-bold mt-1">
               JHARKHAND&apos;S GRANDEST
             </span>
             <div className="flex items-center justify-center gap-1.5 text-bright-gold">

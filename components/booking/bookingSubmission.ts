@@ -1,9 +1,7 @@
 /**
  * Client-Side Booking Submission Service
- * Dispatches a CORS-safe simple POST request to the Google Apps Script Web App endpoint.
- *
- * NOTE: Uses 'Content-Type': 'text/plain;charset=utf-8' to bypass CORS preflight (OPTIONS)
- * as per Google Apps Script browser compatibility requirements.
+ * Dispatches an authoritative booking creation request to the Next.js API (/api/bookings).
+ * Neon PostgreSQL serves as the single authoritative transactional database.
  */
 
 export interface BookingSubmissionPayload {
@@ -29,6 +27,11 @@ export interface BookingSubmissionResponse {
   quantity: number;
   unitPrice: number;
   total: number;
+  recoveryToken?: string;
+  status?: 'PENDING' | 'CONFIRMED' | 'EXPIRED' | 'CANCELLED';
+  paymentStatus?: 'NOT_STARTED' | 'PENDING' | 'FAILED' | 'PAID';
+  createdAt?: string;
+  expiresAt?: string;
   message?: string;
   error?: string;
   isMocked?: boolean;
@@ -36,7 +39,7 @@ export interface BookingSubmissionResponse {
 
 /**
  * Generates a client-side enquiry request ID (e.g. RU26-REQ-4819).
- * Explicitly treated as an enquiry request identifier, not a confirmed ticket number.
+ * Preserved for client session references prior to server-authoritative issuance.
  */
 export function generateBookingRequestId(): string {
   const randomDigits = Math.floor(1000 + Math.random() * 9000);
@@ -44,136 +47,92 @@ export function generateBookingRequestId(): string {
 }
 
 /**
- * Submits the booking request payload to the configured Google Apps Script Web App.
+ * Submits the booking request payload to the authoritative /api/bookings endpoint.
  */
 export async function submitBookingRequest(
   payload: BookingSubmissionPayload
 ): Promise<BookingSubmissionResponse> {
-  const bookingId = payload.bookingId || generateBookingRequestId();
-  const timestamp = new Date().toISOString();
-  const endpointUrl = process.env.NEXT_PUBLIC_BOOKING_SHEETS_ENDPOINT;
-
-  // Preserve trimmed phone string (Code.gs validates and formats as plain text)
-  const phone = payload.phone.trim();
-
-  const submissionData = {
-    ...payload,
-    phone,
-    bookingId,
-    timestamp,
-    source: 'Web Booking Desk (/booking)',
-    hp_company_field: payload.hp_company_field || '', // Anti-spam honeypot
-  };
-
-  // If endpoint is not configured in local environment, provide transparent, safe fallback
-  if (!endpointUrl || endpointUrl.trim() === '') {
-    console.info(
-      'NEXT_PUBLIC_BOOKING_SHEETS_ENDPOINT is not configured. Simulating successful Google Sheets record for development.'
-    );
-    await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate brief network delay
-    return {
-      success: true,
-      bookingId,
-      passType: payload.passType,
-      quantity: payload.quantity,
-      unitPrice: payload.unitPrice,
-      total: payload.total,
-      message: 'Booking request recorded successfully (Dev Mode)',
-      isMocked: true,
-    };
-  }
-
   // Immediate offline check
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     return {
       success: false,
-      bookingId,
+      bookingId: payload.bookingId || generateBookingRequestId(),
       passType: payload.passType,
       quantity: payload.quantity,
       unitPrice: payload.unitPrice,
       total: payload.total,
-      error: 'You appear to be offline. Please check your internet connection or use WhatsApp to send your request.',
+      error:
+        'You appear to be offline. Please check your internet connection or use WhatsApp to send your request.',
     };
   }
 
-  // 25 second timeout to safely accommodate high-latency mobile networks (2G/3G with Google Apps Script redirects)
+  // 20 second timeout for mobile network resilience
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 25000);
+  const timeoutId = setTimeout(() => controller.abort(), 20000);
 
   try {
-    // Dispatch CORS-safe simple POST (text/plain;charset=utf-8 bypasses preflight OPTIONS)
-    const response = await fetch(endpointUrl, {
+    const response = await fetch('/api/bookings', {
       method: 'POST',
       headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(submissionData),
-      redirect: 'follow',
+      body: JSON.stringify({
+        passId: payload.passId,
+        quantity: payload.quantity,
+        fullName: payload.fullName,
+        phone: payload.phone,
+        email: payload.email,
+        city: payload.city,
+        hp_company_field: payload.hp_company_field,
+      }),
       signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
 
-    if (!response.ok && response.type !== 'opaque') {
-      throw new Error(`Server returned HTTP ${response.status}`);
-    }
+    const data = await response.json().catch(() => null);
 
-    // Google Apps Script returns JSON or redirects
-    let result: { status?: string; message?: string; total?: number; unitPrice?: number } = {};
-    try {
-      result = await response.json();
-    } catch {
-      // If response is opaque or plain text on redirect, assume successful reach if status is 200
-      result = { status: 'success' };
-    }
-
-    const legacyPassIdMap: Record<string, string> = {
-      'solo-female': 'pass-single',
-      couple: 'pass-couple',
-      vip: 'pass-vip',
-      family: 'pass-season',
-      group: 'pass-group',
-    };
-
-    if (result.status === 'error') {
-      // Resilient fallback: If currently deployed Apps Script has older pass catalog, retry with mapped legacy ID
-      const legacyId = legacyPassIdMap[payload.passId];
-      if (result.message && result.message.toLowerCase().includes('unrecognized') && legacyId && legacyId !== payload.passId) {
-        return submitBookingRequest({ ...payload, passId: legacyId });
-      }
-
+    if (!response.ok || !data?.success) {
       return {
         success: false,
-        bookingId,
+        bookingId: payload.bookingId || '',
         passType: payload.passType,
         quantity: payload.quantity,
         unitPrice: payload.unitPrice,
         total: payload.total,
-        error: result.message || 'The reservation sheet could not process your request.',
+        error:
+          data?.error ||
+          'Unable to record your booking request in the reservation system. Please try again.',
       };
     }
 
+    // Return authoritative booking details from server
     return {
       success: true,
-      bookingId,
-      passType: payload.passType,
-      quantity: payload.quantity,
-      unitPrice: result.unitPrice ?? payload.unitPrice,
-      total: result.total ?? payload.total,
-      message: result.message || 'Booking request recorded successfully',
+      bookingId: data.bookingId,
+      passType: data.passType || payload.passType,
+      quantity: data.quantity ?? payload.quantity,
+      unitPrice: data.unitPrice ?? payload.unitPrice,
+      total: data.total ?? data.totalAmount ?? payload.total,
+      recoveryToken: data.recoveryToken,
+      status: data.status,
+      paymentStatus: data.paymentStatus,
+      createdAt: data.createdAt,
+      expiresAt: data.expiresAt,
+      message: data.message || 'Booking request recorded successfully',
     };
   } catch (err: unknown) {
     clearTimeout(timeoutId);
     const errorMessage =
       err instanceof Error
         ? err.name === 'AbortError'
-          ? 'Network request timed out. On slow networks (2G/3G), requests take longer. Your details have been preserved — please retry or continue via WhatsApp.'
+          ? 'Network request timed out. On slow networks, requests may take longer. Your details have been preserved — please retry or continue via WhatsApp.'
           : err.message
         : 'Network connection failed. Please check your internet connection.';
 
     return {
       success: false,
-      bookingId,
+      bookingId: payload.bookingId || '',
       passType: payload.passType,
       quantity: payload.quantity,
       unitPrice: payload.unitPrice,

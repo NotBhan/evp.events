@@ -46,6 +46,21 @@ export interface EventConfig {
     name: string;
     tagline: string;
   };
+  business: {
+    name: string;
+    individualName: string;
+    email: string;
+    phone: string;
+    address: {
+      plot: string;
+      street: string;
+      area: string;
+      city: string;
+      state: string;
+      pincode: string;
+      display: string;
+    };
+  };
   
   dateDisplay: string;
   timeDisplay: string;
@@ -122,6 +137,21 @@ export const eventData: EventConfig = {
   organizer: {
     name: "EVENT POINT",
     tagline: "A Shop for complete Event Solution. WE PLAN. YOU CELEBRATE.",
+  },
+  business: {
+    name: "PUJA TENT AGENCY",
+    individualName: "KUMARI PUJA VISHWAKARMA",
+    email: "eventpointranchi18@gmail.com",
+    phone: "+91 94301 12440",
+    address: {
+      plot: "KHATA NO 103, PLOT NO 1726",
+      street: "Harmu Road, Argoa Chowk",
+      area: "Argoa",
+      city: "Ranchi",
+      state: "Jharkhand",
+      pincode: "834002",
+      display: "KHATA NO 103, PLOT NO 1726, Argoa Chowk, Harmu Road, Argoa, Ranchi, Jharkhand 834002",
+    },
   },
 
   dateDisplay: "16 OCTOBER 2026",
@@ -391,17 +421,17 @@ export const eventData: EventConfig = {
   },
 
   contact: {
-    enquiryEmail: "eventpoint42@gmail.com",
-    alternateEmail: "eventpointranchi18@gmail.com",
-    helplineNumber: "+91 99315 03960",
-    phoneNumbers: ["+91 99315 03960", "+91 85400 06033", "+91 94301 12440"],
-    officeLocation: "Event Point, Ranchi, Jharkhand",
-    note: "For pass enquiries, group bookings, and sponsorship opportunities, contact the Event Point team directly.",
+    enquiryEmail: "eventpointranchi18@gmail.com",
+    alternateEmail: "eventpoint42@gmail.com",
+    helplineNumber: "+91 94301 12440",
+    phoneNumbers: ["+91 94301 12440", "+91 99315 03960", "+91 85400 06033"],
+    officeLocation: "KHATA NO 103, PLOT NO 1726, Argoa Chowk, Harmu Road, Argoa, Ranchi, Jharkhand 834002",
+    note: "For pass enquiries, group bookings, and sponsorship opportunities, contact our coordination desk.",
   },
 
   contacts: {
-    phones: ["+91 99315 03960", "+91 85400 06033", "+91 94301 12440"],
-    emails: ["eventpoint42@gmail.com", "eventpointranchi18@gmail.com"],
+    phones: ["+91 94301 12440", "+91 99315 03960", "+91 85400 06033"],
+    emails: ["eventpointranchi18@gmail.com", "eventpoint42@gmail.com"],
   },
 
   socialLinks: [

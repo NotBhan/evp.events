@@ -1,0 +1,148 @@
+import React from 'react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { eventData } from '@/data/eventData';
+import { RotateCcw, AlertTriangle, CheckCircle2, Clock, ShieldCheck } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: `Cancellation & Refund Policy | ${eventData.eventName} ${eventData.year}`,
+  description: `Official cancellation and refund policy for ${eventData.eventName} ${eventData.year}. Details the 24-hour reservation hold, technical payment failure reversals, duplicate charge reconciliation, and commercial cancellation terms.`,
+};
+
+export default function RefundAndCancellationPage() {
+  return (
+    <main className="relative min-h-screen bg-deep-plum text-warm-cream selection:bg-vermilion selection:text-warm-cream overflow-x-clip">
+      <Navbar />
+
+      <div className="pt-28 sm:pt-36 pb-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-royal-maroon/80 border border-antique-gold/40 text-bright-gold text-[11px] uppercase tracking-[0.14em] font-bold mb-4">
+            <RotateCcw className="w-3.5 h-3.5 text-bright-gold" />
+            <span>TRANSPARENT POLICY</span>
+          </div>
+
+          <h1 className="font-display text-3xl sm:text-5xl text-warm-cream font-bold tracking-tight uppercase leading-tight">
+            CANCELLATION &amp; REFUND POLICY
+          </h1>
+
+          <div className="h-0.5 max-w-xs mx-auto bg-gradient-to-r from-transparent via-bright-gold to-transparent my-4" />
+
+          <p className="font-body text-xs sm:text-sm text-warm-cream/80 max-w-xl mx-auto leading-relaxed">
+            Clear guidelines explaining reservation expirations, technical payment reversals, duplicate charge resolutions, and pass cancellation terms for {eventData.eventName} {eventData.year}.
+          </p>
+
+          <span className="inline-block mt-3 text-[11px] font-body text-antique-gold/70">
+            Last Updated: September 2026 · Valid for {eventData.year} Edition
+          </span>
+        </div>
+
+        {/* Policy Body */}
+        <div className="space-y-10 font-body text-xs sm:text-sm text-warm-cream/90 leading-relaxed">
+          {/* 1. Reservation Lifecycle & 24-Hour Expiry */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
+            <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
+              <Clock className="w-5 h-5 text-bright-gold shrink-0" />
+              <span>1. 24-HOUR RESERVATION HOLD (UNPAID REQUESTS)</span>
+            </h2>
+            <p>
+              When an attendee initiates a booking request on our website, the requested passes are placed in a <code>PENDING</code> reservation state for up to <strong>24 hours</strong>.
+            </p>
+            <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <p className="text-xs">
+                  <strong>Zero Obligation &amp; No Automatic Charges:</strong> Submitting an online reservation request does not automatically debit your account. If you choose not to proceed with payment, no action is required; the reservation will automatically expire after 24 hours.
+                </p>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <p className="text-xs">
+                  <strong>Automatic Inventory Release:</strong> Once expired, held pass allocations return to the festival pool without any penalty or cancellation fee.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* 2. Technical Payment Failures & Banking Reversals */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
+            <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-bright-gold shrink-0" />
+              <span>2. TECHNICAL PAYMENT FAILURES</span>
+            </h2>
+            <p>
+              If a payment transaction fails during checkout due to network disconnection, bank server timeouts, or incorrect authorization credentials:
+            </p>
+            <ul className="space-y-2 list-disc list-inside text-warm-cream/80">
+              <li>No confirmed pass booking is generated for a failed transaction attempt.</li>
+              <li>Your reservation remains in <code>PENDING</code> status, enabling you to retry payment within your remaining 24-hour reservation window.</li>
+              <li>If your account or card is debited during a failed gateway attempt, the amount is held by the banking network and is processed for reversal to your original source of payment according to standard banking settlement cycles.</li>
+            </ul>
+          </section>
+
+          {/* 3. Duplicate Payment Resolution */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
+            <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-bright-gold shrink-0" />
+              <span>3. DUPLICATE CHARGES</span>
+            </h2>
+            <p>
+              In rare situations where an attendee experiences duplicate debits for the same booking request due to multiple submission attempts or gateway latency:
+            </p>
+            <p>
+              Please notify our coordination desk at <code>eventpointranchi18@gmail.com</code> (or <code>eventpoint42@gmail.com</code>) with your Request ID and payment transaction references. Following technical verification with the payment gateway, duplicate charges are reconciled and processed for refund to the original payment source.
+            </p>
+          </section>
+
+          {/* 4. Confirmed Passes & Voluntary Attendee Cancellations */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
+            <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-bright-gold shrink-0" />
+              <span>4. CONFIRMED PASSES &amp; CANCELLATION TERMS</span>
+            </h2>
+            <p>
+              When payment is successfully confirmed, the reservation transitions to <code>CONFIRMED</code>, and the pass quota is allocated to the booking.
+            </p>
+            <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2">
+              <p className="text-xs text-warm-cream/85 leading-relaxed">
+                Voluntary cancellation terms, refund eligibility, and ticket transferability are subject to the organizer&apos;s published event policy. Attendees should review their pass selections before completing checkout. Any inquiries regarding booking modifications must be directed to Event Point coordination.
+              </p>
+            </div>
+          </section>
+
+          {/* 5. Refund Method */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
+            <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
+              <span>5. REFUND METHOD &amp; DISBURSEMENT</span>
+            </h2>
+            <p>
+              Where refunds or duplicate payment reversals are approved and initiated, the funds are credited directly back to the original source of payment (Credit/Debit Card, Netbanking, or UPI). Cash refunds are not provided.
+            </p>
+          </section>
+
+          {/* 6. Support Contact */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
+            <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
+              <span>6. REFUND &amp; BILLING ASSISTANCE</span>
+            </h2>
+            <p>
+              For inquiries regarding pending transactions, duplicate charges, or reservation records:
+            </p>
+            <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs space-y-1.5">
+              <p><strong>Business Name:</strong> {eventData.business.name} (Individual Name: {eventData.business.individualName})</p>
+              <p><strong>Event Presentation:</strong> {eventData.organizer.name}</p>
+              <p><strong>Business Address:</strong> {eventData.business.address.display}</p>
+              <p><strong>Helpline:</strong> {eventData.contacts.phones.join(' / ')}</p>
+              <p><strong>Email:</strong> {eventData.contacts.emails.join(' / ')}</p>
+              <p><strong>Event Celebration Grounds:</strong> Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001 (Distinct from business address)</p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <Footer />
+    </main>
+  );
+}

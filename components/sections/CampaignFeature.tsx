@@ -162,11 +162,11 @@ export default function CampaignFeature() {
       <div className="relative max-w-[1440px] mx-auto">
         {/* Section Tagline */}
         <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
-          <div className="inline-flex items-center gap-2 text-bright-gold text-xs sm:text-sm font-body tracking-[0.3em] uppercase font-bold">
+          <div className="inline-flex items-center gap-2 text-bright-gold text-xs sm:text-sm font-body tracking-[0.15em] uppercase font-bold">
             <span className="text-vermilion">♦</span>
             <span>03 / THE OFFICIAL CAMPAIGN</span>
           </div>
-          <span className="text-warm-cream/50 text-[11px] font-body tracking-widest hidden sm:inline uppercase">
+          <span className="text-warm-cream/50 text-[11px] font-body tracking-wider hidden sm:inline uppercase">
             REFERENCE A • 1086 × 1448 (3:4 PORTRAIT)
           </span>
         </div>
@@ -347,7 +347,7 @@ export default function CampaignFeature() {
                 </div>
 
                 {/* Monumental Headline */}
-                <span className="block font-antiqua text-[7px] sm:text-[9.5px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-0.5">
+                <span className="block font-antiqua text-[7px] sm:text-[9.5px] text-warm-cream/90 tracking-[0.12em] uppercase font-bold mt-0.5">
                   JHARKHAND&apos;S GRANDEST
                 </span>
                 <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-bright-gold mt-0.5">
@@ -362,7 +362,7 @@ export default function CampaignFeature() {
                   Navratri Celebration like never before
                 </p>
 
-                <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[6.5px] sm:text-[9px] text-amber-glow font-bangle tracking-[0.16em] uppercase font-semibold mt-0.5">
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[6.5px] sm:text-[9px] text-amber-glow font-bangle tracking-[0.1em] uppercase font-semibold mt-0.5">
                   <span>Dance</span>
                   <span className="text-antique-gold/60">|</span>
                   <span>Devotion</span>

@@ -361,11 +361,11 @@ export default function AboutContent() {
         <div className="relative max-w-[1440px] mx-auto">
           {/* Section Eyebrow Header Tag */}
           <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
-            <div className="inline-flex items-center gap-2 text-bright-gold text-xs sm:text-sm font-body tracking-[0.3em] uppercase font-bold">
+            <div className="inline-flex items-center gap-2 text-bright-gold text-xs sm:text-sm font-body tracking-[0.15em] uppercase font-bold">
               <span className="text-vermilion">♦</span>
               <span>ABOUT RAAS UTSAV • 01 / THE STORY</span>
             </div>
-            <span className="text-warm-cream/50 text-[11px] font-body tracking-widest hidden sm:inline uppercase">
+            <span className="text-warm-cream/50 text-[11px] font-body tracking-wider hidden sm:inline uppercase">
               PORTRAIT CAMPAIGN ARTWORK • 1086 × 1448
             </span>
           </div>
@@ -550,7 +550,7 @@ export default function AboutContent() {
                   </div>
 
                   {/* Monumental Headline Lockup matching Reference A */}
-                  <span className="block font-antiqua text-[6px] sm:text-[8.5px] text-warm-cream/90 tracking-[0.25em] uppercase font-bold mt-0.5">
+                  <span className="block font-antiqua text-[6px] sm:text-[8.5px] text-warm-cream/90 tracking-[0.14em] uppercase font-bold mt-0.5">
                     JHARKHAND&apos;S GRANDEST
                   </span>
                   <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-bright-gold mt-0.5">
@@ -671,7 +671,7 @@ export default function AboutContent() {
               className="lg:col-span-6 xl:col-span-6 flex flex-col justify-center py-2 lg:py-4"
             >
               {/* Eyebrow Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-royal-maroon border border-bright-gold/40 text-bright-gold text-[11px] font-body font-bold uppercase tracking-[0.2em] mb-3.5 shadow-sm w-fit">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-royal-maroon border border-bright-gold/40 text-bright-gold text-[11px] font-body font-bold uppercase tracking-[0.12em] mb-3.5 shadow-sm w-fit">
                 <span className="text-bright-gold text-xs" aria-hidden="true">✦</span>
                 <span>JHARKHAND&apos;S GRANDEST CULTURAL GATHERING</span>
               </div>
@@ -801,7 +801,7 @@ export default function AboutContent() {
                   <FolkBorder />
                 </div>
 
-                <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.2em] font-bold block mb-3">
+                <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.12em] font-bold block mb-3">
                   SACRED TRADITION • COSMIC HARMONY
                 </span>
 
@@ -918,10 +918,10 @@ export default function AboutContent() {
               <div className="absolute inset-2 rounded-xl border border-antique-gold/20 pointer-events-none" />
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <span className="inline-block px-3 py-1 rounded-full bg-deep-plum/80 border border-antique-gold/40 text-bright-gold font-body text-[10px] uppercase tracking-widest font-bold mb-2">
+                  <span className="inline-block px-3 py-1 rounded-full bg-deep-plum/80 border border-antique-gold/40 text-bright-gold font-body text-[10px] uppercase tracking-wider font-bold mb-2">
                     ANCHOR PILLAR
                   </span>
-                  <span className="font-body text-xs text-bright-gold uppercase tracking-[0.2em] font-bold block">
+                  <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block">
                     VINTAGE COLONIAL CHARM
                   </span>
                   <h3 className="font-display text-3xl sm:text-4xl text-warm-cream tracking-wide uppercase leading-tight mt-1">
@@ -959,7 +959,7 @@ export default function AboutContent() {
                   </div>
                   <span className="font-display text-4xl text-bright-gold/40">02</span>
                 </div>
-                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.2em] font-bold block mb-1">
+                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block mb-1">
                   FOLK RHYTHM &amp; DHOL
                 </span>
                 <h3 className="font-display text-2xl text-warm-cream tracking-wide uppercase mb-3 leading-tight">
@@ -990,7 +990,7 @@ export default function AboutContent() {
                   </div>
                   <span className="font-display text-4xl text-bright-gold/40">03</span>
                 </div>
-                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.2em] font-bold block mb-1">
+                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block mb-1">
                   HONORING MAA DURGA
                 </span>
                 <h3 className="font-display text-2xl text-warm-cream tracking-wide uppercase mb-3 leading-tight">
@@ -1021,7 +1021,7 @@ export default function AboutContent() {
                   </div>
                   <span className="font-display text-4xl text-bright-gold/40">04</span>
                 </div>
-                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.2em] font-bold block mb-1">
+                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block mb-1">
                   CONCENTRIC DANCE CIRCLES
                 </span>
                 <h3 className="font-display text-2xl sm:text-3xl text-warm-cream tracking-wide uppercase mb-3 leading-tight">
@@ -1054,7 +1054,7 @@ export default function AboutContent() {
           {/* Section Header */}
           <div ref={venueTextRef} className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 mb-3 text-bright-gold text-xs font-body tracking-[0.3em] uppercase font-bold">
+              <div className="inline-flex items-center gap-2 mb-3 text-bright-gold text-xs font-body tracking-[0.15em] uppercase font-bold">
                 <span className="text-vermilion">♦</span>
                 <span>04 / HISTORIC FESTIVAL GROUNDS</span>
               </div>

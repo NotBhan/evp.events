@@ -354,9 +354,9 @@ export default function CurtainReveal({
       {/* Top Decorative Festoon Pelmet / Stage Arch Valance */}
       <div className="absolute top-0 inset-x-0 h-6 z-25 pointer-events-none select-none overflow-hidden flex justify-center">
         <div className="w-full h-full bg-gradient-to-b from-deep-plum via-deep-plum/90 to-transparent border-b border-ochre-gold/40 flex items-center justify-between px-6">
-          <span className="text-ochre-gold text-[10px] tracking-widest font-display">✦ ✦ ✦</span>
-          <span className="text-ochre-gold text-[10px] uppercase font-display tracking-[0.2em] drop-shadow-sm">FESTIVAL STAGE ARENA</span>
-          <span className="text-ochre-gold text-[10px] tracking-widest font-display">✦ ✦ ✦</span>
+          <span className="text-ochre-gold text-[10px] tracking-wider font-display">✦ ✦ ✦</span>
+          <span className="text-ochre-gold text-[10px] uppercase font-display tracking-[0.14em] drop-shadow-sm">FESTIVAL STAGE ARENA</span>
+          <span className="text-ochre-gold text-[10px] tracking-wider font-display">✦ ✦ ✦</span>
         </div>
       </div>
 

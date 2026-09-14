@@ -65,7 +65,7 @@ export default function PassCard({ pass }: PassCardProps) {
 
         {/* Feature List */}
         <div className="mb-8">
-          <span className="font-body text-[10px] text-bright-gold uppercase tracking-[0.2em] font-bold block mb-3">
+          <span className="font-body text-[10px] text-bright-gold uppercase tracking-[0.12em] font-bold block mb-3">
             PASS DETAILS
           </span>
           <ul className="space-y-3">

@@ -55,7 +55,7 @@ export default function PageHero({
   return (
     <section
       ref={containerRef}
-      className="relative z-20 w-full pt-28 pb-16 md:pt-36 md:pb-20 px-4 sm:px-6 lg:px-8 bg-deep-plum border-b border-antique-gold/25 overflow-hidden text-center"
+      className="relative z-20 w-full pt-24 pb-14 sm:pt-28 sm:pb-16 md:pt-36 md:pb-20 px-4 sm:px-6 lg:px-8 bg-deep-plum border-b border-antique-gold/25 overflow-hidden text-center"
       aria-label="Interior Page Header"
     >
       {/* Background Decorative Mandala Halo */}
@@ -71,7 +71,7 @@ export default function PageHero({
         {/* Eyebrow Festival Badge */}
         <div
           ref={eyebrowRef}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-royal-maroon/90 border border-antique-gold/50 text-bright-gold font-body text-xs md:text-sm font-semibold tracking-widest uppercase mb-4 shadow-md"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-royal-maroon/90 border border-antique-gold/50 text-bright-gold font-body text-xs md:text-sm font-semibold tracking-wide sm:tracking-wider uppercase mb-4 shadow-md"
         >
           <span className="text-vermilion text-xs" aria-hidden="true">♦</span>
           <span>{eyebrow}</span>
@@ -86,7 +86,7 @@ export default function PageHero({
         {/* Display Title */}
         <h1
           ref={titleRef}
-          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-wider uppercase leading-none mb-4 drop-shadow-[0_4px_16px_rgba(217,37,36,0.4)]"
+          className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-bold tracking-wider uppercase leading-none mb-4 drop-shadow-[0_4px_16px_rgba(217,37,36,0.4)]"
         >
           {title}
         </h1>

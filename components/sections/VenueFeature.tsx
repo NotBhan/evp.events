@@ -124,7 +124,7 @@ export default function VenueFeature() {
         {/* Section Header */}
         <div ref={headerRef} className="flex flex-col lg:flex-row lg:items-end justify-between mb-14 gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 mb-3 text-bright-gold text-xs sm:text-sm font-body tracking-[0.3em] uppercase font-bold">
+            <div className="inline-flex items-center gap-2 mb-3 text-bright-gold text-xs sm:text-sm font-body tracking-[0.15em] uppercase font-bold">
               <span className="text-vermilion">♦</span>
               <span>06 / THE FESTIVAL SETTING</span>
             </div>

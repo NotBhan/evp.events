@@ -229,7 +229,7 @@ export default function ServicesContent() {
             {/* Left Column: Oversized Editorial Typography & Facts */}
             <div ref={heroLeftRef} className="lg:col-span-7 flex flex-col justify-center text-left">
               {/* Eyebrow */}
-              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-royal-maroon/90 border border-antique-gold/50 text-bright-gold text-xs uppercase font-bold tracking-[0.25em] w-fit mb-6 shadow-md">
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-royal-maroon/90 border border-antique-gold/50 text-bright-gold text-xs uppercase font-bold tracking-[0.12em] w-fit mb-6 shadow-md">
                 <span className="text-vermilion text-xs" aria-hidden="true">♦</span>
                 <span>01 / THE FESTIVAL EXPERIENCE</span>
               </div>
@@ -358,7 +358,7 @@ export default function ServicesContent() {
 
                 {/* Layer 5: Bottom Plaque with Event Point Credential */}
                 <div className="absolute bottom-5 left-6 right-6 z-30 bg-royal-maroon/95 border border-antique-gold/50 rounded-xl py-2.5 px-4 text-center shadow-lg backdrop-blur-sm">
-                  <span className="font-body text-[10px] text-bright-gold uppercase font-bold tracking-[0.2em] block">
+                  <span className="font-body text-[10px] text-bright-gold uppercase font-bold tracking-[0.1em] block">
                     JHARKHAND&apos;S GRANDEST DANDIYA NIGHT
                   </span>
                   <span className="font-display text-sm text-warm-cream uppercase tracking-wider block mt-0.5">
@@ -427,7 +427,7 @@ export default function ServicesContent() {
                     <span className="font-display text-6xl text-bright-gold/80">01</span>
                   </div>
 
-                  <span className="font-body text-xs text-bright-gold font-bold uppercase tracking-[0.2em] block mb-2">
+                  <span className="font-body text-xs text-bright-gold font-bold uppercase tracking-[0.1em] block mb-2">
                     VINTAGE ROYAL CHARM
                   </span>
                   <h3 className="font-display text-3xl sm:text-4xl md:text-5xl text-warm-cream uppercase tracking-wide mb-4 leading-tight">
@@ -623,7 +623,7 @@ export default function ServicesContent() {
         className="relative z-20 py-28 md:py-36 px-4 sm:px-6 lg:px-8 bg-deep-plum text-center overflow-hidden border-b border-antique-gold/25"
       >
         <div className="max-w-5xl mx-auto">
-          <span className="font-body text-xs text-bright-gold font-bold uppercase tracking-[0.3em] block mb-4">
+          <span className="font-body text-xs text-bright-gold font-bold uppercase tracking-[0.15em] block mb-4">
             THE ESSENCE OF RAAS UTSAV 2026
           </span>
 
@@ -641,19 +641,19 @@ export default function ServicesContent() {
           <div className="space-y-4 sm:space-y-6">
             <div
               ref={word1Ref}
-              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-warm-cream uppercase tracking-[0.25em] font-bold select-none will-change-transform drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]"
+              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-warm-cream uppercase tracking-[0.12em] font-bold select-none will-change-transform drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]"
             >
               DANCE
             </div>
             <div
               ref={word2Ref}
-              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-amber-glow to-bright-gold uppercase tracking-[0.25em] font-bold select-none will-change-transform"
+              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-transparent bg-clip-text bg-gradient-to-r from-bright-gold via-amber-glow to-bright-gold uppercase tracking-[0.12em] font-bold select-none will-change-transform"
             >
               DEVOTION
             </div>
             <div
               ref={word3Ref}
-              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-warm-cream uppercase tracking-[0.25em] font-bold select-none will-change-transform drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]"
+              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-warm-cream uppercase tracking-[0.12em] font-bold select-none will-change-transform drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]"
             >
               CELEBRATION
             </div>
@@ -836,7 +836,7 @@ export default function ServicesContent() {
                 />
               </div>
               <div>
-                <span className="font-body text-[10px] text-bright-gold uppercase font-bold tracking-[0.25em] block">
+                <span className="font-body text-[10px] text-bright-gold uppercase font-bold tracking-[0.12em] block">
                   OFFICIAL FESTIVAL COORDINATES
                 </span>
                 <h3 className="font-display text-2xl text-warm-cream uppercase tracking-wide mt-0.5">

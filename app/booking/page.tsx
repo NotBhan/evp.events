@@ -112,14 +112,14 @@ export default function BookingPage({ searchParams }: BookingPageProps) {
                     <Ticket className="w-5 h-5 text-bright-gold" />
                   </div>
                   <h3 className="font-display text-2xl text-warm-cream uppercase tracking-wide mb-2">
-                    Physical Pass Collection
+                    Digital Pass Confirmation
                   </h3>
                   <p className="font-body text-xs sm:text-sm text-warm-cream/80 leading-relaxed">
-                    Upon confirmation with our team, physical entry wristbands and festival access stubs can be collected at the venue box office counter on 16 October 2026.
+                    Upon completing your booking and payment, your official digital booking receipt is generated immediately on-screen with zero delivery charges.
                   </p>
                 </div>
                 <div className="pt-4 mt-6 border-t border-antique-gold/20 text-xs text-bright-gold font-body font-semibold">
-                  Venue: Upwan Lawn, BNR Chanakya
+                  Instant Electronic Fulfillment
                 </div>
               </div>
             </InteriorReveal>

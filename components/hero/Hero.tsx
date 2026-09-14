@@ -75,7 +75,7 @@ export default function Hero() {
       {/* 100svh CSS-Sticky Stage (Zero pin-spacer, zero layout jumps) */}
       <div
         ref={heroStageRef}
-        className="hero-stage-sticky flex flex-col justify-between pt-16 md:pt-18 lg:pt-20 pb-4 sm:pb-6 px-3 sm:px-6"
+        className="hero-stage-sticky flex flex-col justify-between pt-16 md:pt-[72px] lg:pt-20 pb-4 sm:pb-6 px-3 sm:px-6"
       >
         {/* ============================================================== */}
         {/* Layer 1: Subtle Background Lattice Pattern                     */}
@@ -120,13 +120,13 @@ export default function Hero() {
         {/* ============================================================== */}
         <div
           ref={cornerMedallionTLRef}
-          className="absolute top-16 md:top-18 lg:top-20 left-0 z-25 hidden sm:block pointer-events-none"
+          className="absolute top-16 md:top-[72px] lg:top-20 left-0 z-25 hidden sm:block pointer-events-none"
         >
           <CornerMedallion position="top-left" size={180} />
         </div>
         <div
           ref={cornerMedallionTRRef}
-          className="absolute top-16 md:top-18 lg:top-20 right-0 z-25 hidden sm:block pointer-events-none"
+          className="absolute top-16 md:top-[72px] lg:top-20 right-0 z-25 hidden sm:block pointer-events-none"
         >
           <CornerMedallion position="top-right" size={180} />
         </div>
@@ -144,13 +144,13 @@ export default function Hero() {
         {/* ============================================================== */}
         <div
           ref={leftDiyaRef}
-          className="absolute top-16 md:top-18 lg:top-20 left-4 sm:left-12 md:left-24 z-25 pointer-events-none"
+          className="absolute top-16 md:top-[72px] lg:top-20 left-4 sm:left-12 md:left-24 z-25 pointer-events-none"
         >
           <HangingDiya side="left" size={60} className="w-[44px] sm:w-[56px] md:w-[68px]" />
         </div>
         <div
           ref={rightDiyaRef}
-          className="absolute top-16 md:top-18 lg:top-20 right-4 sm:right-12 md:right-24 z-25 pointer-events-none"
+          className="absolute top-16 md:top-[72px] lg:top-20 right-4 sm:right-12 md:right-24 z-25 pointer-events-none"
         >
           <HangingDiya side="right" size={56} className="w-[40px] sm:w-[52px] md:w-[64px]" />
         </div>
@@ -160,13 +160,13 @@ export default function Hero() {
         {/* ============================================================== */}
         <div
           ref={leftPillarRef}
-          className="absolute left-0 bottom-0 top-16 md:top-18 lg:top-20 z-25 hidden md:flex items-end pointer-events-none pl-1 lg:pl-3"
+          className="absolute left-0 bottom-0 top-16 md:top-[72px] lg:top-20 z-25 hidden md:flex items-end pointer-events-none pl-1 lg:pl-3"
         >
           <OrnamentalPillar placement="left" />
         </div>
         <div
           ref={rightPillarRef}
-          className="absolute right-0 bottom-0 top-16 md:top-18 lg:top-20 z-25 hidden md:flex items-end pointer-events-none pr-1 lg:pr-3"
+          className="absolute right-0 bottom-0 top-16 md:top-[72px] lg:top-20 z-25 hidden md:flex items-end pointer-events-none pr-1 lg:pr-3"
         >
           <OrnamentalPillar placement="right" />
         </div>

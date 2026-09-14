@@ -154,7 +154,7 @@ export default function ExperienceMosaic() {
         {/* Section Header */}
         <div ref={headerRef} className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 mb-3 text-bright-gold text-xs sm:text-sm font-body tracking-[0.25em] uppercase font-bold">
+            <div className="inline-flex items-center gap-2 mb-3 text-bright-gold text-xs sm:text-sm font-body tracking-[0.12em] uppercase font-bold">
               <span className="text-vermilion">♦</span>
               <span>02 / PLANNED ATTRACTIONS & EXPERIENCES</span>
             </div>

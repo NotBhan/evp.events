@@ -158,7 +158,7 @@ export default function EventDateSchedule() {
         {/* Section Eyebrow */}
         <div
           ref={eyebrowRef}
-          className="inline-flex items-center gap-2 mb-8 text-bright-gold text-xs sm:text-sm font-body tracking-[0.3em] uppercase font-bold"
+          className="inline-flex items-center gap-2 mb-8 text-bright-gold text-xs sm:text-sm font-body tracking-[0.15em] uppercase font-bold"
         >
           <span className="text-vermilion">♦</span>
           <span>04 / EVENT DATE & VENUE SCHEDULE</span>
@@ -175,23 +175,23 @@ export default function EventDateSchedule() {
               {/* Monumental "16" */}
               <span
                 ref={num16Ref}
-                className="font-display text-[10rem] sm:text-[13rem] md:text-[15rem] xl:text-[18rem] 2xl:text-[20rem] leading-[0.82] text-transparent bg-clip-text bg-gradient-to-b from-bright-gold via-antique-gold to-vermilion tracking-tighter select-none drop-shadow-[0_8px_40px_rgba(243,198,76,0.45)] inline-block font-black"
+                className="font-display text-[7rem] sm:text-[10rem] md:text-[13rem] lg:text-[15rem] xl:text-[18rem] 2xl:text-[20rem] leading-[0.82] text-transparent bg-clip-text bg-gradient-to-b from-bright-gold via-antique-gold to-vermilion tracking-tighter select-none drop-shadow-[0_8px_40px_rgba(243,198,76,0.45)] inline-block font-black"
               >
                 16
               </span>
 
               {/* Orbiting Month, Year, and Festival Subtitle */}
               <div ref={monthBlockRef} className="space-y-2 sm:pl-2">
-                <h3 className="font-display text-4xl sm:text-5xl md:text-6xl xl:text-7xl text-warm-cream tracking-[0.12em] uppercase leading-none font-black">
+                <h3 className="font-display text-4xl sm:text-5xl md:text-6xl xl:text-7xl text-warm-cream tracking-[0.06em] uppercase leading-none font-black">
                   OCTOBER
                 </h3>
                 <div className="flex items-center gap-3">
-                  <span className="font-display text-3xl sm:text-4xl text-vermilion tracking-[0.2em] font-bold">
+                  <span className="font-display text-3xl sm:text-4xl text-vermilion tracking-[0.1em] font-bold">
                     2026
                   </span>
                   <div className="h-[2px] w-24 bg-gradient-to-r from-antique-gold via-bright-gold to-transparent" />
                 </div>
-                <p className="font-body text-xs sm:text-sm text-bright-gold uppercase tracking-[0.25em] font-bold pt-2">
+                <p className="font-body text-xs sm:text-sm text-bright-gold uppercase tracking-[0.12em] font-bold pt-2">
                   FRIDAY CELEBRATION EVENING · NAVRATRI
                 </p>
                 <p className="font-body text-xs sm:text-sm text-warm-cream/70 max-w-sm leading-relaxed pt-1">
@@ -208,7 +208,7 @@ export default function EventDateSchedule() {
                   <Clock className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="font-body text-[10px] text-bright-gold uppercase tracking-widest font-bold block mb-0.5">
+                  <span className="font-body text-[10px] text-bright-gold uppercase tracking-wide sm:tracking-widest font-bold block mb-0.5">
                     CONFIRMED TIMING
                   </span>
                   <span className="font-display text-2xl text-warm-cream tracking-wide block font-bold">
@@ -226,7 +226,7 @@ export default function EventDateSchedule() {
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="font-body text-[10px] text-bright-gold uppercase tracking-widest font-bold block mb-0.5">
+                  <span className="font-body text-[10px] text-bright-gold uppercase tracking-wide sm:tracking-widest font-bold block mb-0.5">
                     CONFIRMED VENUE
                   </span>
                   <span className="font-display text-xl sm:text-2xl text-warm-cream tracking-wide uppercase block font-bold">

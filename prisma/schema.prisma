@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  NOT_STARTED
+  PENDING
+  FAILED
+  PAID
+}
+
+enum PaymentAttemptStatus {
+  INITIATED
+  PENDING
+  FAILED
+  SUCCEEDED
+}
+
+model Pass {
+  id               String    @id @default(cuid())
+  passType         String    @unique @map("pass_type")
+  name             String
+  price            Int       @default(0)
+  totalQuantity    Int       @default(0) @map("total_quantity")
+  reservedQuantity Int       @default(0) @map("reserved_quantity")
+  soldQuantity     Int       @default(0) @map("sold_quantity")
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  bookings         Booking[]
+
+  @@map("passes")
+}
+
+model Booking {
+  id              String         @id @default(cuid())
+  publicId        String         @unique @map("public_id")
+  fullName        String         @map("full_name")
+  email           String?
+  phone           String
+  city            String?        @default("Ranchi")
+  passId          String         @map("pass_id")
+  quantity        Int            @default(1)
+  unitPrice       Int            @map("unit_price")
+  totalAmount     Int            @map("total_amount")
+  status          BookingStatus  @default(PENDING)
+  paymentStatus   PaymentStatus  @default(NOT_STARTED) @map("payment_status")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  expiresAt       DateTime       @map("expires_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  confirmedAt       DateTime?      @map("confirmed_at")
+  recoveryTokenHash String?        @map("recovery_token_hash")
+  source            String         @default("web")
+
+  pass            Pass           @relation(fields: [passId], references: [id])
+  paymentAttempts PaymentAttempt[]
+
+  @@index([status])
+  @@index([expiresAt])
+  @@index([passId])
+  @@index([phone, email])
+  @@index([email])
+  @@map("bookings")
+}
+
+model PaymentAttempt {
+  id                String               @id @default(cuid())
+  bookingId         String               @map("booking_id")
+  provider          String
+  providerOrderId   String?              @map("provider_order_id")
+  providerPaymentId String?              @map("provider_payment_id")
+  amount            Int
+  status            PaymentAttemptStatus @default(INITIATED)
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  booking           Booking              @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([providerOrderId])
+  @@map("payment_attempts")
+}

@@ -17,6 +17,10 @@ export interface SubmittedBookingRecord {
   email?: string;
   city?: string;
   timestamp: string;
+  status?: 'PENDING' | 'CONFIRMED' | 'EXPIRED' | 'CANCELLED';
+  paymentStatus?: 'NOT_STARTED' | 'PENDING' | 'FAILED' | 'PAID';
+  expiresAt?: string;
+  recoveryToken?: string;
 }
 
 interface BookingReceiptPrintProps {
@@ -86,7 +90,7 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
           <div className="print-disclaimer-callout">
             <div className="print-disclaimer-title">BOOKING REQUEST — NOT A CONFIRMED TICKET</div>
             <div className="print-disclaimer-body">
-              This receipt confirms submission of a booking request only. It is not a confirmed ticket or proof of payment. Final pass allocation, payment, and physical wristband collection details are handled directly by the Event Point team.
+              This receipt confirms submission of a booking request only. It is not a confirmed ticket or proof of payment. Final pass allocation and payment confirmation are handled directly through the Event Point booking system.
             </div>
           </div>
         </header>
@@ -176,7 +180,7 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
         {/* ============================================================== */}
         <footer className="print-footer">
           <p className="print-footer-text">
-            Important Protocol: Submitting this form records an official enquiry request with Event Point. No online payment was deducted. Pass allocation, payment collection, and entry stubs will be verified directly by the festival box office. For expedited review, contact the coordination desk via phone or WhatsApp.
+            Important Protocol: Submitting this form records an official pass reservation with Event Point. No online payment was deducted yet. Pass allocation and booking confirmation will be verified directly by the Event Point coordination team. For expedited assistance, contact the coordination desk via phone or WhatsApp.
           </p>
         </footer>
       </div>

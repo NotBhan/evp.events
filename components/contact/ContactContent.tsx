@@ -208,7 +208,7 @@ export default function ContactContent() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end">
             {/* Left: Headline & Description */}
             <div className="lg:col-span-7">
-              <div className="animate-hero-item inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-royal-maroon/80 border border-antique-gold/40 text-bright-gold text-[11px] uppercase tracking-[0.25em] font-bold mb-6">
+              <div className="animate-hero-item inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-royal-maroon/80 border border-antique-gold/40 text-bright-gold text-[11px] uppercase tracking-[0.12em] font-bold mb-6">
                 <span>✦</span>
                 <span>01 / OFFICIAL COORDINATION DESK</span>
               </div>
@@ -255,18 +255,26 @@ export default function ContactContent() {
                     />
                   </div>
 
-                  <span className="font-display text-sm sm:text-base text-bright-gold uppercase tracking-[0.2em] font-bold mb-1">
+                  <span className="font-display text-sm sm:text-base text-bright-gold uppercase tracking-[0.1em] font-bold mb-1">
                     EVENT POINT
                   </span>
                   <p className="font-body text-xs text-warm-cream/75 italic mb-4">
                     {eventData.organizer.tagline || 'A Shop for complete Event Solution'}
                   </p>
 
-                  <div className="h-px w-24 bg-gradient-to-r from-transparent via-antique-gold/60 to-transparent mb-4" />
+                  <div className="h-px w-24 bg-gradient-to-r from-transparent via-antique-gold/60 to-transparent mb-3" />
 
-                  <span className="font-body text-[11px] text-warm-cream/80 uppercase tracking-wider">
-                    Main Road, Ranchi, Jharkhand
-                  </span>
+                  <div className="text-[11px] font-body text-warm-cream/80 space-y-0.5">
+                    <span className="block text-bright-gold font-semibold uppercase tracking-wider">
+                      Business Name: {eventData.business.name}
+                    </span>
+                    <span className="block text-warm-cream/90 text-[10px]">
+                      Individual Name: {eventData.business.individualName}
+                    </span>
+                    <span className="block text-warm-cream/60 text-[10px]">
+                      {eventData.business.address.plot}, Argoa, Ranchi 834002
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -283,7 +291,7 @@ export default function ContactContent() {
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-2">
+            <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block mb-2">
               DIRECT COMMUNICATION
             </span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase">
@@ -301,7 +309,7 @@ export default function ContactContent() {
               <div className="absolute inset-2 rounded-2xl border border-antique-gold/15 pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-5">
-                  <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.2em] font-bold">
+                  <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.1em] font-bold">
                     FASTEST RESPONSE
                   </span>
                   <span className="w-2.5 h-2.5 rounded-full bg-[#25D366] shadow-[0_0_8px_#25D366]" aria-hidden="true" />
@@ -340,7 +348,7 @@ export default function ContactContent() {
               <div className="absolute inset-2 rounded-2xl border border-antique-gold/15 pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-5">
-                  <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.2em] font-bold">
+                  <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.1em] font-bold">
                     VOICE HELPLINE
                   </span>
                   <span className="text-bright-gold text-xs">♦</span>
@@ -370,7 +378,7 @@ export default function ContactContent() {
                   </a>
                 ))}
                 <span className="block text-center font-body text-[11px] text-warm-cream/65 pt-1">
-                  Daily: 10:00 AM – 9:00 PM IST
+                  Official Festival Phone Coordination
                 </span>
               </div>
             </div>
@@ -380,7 +388,7 @@ export default function ContactContent() {
               <div className="absolute inset-2 rounded-2xl border border-antique-gold/15 pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-5">
-                  <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.2em] font-bold">
+                  <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.1em] font-bold">
                     OFFICIAL CORRESPONDENCE
                   </span>
                   <span className="text-bright-gold text-xs">✦</span>
@@ -410,8 +418,90 @@ export default function ContactContent() {
                   </a>
                 ))}
                 <span className="block text-center font-body text-[11px] text-warm-cream/65 pt-1">
-                  Response within 24 festival hours
+                  Official Festival Inquiries
                 </span>
+              </div>
+            </div>
+
+            {/* Official Business & Billing Entity Disclosure Card */}
+            <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-card-surface border-2 border-antique-gold/45 shadow-2xl relative overflow-hidden">
+              <div className="absolute inset-2 rounded-2xl border border-antique-gold/15 pointer-events-none" />
+              <div className="relative z-10">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-6 pb-4 border-b border-antique-gold/20">
+                  <div>
+                    <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.12em] font-bold block mb-1">
+                      OFFICIAL ENTITY &amp; BILLING INFORMATION
+                    </span>
+                    <h3 className="font-display text-2xl sm:text-3xl text-warm-cream uppercase tracking-wide">
+                      BUSINESS &amp; LEGAL DISCLOSURE
+                    </h3>
+                  </div>
+                  <div className="px-3 py-1 rounded-full bg-royal-maroon border border-antique-gold/40 text-bright-gold text-[10px] font-bold uppercase tracking-wider">
+                    VERIFIED BUSINESS IDENTITY
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs font-body text-warm-cream/85">
+                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
+                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
+                      BUSINESS NAME
+                    </span>
+                    <span className="font-semibold text-warm-cream text-sm block">
+                      {eventData.business.name}
+                    </span>
+                    <span className="text-[11px] text-warm-cream/65 block">
+                      Commercial &amp; Billing Entity
+                    </span>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
+                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
+                      INDIVIDUAL NAME
+                    </span>
+                    <span className="font-semibold text-warm-cream text-sm block">
+                      {eventData.business.individualName}
+                    </span>
+                    <span className="text-[11px] text-warm-cream/65 block">
+                      {eventData.business.name}
+                    </span>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
+                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
+                      BILLING CONTACT
+                    </span>
+                    <a
+                      href={`tel:${eventData.business.phone.replace(/\s+/g, '')}`}
+                      className="font-semibold text-warm-cream block hover:text-bright-gold transition-colors"
+                    >
+                      {eventData.business.phone}
+                    </a>
+                    <a
+                      href={`mailto:${eventData.business.email}`}
+                      className="text-[11px] text-warm-cream/80 hover:text-bright-gold transition-colors break-all block"
+                    >
+                      {eventData.business.email}
+                    </a>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
+                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
+                      BUSINESS ADDRESS
+                    </span>
+                    <p className="text-[11px] text-warm-cream/90 leading-relaxed">
+                      {eventData.business.address.plot}, {eventData.business.address.street}, {eventData.business.address.area}, {eventData.business.address.city}, {eventData.business.address.state} – {eventData.business.address.pincode}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-antique-gold/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-body text-warm-cream/70">
+                  <span>
+                    Event Presentation Brand: <strong className="text-bright-gold">{eventData.organizer.name}</strong> (Presenting {eventData.eventName} {eventData.year})
+                  </span>
+                  <span className="text-antique-gold/80 italic">
+                    Celebration Venue: Upwan Lawn, Chanakya BNR Hotel (Distinct from business address)
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -434,7 +524,7 @@ export default function ContactContent() {
             <span className="absolute bottom-4 right-4 text-bright-gold text-[10px] select-none pointer-events-none">♦</span>
 
             <div className="relative z-10 text-center max-w-2xl mx-auto mb-12">
-              <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-2">
+              <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block mb-2">
                 TRANSPARENT PASS PROCESS
               </span>
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase">
@@ -481,20 +571,31 @@ export default function ContactContent() {
               <div className="support-step p-5 rounded-2xl bg-deep-plum/80 border border-antique-gold/30 flex flex-col">
                 <span className="font-display text-2xl text-bright-gold font-bold mb-2">04</span>
                 <h3 className="font-display text-base text-warm-cream uppercase tracking-wide mb-2">
-                  DESK REVIEWS
+                  CONFIRM RESERVATION
                 </h3>
                 <p className="font-body text-xs text-warm-cream/75 leading-relaxed">
-                  The Event Point coordination desk reviews and connects with the attendee to finalize collection.
+                  Complete online payment to secure instant confirmation, or coordinate with our desk. Your digital booking receipt is generated immediately with your Request ID.
                 </p>
               </div>
             </div>
 
-            {/* Non-Ticket Disclaimer Callout */}
-            <div className="relative z-10 p-5 rounded-xl bg-royal-maroon/80 border border-vermilion/50 text-center max-w-2xl mx-auto mb-8">
+            {/* 24-Hour Hold & Compliance Disclosure Callout */}
+            <div className="relative z-10 p-5 rounded-xl bg-royal-maroon/80 border border-antique-gold/40 text-center max-w-3xl mx-auto mb-8 space-y-2">
               <p className="font-body text-xs sm:text-sm text-warm-cream font-medium leading-relaxed">
-                <span className="text-bright-gold font-bold uppercase tracking-wider block sm:inline mr-2">Notice:</span>
-                Submitting a booking request does not constitute payment or final ticket confirmation. Final pass allocation and payment/collection details are handled by the Event Point team.
+                <span className="text-bright-gold font-bold uppercase tracking-wider block sm:inline mr-2">Reservation Policy:</span>
+                Submitting an online booking holds your passes for up to 24 hours. Completing payment immediately confirms your allocation and generates your verified digital booking receipt. Retain your Request ID for booking reference and coordination with our desk.
               </p>
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-body text-bright-gold/90 pt-1">
+                <Link href="/pricing" className="underline hover:text-warm-cream">Pass Pricing</Link>
+                <span>•</span>
+                <Link href="/terms-and-conditions" className="underline hover:text-warm-cream">Terms &amp; Conditions</Link>
+                <span>•</span>
+                <Link href="/privacy-policy" className="underline hover:text-warm-cream">Privacy Policy</Link>
+                <span>•</span>
+                <Link href="/refund-and-cancellation" className="underline hover:text-warm-cream">Cancellation &amp; Refund</Link>
+                <span>•</span>
+                <Link href="/shipping-policy" className="underline hover:text-warm-cream">Fulfillment Policy</Link>
+              </div>
             </div>
 
             {/* CTA to Booking Desk */}
@@ -525,7 +626,7 @@ export default function ContactContent() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-royal-maroon border border-bright-gold/40 text-bright-gold text-[11px] uppercase tracking-[0.2em] font-bold mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-royal-maroon border border-bright-gold/40 text-bright-gold text-[11px] uppercase tracking-[0.1em] font-bold mb-4">
                   <span>✦</span>
                   <span>CORPORATE &amp; BRAND OPPORTUNITIES</span>
                 </div>
@@ -582,7 +683,7 @@ export default function ContactContent() {
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-2">
+            <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block mb-2">
               FESTIVAL DESTINATION
             </span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-bold tracking-wide uppercase">
@@ -615,7 +716,7 @@ export default function ContactContent() {
             {/* Venue Metadata Box */}
             <div className="venue-info-block lg:col-span-5 p-8 sm:p-10 rounded-3xl bg-card-surface border-2 border-antique-gold/40 shadow-xl flex flex-col justify-between">
               <div>
-                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.2em] font-bold block mb-2">
+                <span className="font-body text-xs text-bright-gold uppercase tracking-[0.1em] font-bold block mb-2">
                   EVENT DETAILS
                 </span>
                 <h3 className="font-display text-2xl sm:text-3xl text-warm-cream uppercase tracking-wide mb-6">
@@ -642,7 +743,18 @@ export default function ContactContent() {
                       LOCATION
                     </span>
                     <span className="font-semibold text-warm-cream block">Upwan Lawn, Chanakya BNR Hotel</span>
-                    <span className="text-xs text-warm-cream/70">Station Road, Ranchi, Jharkhand</span>
+                    <span className="text-xs text-warm-cream/70">Station Road, Ranchi, Jharkhand 834001</span>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-royal-maroon/70 border border-antique-gold/30">
+                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block mb-1">
+                      VENUE &amp; BUSINESS ADDRESS SEPARATION
+                    </span>
+                    <p className="text-[11px] text-warm-cream/85 leading-relaxed">
+                      <strong>Celebration Grounds:</strong> Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi 834001.
+                      <br />
+                      <strong>Business Address:</strong> {eventData.business.name}, {eventData.business.address.plot}, {eventData.business.address.street}, {eventData.business.address.area}, Ranchi {eventData.business.address.pincode}.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -679,7 +791,7 @@ export default function ContactContent() {
             <span className="absolute bottom-4 right-4 text-bright-gold text-[10px] select-none pointer-events-none">♦</span>
 
             <div className="relative z-10 max-w-2xl mx-auto">
-              <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-3">
+              <span className="font-body text-xs text-bright-gold uppercase tracking-[0.12em] font-bold block mb-3">
                 JOIN THE CELEBRATION
               </span>
 
@@ -710,11 +822,13 @@ export default function ContactContent() {
                 </a>
               </div>
 
-              {/* Event Point Contacts Summary */}
-              <div className="pt-6 border-t border-antique-gold/20 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-body text-warm-cream/75">
-                <span>Phone: +91 99315 03960 / +91 85400 06033 / +91 94301 12440</span>
-                <span>•</span>
-                <span>Email: eventpoint42@gmail.com</span>
+              {/* Business & Event Contacts Summary */}
+              <div className="pt-6 border-t border-antique-gold/20 flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-2 text-xs font-body text-warm-cream/75 text-center">
+                <span>Business Name: <strong>{eventData.business.name}</strong> (Individual Name: {eventData.business.individualName})</span>
+                <span className="hidden sm:inline">•</span>
+                <span>Helpline: {eventData.business.phone}</span>
+                <span className="hidden sm:inline">•</span>
+                <span>Email: {eventData.business.email}</span>
               </div>
             </div>
           </div>

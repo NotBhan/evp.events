@@ -134,7 +134,7 @@ export default function FestivalIntro() {
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
             <div className="flex-1">
-              <span className="font-body text-xs text-bright-gold uppercase tracking-[0.25em] font-bold block mb-1">
+              <span className="font-body text-xs text-bright-gold uppercase tracking-[0.14em] font-bold block mb-1">
                 FESTIVAL SNAPSHOT
               </span>
               <h3 className="font-display text-3xl sm:text-4xl text-warm-cream tracking-wide mb-3 uppercase">
