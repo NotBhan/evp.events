@@ -72,10 +72,8 @@ export async function syncBookingToSheets(
     };
   }
 
-  // 3. Resolve server-side endpoint
-  const endpoint =
-    process.env.BOOKING_SHEETS_ENDPOINT ||
-    process.env.NEXT_PUBLIC_BOOKING_SHEETS_ENDPOINT;
+  // 3. Resolve server-side endpoint (server-only; never use NEXT_PUBLIC_ variant)
+  const endpoint = process.env.BOOKING_SHEETS_ENDPOINT;
 
   if (!endpoint) {
     const diagnostic =

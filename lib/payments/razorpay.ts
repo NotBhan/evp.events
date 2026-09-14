@@ -49,8 +49,7 @@ export interface RazorpayPayment {
 }
 
 export function getRazorpayKeyId(): string {
-  const keyId =
-    process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+  const keyId = process.env.RAZORPAY_KEY_ID;
   if (!keyId) {
     throw new Error('RAZORPAY_KEY_ID is not configured in the environment.');
   }
