@@ -21,6 +21,7 @@ export interface SubmittedBookingRecord {
   paymentStatus?: 'NOT_STARTED' | 'PENDING' | 'FAILED' | 'PAID';
   expiresAt?: string;
   recoveryToken?: string;
+  confirmedAt?: string | null;
 }
 
 interface BookingReceiptPrintProps {

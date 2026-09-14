@@ -9,8 +9,14 @@ export interface CreateCheckoutSessionParams {
 }
 
 export interface CreateCheckoutSessionResult {
+  provider: 'stripe' | 'razorpay';
   sessionId: string;
-  checkoutUrl: string;
+  checkoutUrl?: string;
+  orderId?: string;
+  amount?: number;
+  currency?: string;
+  keyId?: string;
+  notes?: Record<string, string>;
 }
 
 export interface PaymentProvider {

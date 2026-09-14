@@ -77,6 +77,7 @@ export class StripePaymentProvider implements PaymentProvider {
     }
 
     return {
+      provider: 'stripe',
       sessionId: session.id,
       checkoutUrl: session.url,
     };

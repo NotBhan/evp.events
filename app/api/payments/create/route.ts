@@ -99,28 +99,30 @@ export async function POST(req: Request) {
   }
 
   try {
-    // 4. Create PaymentAttempt record in Neon
+    // 4. Resolve configured PaymentProvider ('stripe' or 'razorpay')
+    const provider = getPaymentProvider();
+
+    // 5. Create PaymentAttempt record in Neon
     const attempt = await prisma.paymentAttempt.create({
       data: {
         bookingId: booking.id,
-        provider: 'stripe',
+        provider: provider.name,
         amount: booking.totalAmount,
         status: 'INITIATED',
       },
     });
 
-    // 5. Resolve safe base URL for redirect callbacks (Origin protection)
+    // 6. Resolve safe base URL for redirect callbacks (Origin protection)
     const baseUrl = resolveSafeBaseUrl(req);
 
-    // 6. Invoke PaymentProvider (Stripe TEST)
-    const provider = getPaymentProvider();
+    // 7. Invoke PaymentProvider to create checkout session/order
     const session = await provider.createCheckoutSession({
       booking,
       paymentAttemptId: attempt.id,
       baseUrl,
     });
 
-    // 7. Store providerOrderId (Stripe Checkout Session ID)
+    // 8. Store providerOrderId (Stripe Checkout Session ID or Razorpay Order ID)
     await prisma.paymentAttempt.update({
       where: { id: attempt.id },
       data: { providerOrderId: session.sessionId },
@@ -128,9 +130,24 @@ export async function POST(req: Request) {
 
     return Response.json({
       success: true,
+      provider: session.provider,
       checkoutUrl: session.checkoutUrl,
       sessionId: session.sessionId,
+      orderId: session.orderId || session.sessionId,
+      amount: session.amount,
+      currency: session.currency,
+      keyId: session.keyId,
       paymentAttemptId: attempt.id,
+      booking: {
+        publicId: booking.publicId,
+        totalAmount: booking.totalAmount,
+        fullName: booking.fullName,
+        phone: booking.phone,
+        email: booking.email,
+        passType: booking.pass.name,
+        quantity: booking.quantity,
+        expiresAt: booking.expiresAt.toISOString(),
+      },
     });
   } catch (err: unknown) {
     console.error(

@@ -37,6 +37,7 @@ export interface BookingReceiptProps {
   expiresAt?: string;
   recoveryToken?: string;
   onNewEnquiry?: () => void;
+  onProceedToPayment?: () => void;
 }
 
 export default function BookingReceipt({
@@ -55,11 +56,16 @@ export default function BookingReceipt({
   expiresAt,
   recoveryToken,
   onNewEnquiry,
+  onProceedToPayment,
 }: BookingReceiptProps) {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const handleOnlineCheckout = async () => {
+    if (onProceedToPayment) {
+      onProceedToPayment();
+      return;
+    }
     setIsRedirecting(true);
     setPaymentError(null);
 
@@ -521,12 +527,12 @@ export default function BookingReceipt({
               {isRedirecting ? (
                 <>
                   <Loader2 className="w-6 h-6 animate-spin text-deep-plum" />
-                  <span>REDIRECTING TO STRIPE...</span>
+                  <span>CONNECTING TO SECURE PAYMENT...</span>
                 </>
               ) : (
                 <>
                   <CreditCard className="w-6 h-6 text-deep-plum" />
-                  <span>PAY ₹{total.toLocaleString('en-IN')} ONLINE (STRIPE TEST)</span>
+                  <span>PROCEED TO ONLINE PAYMENT · ₹{total.toLocaleString('en-IN')}</span>
                 </>
               )}
             </button>

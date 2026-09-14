@@ -17,12 +17,12 @@ export const metadata: Metadata = {
 };
 
 interface BookingPageProps {
-  searchParams: Promise<{ pass?: string }>;
+  searchParams: Promise<{ pass?: string; bookingId?: string }>;
 }
 
-async function BookingDeskWrapper({ searchParams }: { searchParams: Promise<{ pass?: string }> }) {
+async function BookingDeskWrapper({ searchParams }: { searchParams: Promise<{ pass?: string; bookingId?: string }> }) {
   const resolvedParams = await searchParams;
-  return <BookingDesk initialPassId={resolvedParams.pass} />;
+  return <BookingDesk initialPassId={resolvedParams.pass} initialBookingId={resolvedParams.bookingId} />;
 }
 
 export default function BookingPage({ searchParams }: BookingPageProps) {
