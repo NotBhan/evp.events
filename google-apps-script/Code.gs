@@ -15,6 +15,10 @@
  *     and set it as BOOKING_SHEETS_ENDPOINT in your .env.local file (server-side only).
  */
 
+// Authoritative destination spreadsheet and tab (gid=0)
+var BOOKING_SPREADSHEET_ID = '1wxctnQdchiufXzt25hfW5OCf8i08fJJPk78xkGo9RRM';
+var BOOKING_SHEET_TAB_NAME = 'Sheet1';
+
 // Authoritative Pass Catalog matching official Raas Utsav passes from eventData.ts
 var OFFICIAL_PASS_CATALOG = {
   // Official Client Pass Tiers (Slide 6 of Sponsor Presentation)
@@ -156,8 +160,11 @@ function doPost(e) {
     var source = (data.source || 'Web Booking Desk (/booking)').trim();
     var submissionStatus = String(data.submissionStatus || data.status || 'CONFIRMED').trim();
 
-    // 4. Append or Update in Active Sheet (Upsert by Booking ID in Column B)
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    // 4. Append or Update in Authoritative Destination Sheet (Upsert by Booking ID in Column B)
+    var sheet = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID).getSheetByName(BOOKING_SHEET_TAB_NAME);
+    if (!sheet) {
+      return responseJSON({ status: 'error', message: 'Target sheet tab not found: ' + BOOKING_SHEET_TAB_NAME });
+    }
     var lastRow = sheet.getLastRow();
 
     // Automatically create fixed header row if sheet is brand new / empty
