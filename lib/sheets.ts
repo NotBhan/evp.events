@@ -111,7 +111,7 @@ export async function syncBookingToSheets(
   // 5. Post to Apps Script Web App
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second timeout for Apps Script execution
 
     const res = await fetch(endpoint, {
       method: 'POST',
