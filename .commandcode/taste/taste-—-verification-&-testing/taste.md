@@ -7,3 +7,4 @@
 - Does not rely solely on local tests when a bug lives in the deployed environment — requires proving the fix in the actual deployment (e.g. Vercel) with a fresh real flow before declaring completion. Confidence: 0.8
 - Never mutates real/production records during diagnosis; tests use unique temporary records so live data stays untouched. Confidence: 0.75
 - Does not assume a repo file is what runs in an external managed service (e.g. Apps Script Code.gs): editing the repo does not auto-deploy, so verifies the live deployment/version matches before relying on the repo code. Confidence: 0.8
+- Environment/secret audits must verify the real runtime environments (local .env.local, Vercel Production/Preview) — distinguishing placeholder values from real ones — not just the .env.example example file. Confidence: 0.75
