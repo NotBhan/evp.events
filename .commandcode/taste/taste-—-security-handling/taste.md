@@ -1,0 +1,7 @@
+# Taste — Security Handling
+- Do not print or expose secrets in output/logs — Stripe secret keys, webhook signing secrets, DATABASE_URL/connection strings, or any full credentials — nor sensitive payment details (card data). Confidence: 0.8
+- When reporting on env/config, reports only PRESENT/MISSING (presence/absence) and never the actual value; when an identifier must be shown for comparison, exposes only a safe partial (e.g. last few chars), and redacts endpoint URLs to host only. Confidence: 0.8
+- Prefers safe diagnostics that surface identifiers/status/attempt counts over raw payloads or secret values. Confidence: 0.75
+- When auditing secrets, does not want a working production secret regenerated or rotated merely to satisfy the audit, and does not want a missing secret silently invented — prefers reporting MISSING and only generating/configuring when the existing workflow explicitly requires it. Confidence: 0.8
+- Never weakens existing PII masking/redaction to enable a downstream feature (e.g. checkout prefill): when genuine contact data isn't legitimately available to the client, prefers omitting the field (letting the third party collect it) over unmasking via an endpoint, storing extra copies, or logging it in plaintext. Confidence: 0.9
+- Never forwards masked/redacted placeholder values (e.g. `ab****@gmail.com`, `+91 ••••• •6510`) downstream as if they were genuine — detect mask/redaction characters at the boundary and omit them, and never fabricate or infer missing genuine values. Confidence: 0.85

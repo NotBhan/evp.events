@@ -7,12 +7,7 @@
 - When a sheet or table shows more empty rows than expected, first determines whether they are ambient/unused capacity (e.g. Google Sheets getMaxRows() unused grid) versus rows the application actually created, before deleting anything. Confidence: 0.6
 
 # Taste — Security Handling
-
-- Do not print or expose secrets in output/logs — Stripe secret keys, webhook signing secrets, DATABASE_URL/connection strings, or any full credentials — nor sensitive payment details (card data). Confidence: 0.8
-- When reporting on env/config, reports only PRESENT/MISSING (presence/absence) and never the actual value; when an identifier must be shown for comparison, exposes only a safe partial (e.g. last few chars), and redacts endpoint URLs to host only. Confidence: 0.8
-- Prefers safe diagnostics that surface identifiers/status/attempt counts over raw payloads or secret values. Confidence: 0.75
-- When auditing secrets, does not want a working production secret regenerated or rotated merely to satisfy the audit, and does not want a missing secret silently invented — prefers reporting MISSING and only generating/configuring when the existing workflow explicitly requires it. Confidence: 0.8
-
+See [taste-—-security-handling/taste.md](taste-—-security-handling/taste.md)
 # Taste — Tooling & Workflow
 
 - Prefers configuring external services (e.g. Stripe) via the official CLI/API, self-service, using credentials from environment only, rather than instructing the user to navigate a GUI/Dashboard menu. Confidence: 0.8

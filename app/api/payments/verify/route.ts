@@ -138,9 +138,30 @@ export async function POST(req: Request) {
     });
   }
 
-  // 5. Cryptographic Signature Verification
+  // 5. Resolve Authoritative Order ID from Neon & Cryptographic Signature Verification
+  const paymentAttempt = await prisma.paymentAttempt.findFirst({
+    where: {
+      bookingId: booking.id,
+      provider: 'razorpay',
+      providerOrderId: razorpayOrderId,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  if (!paymentAttempt || !paymentAttempt.providerOrderId) {
+    return Response.json(
+      {
+        success: false,
+        error: 'Cryptographic signature verification failed. Payment cannot be confirmed.',
+      },
+      { status: 400 }
+    );
+  }
+
+  const authoritativeOrderId = paymentAttempt.providerOrderId;
+
   const isSignatureValid = verifyRazorpayCheckoutSignature({
-    orderId: razorpayOrderId,
+    orderId: authoritativeOrderId,
     paymentId: razorpayPaymentId,
     signature: razorpaySignature,
   });
@@ -159,12 +180,12 @@ export async function POST(req: Request) {
   try {
     const payment = await fetchRazorpayPayment(razorpayPaymentId);
 
-    // Verify order ID alignment
-    if (payment.order_id !== razorpayOrderId) {
+    // Verify order ID alignment with database authoritative order ID
+    if (payment.order_id !== authoritativeOrderId) {
       return Response.json(
         {
           success: false,
-          error: `Payment order ID mismatch. Expected "${razorpayOrderId}", received "${payment.order_id}".`,
+          error: `Payment order ID mismatch. Expected "${authoritativeOrderId}", received "${payment.order_id}".`,
         },
         { status: 400 }
       );
@@ -196,10 +217,11 @@ export async function POST(req: Request) {
     // 7. Atomic Interactive Transactional Fulfillment
     const result = await confirmBookingPayment({
       provider: 'razorpay',
-      providerOrderId: razorpayOrderId,
+      providerOrderId: authoritativeOrderId,
       providerPaymentId: razorpayPaymentId,
       expectedAmountPaise: payment.amount,
       bookingPublicId: booking.publicId,
+      paymentAttemptId: paymentAttempt.id,
     });
 
     return Response.json({

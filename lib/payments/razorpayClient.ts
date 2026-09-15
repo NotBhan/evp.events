@@ -68,6 +68,45 @@ export function loadRazorpayCheckoutScript(): Promise<boolean> {
   });
 }
 
+const MASK_CHARACTER_PATTERN = /[\u2022\u2026*]/;
+
+/**
+ * Returns true when a value looks like masked/redacted contact data
+ * (e.g. "r•••••a@gmail.com", "+91 ••••• •6510", "ab****@gmail.com").
+ */
+export function isMaskedContactValue(value: string | null | undefined): boolean {
+  return typeof value === 'string' && MASK_CHARACTER_PATTERN.test(value);
+}
+
+/**
+ * Builds a Razorpay Checkout prefill object containing only genuine,
+ * non-masked values. Masked recovery data is omitted rather than forwarded.
+ */
+export function buildCheckoutPrefill(prefill?: {
+  name?: string;
+  email?: string;
+  contact?: string;
+}): { name?: string; email?: string; contact?: string } {
+  const result: { name?: string; email?: string; contact?: string } = {};
+
+  const name = (prefill?.name || '').trim();
+  if (name && !isMaskedContactValue(name)) {
+    result.name = name;
+  }
+
+  const email = (prefill?.email || '').trim();
+  if (email && !isMaskedContactValue(email)) {
+    result.email = email;
+  }
+
+  const contact = (prefill?.contact || '').trim();
+  if (contact && !isMaskedContactValue(contact)) {
+    result.contact = contact;
+  }
+
+  return result;
+}
+
 /**
  * Initializes and displays the official Razorpay Standard Checkout modal.
  */
@@ -101,11 +140,7 @@ export async function launchRazorpayCheckout(
     name: eventName,
     description,
     order_id: orderId,
-    prefill: {
-      name: prefill?.name || '',
-      email: prefill?.email || '',
-      contact: prefill?.contact || '',
-    },
+    prefill: buildCheckoutPrefill(prefill),
     theme: {
       color: '#7E121D', // Royal Maroon matching festival palette
     },
