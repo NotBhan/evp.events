@@ -188,28 +188,27 @@ export default function Hero() {
         {/* Layer 10: Dandiya Performers in Client Attire (Left & Right)   */}
         {/* Visual relationship matches client poster: Female Left, Male Right */}
         {/* Positioned at z-25 to sit above stage floor and frame title    */}
-        {/* ============================================================== */}
-        {/* Left Dancer: Female Garba Performer (Twirling, flared lehenga) */}
+        {/* Left Dancer: Male Dandiya Performer (Holding sticks, dancing inward) */}
         <div
           ref={leftDancerRef}
-          className="absolute left-0 sm:left-2 md:left-4 lg:left-8 xl:left-12 bottom-0 z-25 pointer-events-none w-[180px] sm:w-[240px] md:w-[320px] lg:w-[410px] xl:w-[480px]"
+          className="absolute left-4 sm:left-10 md:left-16 lg:left-24 xl:left-32 bottom-0 z-25 pointer-events-none w-[100px] sm:w-[135px] md:w-[180px] lg:w-[230px] xl:w-[275px]"
         >
           <HeroDancer
-            src="/images/client/raascdr/web/dancer-female.webp"
+            src="/images/client/raascdr/web/dancer-male-new.webp"
             placement="left"
-            alt="Female Garba Performer Twirling in Flared Lehenga"
+            alt="Male Dandiya Performer with Dandiya Sticks"
           />
         </div>
 
-        {/* Right Dancer: Male Dandiya Performer (Leaping, striking inward) */}
+        {/* Right Dancer: Female Garba Performer (Swirling lehenga, dancing inward) */}
         <div
           ref={rightDancerRef}
-          className="absolute right-0 sm:right-2 md:right-4 lg:right-8 xl:right-12 bottom-0 z-25 pointer-events-none w-[150px] sm:w-[200px] md:w-[270px] lg:w-[340px] xl:w-[400px]"
+          className="absolute right-4 sm:right-10 md:right-16 lg:right-24 xl:right-32 bottom-0 z-25 pointer-events-none w-[130px] sm:w-[175px] md:w-[230px] lg:w-[295px] xl:w-[350px]"
         >
           <HeroDancer
-            src="/images/client/raascdr/web/dancer-male.webp"
+            src="/images/client/raascdr/web/dancer-female-new.webp"
             placement="right"
-            alt="Male Dandiya Performer Leaping with Dandiya Sticks"
+            alt="Female Garba Performer in Festive Lehenga"
           />
         </div>
 

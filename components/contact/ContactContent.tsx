@@ -427,83 +427,100 @@ export default function ContactContent() {
             </div>
 
             {/* Official Business & Billing Entity Disclosure Card */}
-            <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-card-surface border-2 border-antique-gold/45 shadow-2xl relative overflow-hidden">
-              <div className="absolute inset-2 rounded-2xl border border-antique-gold/15 pointer-events-none" />
+            <div className="w-full md:col-span-3 mt-6 sm:mt-8 p-6 sm:p-8 md:p-10 lg:p-12 rounded-3xl bg-card-surface/95 border-2 border-antique-gold/45 shadow-2xl relative overflow-hidden backdrop-blur-sm">
+              <div className="absolute inset-2 sm:inset-3 rounded-2xl border border-antique-gold/15 pointer-events-none" />
               <div className="relative z-10">
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-6 pb-4 border-b border-antique-gold/20">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8 pb-5 border-b border-antique-gold/25">
                   <div>
-                    <span className="font-body text-[11px] text-bright-gold uppercase tracking-[0.12em] font-bold block mb-1">
+                    <span className="font-body text-[11px] sm:text-xs text-bright-gold uppercase tracking-[0.14em] font-bold block mb-1.5">
                       OFFICIAL ENTITY &amp; BILLING INFORMATION
                     </span>
-                    <h3 className="font-display text-2xl sm:text-3xl text-warm-cream uppercase tracking-wide">
+                    <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl text-warm-cream uppercase tracking-wide">
                       BUSINESS &amp; LEGAL DISCLOSURE
                     </h3>
                   </div>
-                  <div className="px-3 py-1 rounded-full bg-royal-maroon border border-antique-gold/40 text-bright-gold text-[10px] font-bold uppercase tracking-wider">
+                  <div className="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-royal-maroon/90 border border-antique-gold/45 text-bright-gold text-[10px] sm:text-[11px] font-bold uppercase tracking-wider shadow-sm">
                     VERIFIED BUSINESS IDENTITY
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs font-body text-warm-cream/85">
-                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
-                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
-                      TRADE NAME
-                    </span>
-                    <span className="font-semibold text-warm-cream text-sm block">
-                      {eventData.business.name}
-                    </span>
-                    <span className="text-[11px] text-warm-cream/65 block">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6 text-xs sm:text-sm font-body text-warm-cream/90">
+                  <div className="p-5 sm:p-6 rounded-2xl bg-deep-plum/80 border border-antique-gold/30 space-y-2 flex flex-col justify-between hover:border-antique-gold/60 transition-colors shadow-inner">
+                    <div>
+                      <span className="text-[10px] sm:text-[11px] text-bright-gold uppercase tracking-wider font-bold block mb-1">
+                        TRADE NAME
+                      </span>
+                      <span className="font-semibold text-warm-cream text-base sm:text-lg block leading-snug">
+                        {eventData.business.name}
+                      </span>
+                    </div>
+                    <span className="text-xs text-warm-cream/70 block pt-1 border-t border-antique-gold/15">
                       Commercial &amp; Billing Entity ({eventData.business.constitution})
                     </span>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
-                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
-                      LEGAL NAME &amp; PROPRIETOR
-                    </span>
-                    <span className="font-semibold text-warm-cream text-sm block">
-                      {eventData.business.legalName}
-                    </span>
-                    <span className="text-[11px] text-bright-gold/90 block font-semibold">
+                  <div className="p-5 sm:p-6 rounded-2xl bg-deep-plum/80 border border-antique-gold/30 space-y-2 flex flex-col justify-between hover:border-antique-gold/60 transition-colors shadow-inner">
+                    <div>
+                      <span className="text-[10px] sm:text-[11px] text-bright-gold uppercase tracking-wider font-bold block mb-1">
+                        LEGAL NAME &amp; PROPRIETOR
+                      </span>
+                      <span className="font-semibold text-warm-cream text-base sm:text-lg block leading-snug">
+                        {eventData.business.legalName}
+                      </span>
+                    </div>
+                    <span className="text-xs text-bright-gold/95 block font-mono font-semibold pt-1 border-t border-antique-gold/15">
                       GSTIN: {eventData.business.gstin}
                     </span>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
-                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
-                      BILLING CONTACT
+                  <div className="p-5 sm:p-6 rounded-2xl bg-deep-plum/80 border border-antique-gold/30 space-y-2 flex flex-col justify-between hover:border-antique-gold/60 transition-colors shadow-inner">
+                    <div>
+                      <span className="text-[10px] sm:text-[11px] text-bright-gold uppercase tracking-wider font-bold block mb-1">
+                        BILLING CONTACT
+                      </span>
+                      <a
+                        href={`tel:${eventData.business.phone.replace(/\s+/g, '')}`}
+                        className="font-semibold text-warm-cream text-sm sm:text-base block hover:text-bright-gold transition-colors py-0.5"
+                      >
+                        {eventData.business.phone}
+                      </a>
+                      <a
+                        href={`mailto:${eventData.business.email}`}
+                        className="text-xs text-warm-cream/80 hover:text-bright-gold transition-colors break-all block"
+                      >
+                        {eventData.business.email}
+                      </a>
+                    </div>
+                    <span className="text-[11px] text-warm-cream/60 block pt-1 border-t border-antique-gold/15">
+                      Direct Billing Support Desk
                     </span>
-                    <a
-                      href={`tel:${eventData.business.phone.replace(/\s+/g, '')}`}
-                      className="font-semibold text-warm-cream block hover:text-bright-gold transition-colors"
-                    >
-                      {eventData.business.phone}
-                    </a>
-                    <a
-                      href={`mailto:${eventData.business.email}`}
-                      className="text-[11px] text-warm-cream/80 hover:text-bright-gold transition-colors break-all block"
-                    >
-                      {eventData.business.email}
-                    </a>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-deep-plum/70 border border-antique-gold/25 space-y-1">
-                    <span className="text-[10px] text-bright-gold uppercase tracking-wider font-bold block">
-                      PRINCIPAL PLACE OF BUSINESS
+                  <div className="p-5 sm:p-6 rounded-2xl bg-deep-plum/80 border border-antique-gold/30 space-y-2 flex flex-col justify-between hover:border-antique-gold/60 transition-colors shadow-inner">
+                    <div>
+                      <span className="text-[10px] sm:text-[11px] text-bright-gold uppercase tracking-wider font-bold block mb-1">
+                        PRINCIPAL PLACE OF BUSINESS
+                      </span>
+                      <p className="text-xs sm:text-[13px] text-warm-cream/90 leading-relaxed">
+                        {eventData.business.address.display}
+                      </p>
+                    </div>
+                    <span className="text-[11px] text-warm-cream/60 block pt-1 border-t border-antique-gold/15">
+                      Registered Office Location
                     </span>
-                    <p className="text-[11px] text-warm-cream/90 leading-relaxed">
-                      {eventData.business.address.display}
-                    </p>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-antique-gold/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-body text-warm-cream/70">
-                  <span>
-                    Event Presentation Brand: <strong className="text-bright-gold">{eventData.organizer.name}</strong> (Presenting {eventData.eventName} {eventData.year})
-                  </span>
-                  <span className="text-antique-gold/80 italic">
-                    Celebration Venue: Upwan Lawn, Chanakya BNR Hotel (Distinct from business address)
-                  </span>
+                <div className="mt-8 pt-5 border-t border-antique-gold/25 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-body text-warm-cream/75">
+                  <div className="flex items-center gap-2">
+                    <span className="text-bright-gold">✦</span>
+                    <span>
+                      Event Presentation Brand: <strong className="text-bright-gold font-semibold">{eventData.organizer.name}</strong> (Presenting {eventData.eventName} {eventData.year})
+                    </span>
+                  </div>
+                  <div className="text-antique-gold/90 italic text-xs">
+                    Celebration Venue: Upwan Lawn, Chanakya BNR Hotel (Distinct from registered business address)
+                  </div>
                 </div>
               </div>
             </div>

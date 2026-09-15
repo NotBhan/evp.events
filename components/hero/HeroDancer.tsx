@@ -15,7 +15,7 @@ export default function HeroDancer({
   className = '',
 }: HeroDancerProps) {
   const isLeft = placement === 'left';
-  const isFemale = src ? src.includes('female') : isLeft;
+  const isFemale = src ? src.includes('female') : !isLeft;
 
   return (
     <div
@@ -27,13 +27,13 @@ export default function HeroDancer({
         className="absolute inset-x-6 bottom-4 top-1/4 rounded-full pointer-events-none -z-10"
         style={{
           background: isFemale
-            ? 'radial-gradient(ellipse at 50% 60%, rgba(217, 37, 36, 0.35) 0%, rgba(217, 37, 36, 0.1) 50%, transparent 75%)'
+            ? 'radial-gradient(ellipse at 50% 60%, rgba(220, 20, 120, 0.35) 0%, rgba(220, 20, 120, 0.1) 50%, transparent 75%)'
             : 'radial-gradient(ellipse at 50% 60%, rgba(217, 175, 55, 0.32) 0%, rgba(217, 175, 55, 0.08) 50%, transparent 75%)',
         }}
       />
 
       {src ? (
-        <div className={`relative w-full ${isFemale ? 'aspect-[816/997]' : 'aspect-[626/993]'}`}>
+        <div className={`relative w-full ${isFemale ? 'aspect-[426/888]' : 'aspect-[346/991]'}`}>
           <Image
             src={src}
             alt={alt}

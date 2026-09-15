@@ -366,15 +366,14 @@ export default function GrandestNightBanner() {
           {/* Dancing Couple (Right & Lower-Right) */}
           <div
             ref={dancersRef}
-            className="absolute right-[0.5%] bottom-[2%] w-[33%] h-[74%] z-25 pointer-events-none"
+            className="absolute right-[1%] bottom-[2%] w-[35%] h-[80%] z-25 pointer-events-none"
           >
             <div className="relative w-full h-full drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
               <Image
-                src="/images/client/raascdr/web/dancers-composite.webp"
+                src="/images/client/raascdr/web/dancers-composite-new.webp"
                 alt="Female and Male Dandiya Dancers in Festive Attire"
                 fill
                 className="object-contain object-right-bottom"
-                
                 sizes="(max-width: 1024px) 400px, 600px"
                 quality={100}
               />
@@ -542,9 +541,9 @@ export default function GrandestNightBanner() {
           </div>
 
           {/* Dancers Presentation */}
-          <div className="relative z-10 w-full h-[180px] my-2">
+          <div className="relative z-10 w-full h-[220px] my-2">
             <Image
-              src="/images/client/raascdr/web/dancers-composite.webp"
+              src="/images/client/raascdr/web/dancers-composite-new.webp"
               alt="Dandiya Dancers"
               fill
               className="object-contain"

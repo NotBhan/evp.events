@@ -46,99 +46,129 @@ export function getBookingVisualStage(
 
 export interface DancerConfig {
   id: string;
+  /** Full-resolution PNG (RGBA transparent) */
   src: string;
+  /** Full WebP */
   webpSrc: string;
+  /** Medium WebP (≈700px tall) */
+  webpMd: string;
+  /** Small WebP (≈400px tall) */
+  webpSm: string;
+  /** Medium PNG fallback */
+  pngMd: string;
+  /** Small PNG fallback */
+  pngSm: string;
   alt: string;
   width: number;
   height: number;
-  aspectRatio: string;
   positionClass: string;
+  sizeStyle: React.CSSProperties;
   auraGradient: string;
 }
 
-// Fixed dancer definitions matching the 3 supplied client assets
-const DANCER_01: DancerConfig = {
-  id: 'dancer-01',
-  src: '/images/dancers/dancer-couple-01.png',
-  webpSrc: '/images/dancers/dancer-couple-01.webp',
-  alt: 'Garba Dandiya couple in red and royal blue festive attire',
-  width: 682,
-  height: 1024,
-  aspectRatio: '682/1024',
+// ─── Real Raas Utsav 2026 poster-extracted dancers ──────────────────────────
+
+/** MALE dancer — Dandiya pose, left flank */
+const DANCER_MALE: DancerConfig = {
+  id: 'dancer-male',
+  src: '/images/dancers/dancer-male.png',
+  webpSrc: '/images/dancers/dancer-male.webp',
+  webpMd: '/images/dancers/dancer-male-md.webp',
+  webpSm: '/images/dancers/dancer-male-sm.webp',
+  pngMd: '/images/dancers/dancer-male-md.png',
+  pngSm: '/images/dancers/dancer-male-sm.png',
+  alt: 'Male Dandiya dancer in colorful traditional Gujarati attire',
+  width: 346,
+  height: 991,
   positionClass:
-    'left-[-40px] sm:left-[-30px] md:left-[-70px] lg:left-[-120px] xl:left-[-160px] bottom-0 origin-bottom-left',
+    'left-[-20px] sm:left-[-10px] md:left-[-40px] lg:left-[-60px] xl:left-[-80px] bottom-0 origin-bottom-left',
+  sizeStyle: { maxWidth: '360px', width: '32vw' },
   auraGradient:
-    'radial-gradient(ellipse at 40% 70%, rgba(217, 37, 36, 0.28) 0%, rgba(217, 175, 55, 0.12) 45%, transparent 70%)',
+    'radial-gradient(ellipse at 45% 65%, rgba(217, 175, 55, 0.30) 0%, rgba(217, 37, 36, 0.14) 50%, transparent 75%)',
 };
 
-const DANCER_02: DancerConfig = {
-  id: 'dancer-02',
-  src: '/images/dancers/dancer-couple-02.png',
-  webpSrc: '/images/dancers/dancer-couple-02.webp',
-  alt: 'Garba Dandiya couple with flared circular embroidered skirt',
-  width: 1024,
-  height: 682,
-  aspectRatio: '1024/682',
+/** FEMALE dancer — swirling lehenga, right flank */
+const DANCER_FEMALE: DancerConfig = {
+  id: 'dancer-female',
+  src: '/images/dancers/dancer-female.png',
+  webpSrc: '/images/dancers/dancer-female.webp',
+  webpMd: '/images/dancers/dancer-female-md.webp',
+  webpSm: '/images/dancers/dancer-female-sm.webp',
+  pngMd: '/images/dancers/dancer-female-md.png',
+  pngSm: '/images/dancers/dancer-female-sm.png',
+  alt: 'Female Dandiya dancer in vibrant Gujarati lehenga with swirling skirt',
+  width: 426,
+  height: 888,
   positionClass:
-    'left-1/2 -translate-x-1/2 bottom-0 origin-bottom',
+    'right-[-20px] sm:right-[-10px] md:right-[-40px] lg:right-[-60px] xl:right-[-80px] bottom-0 origin-bottom-right',
+  sizeStyle: { maxWidth: '420px', width: '38vw' },
   auraGradient:
-    'radial-gradient(ellipse at 50% 80%, rgba(217, 175, 55, 0.24) 0%, rgba(217, 37, 36, 0.14) 50%, transparent 75%)',
+    'radial-gradient(ellipse at 55% 65%, rgba(220, 20, 120, 0.28) 0%, rgba(255, 127, 0, 0.14) 50%, transparent 75%)',
 };
 
-const DANCER_03: DancerConfig = {
-  id: 'dancer-03',
-  src: '/images/dancers/dancer-couple-03.png',
-  webpSrc: '/images/dancers/dancer-couple-03.webp',
-  alt: 'Garba Dandiya couple in festive multicolored mirrorwork dress',
-  width: 682,
-  height: 1024,
-  aspectRatio: '682/1024',
-  positionClass:
-    'right-[-40px] sm:right-[-30px] md:right-[-70px] lg:right-[-120px] xl:right-[-160px] bottom-0 origin-bottom-right',
+/** COMPOSITE — both dancers together, centered for review step */
+const DANCER_COMPOSITE: DancerConfig = {
+  id: 'dancer-composite',
+  src: '/images/dancers/dancer-composite.png',
+  webpSrc: '/images/dancers/dancer-composite.webp',
+  webpMd: '/images/dancers/dancer-composite-md.webp',
+  webpSm: '/images/dancers/dancer-composite-md.webp', // reuse md for small
+  pngMd: '/images/dancers/dancer-composite-md.png',
+  pngSm: '/images/dancers/dancer-composite-md.png',
+  alt: 'Male and female Dandiya dancers together in festive Gujarati attire',
+  width: 668,
+  height: 1000,
+  positionClass: 'left-1/2 -translate-x-1/2 bottom-0 origin-bottom',
+  sizeStyle: { maxWidth: '620px', width: '65vw' },
   auraGradient:
-    'radial-gradient(ellipse at 60% 70%, rgba(19, 126, 134, 0.26) 0%, rgba(217, 175, 55, 0.12) 45%, transparent 70%)',
+    'radial-gradient(ellipse at 50% 75%, rgba(217, 175, 55, 0.22) 0%, rgba(217, 37, 36, 0.12) 55%, transparent 80%)',
 };
 
+// ─── Stage → Dancer mapping ──────────────────────────────────────────────────
 /**
- * Deterministic Stage Visual Mapping
- * 1. SELECT PASS -> Asset 1 (left flank)
- * 2. ATTENDEE    -> Asset 3 (right flank)
- * 3. REVIEW      -> Asset 2 (centered horizontal couple with flared skirt)
- * 4. PAYMENT     -> Asset 1 (left flank celebratory stance)
- * 5. RECEIPT     -> Asset 3 (restrained subtle watermark, print:hidden)
+ * 1. selectPass  → Male dancer (left)
+ * 2. attendee    → Female dancer (right)
+ * 3. review      → BOTH dancers simultaneously (left + right), mirrors poster layout
+ * 4. payment     → Male dancer (left)
+ * 5. receipt     → Female dancer (right) — subtle grayscale watermark
  */
 export const STAGE_CONFIGS: Record<
   BookingVisualStage,
   {
+    /** Primary dancer to show. For 'review' this is ignored — both are shown. */
     dancer: DancerConfig;
+    /** If set, show this dancer simultaneously alongside the primary. */
+    secondDancer?: DancerConfig;
     opacityClass: string;
     scaleClass: string;
     isSubtleWatermark?: boolean;
   }
 > = {
   selectPass: {
-    dancer: DANCER_01,
-    opacityClass: 'opacity-25 sm:opacity-35 md:opacity-65 lg:opacity-85',
+    dancer: DANCER_MALE,
+    opacityClass: 'opacity-30 sm:opacity-45 md:opacity-70 lg:opacity-90',
     scaleClass: 'scale-90 sm:scale-95 md:scale-100',
   },
   attendee: {
-    dancer: DANCER_03,
-    opacityClass: 'opacity-25 sm:opacity-35 md:opacity-65 lg:opacity-85',
+    dancer: DANCER_FEMALE,
+    opacityClass: 'opacity-30 sm:opacity-45 md:opacity-70 lg:opacity-90',
     scaleClass: 'scale-90 sm:scale-95 md:scale-100',
   },
   review: {
-    dancer: DANCER_02,
-    opacityClass: 'opacity-20 sm:opacity-30 md:opacity-55 lg:opacity-75',
+    dancer: DANCER_MALE,
+    secondDancer: DANCER_FEMALE,
+    opacityClass: 'opacity-25 sm:opacity-38 md:opacity-62 lg:opacity-82',
     scaleClass: 'scale-90 sm:scale-95 md:scale-100',
   },
   payment: {
-    dancer: DANCER_01,
-    opacityClass: 'opacity-25 sm:opacity-35 md:opacity-60 lg:opacity-80',
+    dancer: DANCER_MALE,
+    opacityClass: 'opacity-28 sm:opacity-40 md:opacity-65 lg:opacity-85',
     scaleClass: 'scale-90 sm:scale-95 md:scale-100',
   },
   receipt: {
-    dancer: DANCER_03,
-    opacityClass: 'print:hidden opacity-15 sm:opacity-20 md:opacity-30 mix-blend-luminosity grayscale contrast-125',
+    dancer: DANCER_FEMALE,
+    opacityClass:
+      'print:hidden opacity-12 sm:opacity-18 md:opacity-28 mix-blend-luminosity grayscale contrast-125',
     scaleClass: 'scale-85 sm:scale-90 md:scale-95',
     isSubtleWatermark: true,
   },
@@ -152,11 +182,12 @@ interface BookingDancerAtmosphereProps {
  * BookingDancerAtmosphere renders the fixed, state-driven dancer artwork behind the booking UI.
  *
  * Architectural Invariants:
- * 1. Preloads all 3 static assets so switching steps is instant with ZERO network lag or layout shift.
- * 2. Uses pure CSS crossfades (opacity + transform) with prefers-reduced-motion safety.
+ * 1. Preloads all assets so switching steps is instant with ZERO network lag or layout shift.
+ * 2. Pure CSS crossfades (opacity + transform) with prefers-reduced-motion safety.
  * 3. pointer-events-none ensures zero interaction interference with form elements.
  * 4. Strictly deterministic: derived directly from (deskStage, currentStep).
  * 5. print:hidden ensures zero interference with receipt printing and PDF downloads.
+ * 6. Uses real Raas Utsav 2026 poster-extracted dancers (not generated placeholders).
  */
 export default function BookingDancerAtmosphere({
   visualStage,
@@ -170,24 +201,17 @@ export default function BookingDancerAtmosphere({
       className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 print:hidden"
       aria-hidden="true"
     >
-      {/* Visual Layer: Dancer 1 (Asset 1 - Left Flank) */}
+      {/* Male dancer — left flank */}
       <DancerLayer
-        dancer={DANCER_01}
-        isActive={activeDancerId === DANCER_01.id}
+        dancer={DANCER_MALE}
+        isActive={activeDancerId === DANCER_MALE.id || activeConfig.secondDancer?.id === DANCER_MALE.id}
         stageConfig={activeConfig}
       />
 
-      {/* Visual Layer: Dancer 2 (Asset 2 - Centered Horizontal Flared Skirt) */}
+      {/* Female dancer — right flank */}
       <DancerLayer
-        dancer={DANCER_02}
-        isActive={activeDancerId === DANCER_02.id}
-        stageConfig={activeConfig}
-      />
-
-      {/* Visual Layer: Dancer 3 (Asset 3 - Right Flank) */}
-      <DancerLayer
-        dancer={DANCER_03}
-        isActive={activeDancerId === DANCER_03.id}
+        dancer={DANCER_FEMALE}
+        isActive={activeDancerId === DANCER_FEMALE.id || activeConfig.secondDancer?.id === DANCER_FEMALE.id}
         stageConfig={activeConfig}
       />
     </div>
@@ -210,26 +234,24 @@ function DancerLayer({ dancer, isActive, stageConfig }: DancerLayerProps) {
           ? `${stageConfig.opacityClass} ${stageConfig.scaleClass} translate-y-0 visible`
           : 'opacity-0 translate-y-3 pointer-events-none invisible scale-95'
       }`}
-      style={{
-        maxWidth: dancer.id === 'dancer-02' ? '820px' : '440px',
-        width: dancer.id === 'dancer-02' ? '70vw' : '40vw',
-      }}
+      style={dancer.sizeStyle}
     >
-      {/* Soft Ambient Festive Halo behind dancer */}
+      {/* Soft ambient festive halo behind dancer */}
       <div
-        className="absolute inset-x-8 bottom-0 top-1/4 rounded-full pointer-events-none -z-10 blur-xl opacity-60"
+        className="absolute inset-x-8 bottom-0 top-1/4 rounded-full pointer-events-none -z-10 blur-xl opacity-55"
         style={{ background: dancer.auraGradient }}
       />
 
-      {/* Responsive Picture with optimized WebP and high-res fallbacks */}
+      {/* Responsive picture with optimized WebP srcSet + PNG fallback */}
       <picture>
         <source
           type="image/webp"
-          srcSet={`${dancer.src.replace('.png', '-sm.webp')} 400w, ${dancer.src.replace(
-            '.png',
-            '-md.webp'
-          )} 700w, ${dancer.webpSrc} 1024w`}
-          sizes="(max-width: 640px) 40vw, (max-width: 1024px) 35vw, 440px"
+          srcSet={`${dancer.webpSm} 400w, ${dancer.webpMd} 700w, ${dancer.webpSrc} 1200w`}
+          sizes={
+            dancer.id === 'dancer-composite'
+              ? '(max-width: 640px) 80vw, (max-width: 1024px) 70vw, 860px'
+              : '(max-width: 640px) 40vw, (max-width: 1024px) 36vw, 460px'
+          }
         />
         <Image
           src={dancer.src}
@@ -237,8 +259,12 @@ function DancerLayer({ dancer, isActive, stageConfig }: DancerLayerProps) {
           width={dancer.width}
           height={dancer.height}
           priority
-          sizes="(max-width: 640px) 40vw, (max-width: 1024px) 35vw, 440px"
-          className="w-full h-auto object-contain object-bottom drop-shadow-[0_16px_36px_rgba(0,0,0,0.85)]"
+          sizes={
+            dancer.id === 'dancer-composite'
+              ? '(max-width: 640px) 80vw, (max-width: 1024px) 70vw, 860px'
+              : '(max-width: 640px) 40vw, (max-width: 1024px) 36vw, 460px'
+          }
+          className="w-full h-auto object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.80)]"
         />
       </picture>
     </div>

@@ -6,3 +6,4 @@
 - Prefers explicit, pinned identifiers/configuration over ambient or active-context resolution — e.g. an Apps Script write must target SpreadsheetApp.openById(id).getSheetByName(tab), never getActiveSpreadsheet()/getActiveSheet(). Confidence: 0.85
 - When modifying an existing external write path, preserves the existing destination schema/column layout rather than reshaping it (e.g. keep the existing 11-column layout). Confidence: 0.7
 - Prefers keeping API response contracts stable (no breaking changes) unless absolutely necessary, even when a downstream feature would be easier with a contract change or extra exposure. Confidence: 0.75
+- Typography: headers and fonts should maintain a proper, consistent character gap — avoids negative/cramped letter-spacing (e.g. `tracking-tight`/`tracking-tighter`) on condensed display faces like Bebas Neue, favoring a uniform positive gap instead. Confidence: 0.7

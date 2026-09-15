@@ -173,11 +173,13 @@ export default function DurgaAura({
             {/* Inner Beaded Rosette */}
             {Array.from({ length: 36 }).map((_, i) => {
               const rad = (i * 10 * Math.PI) / 180;
+              const cx = Number((200 + Math.cos(rad) * 119).toFixed(2));
+              const cy = Number((200 + Math.sin(rad) * 119).toFixed(2));
               return (
                 <circle
                   key={`bead-${i}`}
-                  cx={200 + Math.cos(rad) * 119}
-                  cy={200 + Math.sin(rad) * 119}
+                  cx={cx}
+                  cy={cy}
                   r="2.2"
                   fill="#F3C64C"
                 />

@@ -406,14 +406,13 @@ export default function CampaignFeature() {
                 </div>
               </div>
 
-              {/* Layer 9: LOWER HALF — Dancing Couple & Corner Dandiya Diya Artwork */}
               <div
                 ref={dancersRef}
-                className="absolute left-[5%] right-[5%] sm:left-[6%] sm:right-[6%] top-[56%] bottom-[8.5%] z-25 pointer-events-none"
+                className="absolute left-[4%] right-[4%] sm:left-[5%] sm:right-[5%] top-[54%] bottom-[7%] z-25 pointer-events-none"
               >
                 <div className="relative w-full h-full drop-shadow-[0_10px_35px_rgba(0,0,0,0.92)]">
                   <Image
-                    src="/images/client/raascdr/web/dancers-composite.webp"
+                    src="/images/client/raascdr/web/dancers-composite-new.webp"
                     alt="Female and Male Dandiya Dancers"
                     fill
                     className="object-contain object-bottom"
