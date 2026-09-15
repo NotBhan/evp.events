@@ -37,35 +37,62 @@ export interface LaunchRazorpayCheckoutParams {
   onDismiss?: () => void;
 }
 
+let checkoutScriptPromise: Promise<boolean> | null = null;
+
 /**
  * Dynamically loads the official Razorpay Standard Checkout script.
+ *
+ * The load is memoized so repeated calls (preload on mount + checkout launch)
+ * share a single in-flight attempt instead of stacking duplicate listeners or
+ * creating a duplicate script element. On failure the cached promise is reset
+ * and the failed element removed so a later click can retry cleanly.
  */
 export function loadRazorpayCheckoutScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window === 'undefined') {
-      return resolve(false);
-    }
+  if (typeof window === 'undefined') {
+    return Promise.resolve(false);
+  }
 
-    if ((window as any).Razorpay) {
-      return resolve(true);
-    }
+  if ((window as any).Razorpay) {
+    return Promise.resolve(true);
+  }
 
-    const scriptId = 'razorpay-checkout-js';
-    const existing = document.getElementById(scriptId) as HTMLScriptElement | null;
-    if (existing) {
-      existing.addEventListener('load', () => resolve(true));
-      existing.addEventListener('error', () => resolve(false));
-      return;
-    }
+  if (!checkoutScriptPromise) {
+    checkoutScriptPromise = new Promise<boolean>((resolve) => {
+      const scriptId = 'razorpay-checkout-js';
+      const existing = document.getElementById(scriptId) as HTMLScriptElement | null;
 
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
+      const handleError = () => {
+        checkoutScriptPromise = null;
+        resolve(false);
+      };
+
+      if (existing) {
+        existing.addEventListener('load', () => resolve(true), { once: true });
+        existing.addEventListener(
+          'error',
+          () => {
+            existing.remove();
+            handleError();
+          },
+          { once: true }
+        );
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => {
+        script.remove();
+        handleError();
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  return checkoutScriptPromise;
 }
 
 const MASK_CHARACTER_PATTERN = /[\u2022\u2026*]/;

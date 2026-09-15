@@ -21,7 +21,11 @@ import {
   Loader2,
   XCircle,
 } from 'lucide-react';
-import { calculateGstAndRefund, RefundCalculation } from '@/lib/cancellation-constants';
+import {
+  calculateGstAndRefund,
+  RefundCalculation,
+  CANCELLATION_DEADLINE_DISPLAY,
+} from '@/lib/cancellation-constants';
 
 export interface BookingReceiptProps {
   bookingId: string;
@@ -537,6 +541,52 @@ export default function BookingReceipt({
             </div>
           </div>
         </div>
+
+        {/* ------------------------------------------------------------------
+            POST-PURCHASE INSTRUCTIONS (CONFIRMED RECEIPTS ONLY)
+            ------------------------------------------------------------------ */}
+        {status === 'CONFIRMED' && (
+          <section className="mt-6 pt-5 border-t border-antique-gold/20 text-left">
+            <span className="text-bright-gold font-bold uppercase tracking-wider text-[11px] block mb-3">
+              IMPORTANT INFORMATION
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-body text-[11px] leading-relaxed text-warm-cream/85">
+              <div className="space-y-1">
+                <span className="text-warm-cream font-bold uppercase tracking-wider text-[10px] block">
+                  Retrieve Your Receipt
+                </span>
+                <p>
+                  Use <strong className="text-warm-cream">Find / Recover Reservation</strong> on the
+                  booking page. Provide your Booking Reference ID (
+                  <span className="font-mono text-bright-gold">{bookingId}</span>) with your email
+                  &amp; mobile, or use <strong className="text-warm-cream">Key Recovery (No Email)</strong>{' '}
+                  if you booked without an email address.
+                </p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-warm-cream font-bold uppercase tracking-wider text-[10px] block">
+                  Cancellation
+                </span>
+                <p>
+                  Cancellations are requested through the website's booking recovery flow — open your
+                  confirmed booking and select <strong className="text-warm-cream">Cancel Booking</strong>.
+                  Cancellation requests close {CANCELLATION_DEADLINE_DISPLAY}.
+                </p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-warm-cream font-bold uppercase tracking-wider text-[10px] block">
+                  Refund Request
+                </span>
+                <p>
+                  Cancellation and refund are handled separately. After cancelling on the website,
+                  request your refund via the WhatsApp/email support contacts shown above. Approved
+                  refunds are returned to your original payment method, less the 18% GST included in
+                  the amount paid.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ------------------------------------------------------------------
             MANDATORY FORMAL NOTICE

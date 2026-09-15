@@ -34,6 +34,9 @@ import {
 import BookingReceipt from './BookingReceipt';
 import BookingReceiptPrint, { SubmittedBookingRecord } from './BookingReceiptPrint';
 import BookingLookupDesk from './BookingLookupDesk';
+import BookingDancerAtmosphere, {
+  getBookingVisualStage,
+} from './BookingDancerAtmosphere';
 import {
   launchRazorpayCheckout,
   loadRazorpayCheckoutScript,
@@ -573,8 +576,6 @@ export default function BookingDesk({
       }
 
       if (data.provider === 'razorpay') {
-        setIsInitiatingPayment(false);
-
         await launchRazorpayCheckout({
           keyId: data.keyId,
           orderId: data.orderId,
@@ -645,6 +646,7 @@ export default function BookingDesk({
             setDeskStage('PAYMENT_PENDING');
           },
         });
+        setIsInitiatingPayment(false);
       } else if (data.checkoutUrl) {
         // Stripe redirect flow
         window.location.href = data.checkoutUrl;
@@ -699,6 +701,11 @@ export default function BookingDesk({
       <div
         className="absolute bottom-0 left-0 w-80 h-80 pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(243,198,76,0.10) 0%, transparent 70%)' }}
+      />
+
+      {/* Dancer Atmosphere — deterministic, stage-driven artwork */}
+      <BookingDancerAtmosphere
+        visualStage={getBookingVisualStage(deskStage, currentStep)}
       />
 
       {/* Box Office Header */}

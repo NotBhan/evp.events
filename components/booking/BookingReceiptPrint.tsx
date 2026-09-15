@@ -4,7 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { eventData } from '@/data/eventData';
-import { calculateGstAndRefund, RefundCalculation } from '@/lib/cancellation-constants';
+import {
+  calculateGstAndRefund,
+  RefundCalculation,
+  CANCELLATION_DEADLINE_DISPLAY,
+} from '@/lib/cancellation-constants';
 
 export interface SubmittedBookingRecord {
   bookingId: string;
@@ -237,7 +241,33 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
         </div>
 
         {/* ============================================================== */}
-        {/* 4. FORMAL FOOTER PROTOCOL                                      */}
+        {/* 4. POST-PURCHASE INSTRUCTIONS                                  */}
+        {/* ============================================================== */}
+        {record.status === 'CONFIRMED' && (
+          <div className="print-instructions">
+            <div className="print-section-title">IMPORTANT INFORMATION</div>
+            <div className="print-instruction">
+              <strong>Retrieve Your Receipt:</strong> Use &ldquo;Find / Recover Reservation&rdquo; on the
+              website&apos;s booking page. Provide your Booking Reference ID ({record.bookingId}) with
+              your email and mobile, or use &ldquo;Key Recovery (No Email)&rdquo; if you booked without
+              an email address.
+            </div>
+            <div className="print-instruction">
+              <strong>Cancellation:</strong> Cancel through the website&apos;s booking recovery flow —
+              open your confirmed booking and select &ldquo;Cancel Booking&rdquo;. Cancellation requests
+              close on {CANCELLATION_DEADLINE_DISPLAY}.
+            </div>
+            <div className="print-instruction">
+              <strong>Refund Request:</strong> Cancellation and refund are handled separately. After
+              cancelling on the website, request your refund via the WhatsApp/email support contacts
+              above. Approved refunds are returned to your original payment method, less the 18% GST
+              included in the amount paid.
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* 5. FORMAL FOOTER PROTOCOL                                      */}
         {/* ============================================================== */}
         <footer className="print-footer">
           <p className="print-footer-text">
@@ -254,20 +284,9 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
         @media print {
           #print-receipt-root {
             display: block !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 210mm !important;
-            height: 297mm !important;
-            max-height: 297mm !important;
-            padding: 8mm 12mm !important;
-            box-sizing: border-box !important;
             background: #ffffff !important;
             color: #12080d !important;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-            overflow: hidden !important;
-            page-break-after: avoid !important;
-            page-break-inside: avoid !important;
           }
 
           .print-card {
@@ -276,10 +295,6 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
             padding: 14pt 18pt !important;
             background: #ffffff !important;
             box-sizing: border-box !important;
-            height: 100% !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
           }
 
           .print-header {
@@ -287,6 +302,8 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
             border-bottom: 1.5pt dashed #b38f24 !important;
             padding-bottom: 10pt !important;
             margin-bottom: 10pt !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
           }
 
           .print-brand-row {
@@ -402,6 +419,8 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
             border-bottom: 1.5pt dashed #b38f24 !important;
             padding-bottom: 10pt !important;
             margin-bottom: 10pt !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
           }
 
           .print-col {
@@ -486,6 +505,8 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
             justify-content: space-between !important;
             gap: 16pt !important;
             margin-bottom: 8pt !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
           }
 
           .print-meta-col {
@@ -503,10 +524,31 @@ export default function BookingReceiptPrint({ record }: BookingReceiptPrintProps
             color: #8c1d40 !important;
           }
 
+          .print-instructions {
+            margin-top: 8pt !important;
+            padding-top: 8pt !important;
+            border-top: 1.5pt dashed #b38f24 !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+          }
+
+          .print-instruction {
+            font-size: 7.5pt !important;
+            color: #333333 !important;
+            line-height: 1.35 !important;
+            margin-bottom: 4pt !important;
+          }
+
+          .print-instruction strong {
+            color: #8c1d40 !important;
+          }
+
           .print-footer {
             border-top: 1pt solid #e5d8b8 !important;
             padding-top: 6pt !important;
             text-align: center !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
           }
 
           .print-footer-text {
