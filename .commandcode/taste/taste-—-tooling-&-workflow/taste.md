@@ -1,0 +1,15 @@
+# Taste — Tooling & Workflow
+- Prefers configuring external services (e.g. Stripe) via the official CLI/API, self-service, using credentials from environment only, rather than instructing the user to navigate a GUI/Dashboard menu. Confidence: 0.8
+- Before creating/registering an external resource (e.g. a webhook endpoint), inspects existing ones first to avoid duplicates. Confidence: 0.8
+- When a tool can't accomplish the task, prefers stopping and reporting the exact limitation plus the currently supported configuration path, rather than hacking around it or changing application code. Confidence: 0.75
+- Cleans up temporary scripts/files created during investigation afterward (leaves the repo clean). Confidence: 0.7
+- In a planning stage, implements nothing (no code, schema, migrations, deps, routes, or env changes) and stops to wait for explicit approval before executing; when asked for clarifications only, applies only those clarifications and does not redesign the system. Confidence: 0.85
+- In planning documents, separates locked decisions (DECIDED) from recommendations (PROPOSED) and open business decisions (REQUIRES CLIENT DECISION), and never presents an unconfirmed assumption as an established business rule. Confidence: 0.8
+- Implements changes incrementally and verifies each major subsystem before proceeding to the next. Confidence: 0.7
+- Explicitly asks to be consulted before editing sensitive files — wants confirmation/approval before modifying sensitive files rather than having them changed unilaterally. Confidence: 0.85
+- Keeps architecture/specification documents focused on rules and behavior, avoiding transient line-number references (verified paths belong in the implementation report instead). Confidence: 0.7
+- Does not block core implementation on optional features (admin UI, allowlists, extra enforcement windows); builds the authoritative core first. Confidence: 0.65
+- Prefers a web-based admin/management UI for the normal workflow, with a CLI reserved for bootstrap and emergency/operational fallback. Confidence: 0.65
+- When adding new environment variables to a config file (e.g. `.env.local`), only adds the new entries and never changes existing values. Confidence: 0.7
+- Wants the committed `.env.example` template to contain bare `KEY=` entries with no values at all (every value cleared) while preserving all comments, section headers and key order — not plausible-looking placeholder values. Confidence: 0.75
+- Wants `.env.example` tracked in version control (explicitly excluded from the `.env*` gitignore rule while real env files like `.env.local` stay ignored). Confidence: 0.7

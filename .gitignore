@@ -46,3 +46,11 @@ next-env.d.ts
 !/scripts/run-with-ipv4.sh
 !/scripts/organiser-admin.mjs
 !/scripts/set_inventory.mjs
+
+# local agent tooling (not application source)
+/.claude/
+/.commandcode/skills/
+/.commandcode/settings.json
+
+# internal operational / audit reports (not for the public repo)
+/artifacts/*.md

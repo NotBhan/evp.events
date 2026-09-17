@@ -3,10 +3,18 @@
 - After a fix is applied, expects full end-to-end verification rather than code reasoning alone: run the type checker (e.g. `tsc --noEmit`) and a build, then exercise the real flow against the live test environment (create a fresh test record, drive the actual third-party checkout/payment with the standard test card, confirm success). Confidence: 0.85
 - Expects test data to be cleaned up and state restored to its pre-test baseline after verification (delete test records, restore inventory counters). Confidence: 0.8
 - Expects side effects to be proven exactly-once and replay/idempotency explicitly tested (e.g. counters change exactly once; replaying an event leaves state unchanged). Confidence: 0.75
-- Gives explicit numbered acceptance checklists for a change and expects every item to be executed and reported on individually. Confidence: 0.7
+- Gives explicit numbered acceptance checklists for a change and expects every item to be executed and reported on individually. Confidence: 0.8
 - Does not rely solely on local tests when a bug lives in the deployed environment — requires proving the fix in the actual deployment (e.g. Vercel) with a fresh real flow before declaring completion. Confidence: 0.8
 - Never mutates real/production records during diagnosis; tests use unique temporary records so live data stays untouched. Confidence: 0.75
 - Does not assume a repo file is what runs in an external managed service (e.g. Apps Script Code.gs): editing the repo does not auto-deploy, so verifies the live deployment/version matches before relying on the repo code. Confidence: 0.8
 - Environment/secret audits must verify the real runtime environments (local .env.local, Vercel Production/Preview) — distinguishing placeholder values from real ones — not just the .env.example example file. Confidence: 0.75
 - Never performs a real charge with a live/production account during verification — uses test-mode credentials, a mock/third-party test environment, and standard test cards for payment flows. Confidence: 0.8
 - Expects regression tests to enumerate edge cases beyond the happy path — recovered/partial data, masked-looking values, and empty/missing data — each asserted explicitly. Confidence: 0.8
+- Prefers exercising race/concurrency correctness through the real API + database path (e.g. two independently authenticated sessions hitting the actual endpoint near-simultaneously), not only a direct unit test of the service function. Confidence: 0.9
+- Explicitly tests cross-authorization boundaries in both directions (a session of one domain must NOT access another domain's endpoints — e.g. customer session → staff API = 401), in addition to happy-path auth. Confidence: 0.7
+- Prefers validating a real observable outcome (e.g. an actual printed/scanned QR) over trusting an arbitrary configuration value (e.g. a CSS pixel size). Confidence: 0.6
+- Keeps existing test coverage when adding features: adds new tests without deleting existing ones. Confidence: 0.7
+- Runs load/stress tests (e.g. exhausting an ID namespace) only in a dedicated non-production/test environment, never against production data. Confidence: 0.75
+- Does not weaken a stress test to hide inherent statistical behavior (e.g. rising collisions as a finite namespace saturates); records honest metrics instead. Confidence: 0.6
+- Requires integration suites to be state-neutral: they must reverse their own production side effects (e.g. restore inventory counters) after both successful and failed runs, proven by a before/after snapshot showing zero drift so repeated runs cannot accumulate drift. Confidence: 0.8
+- For tests with permanent production side effects (real payments, real external-sheet rows), prefers dedicated non-production resources/local mocks; any genuinely live-write leg must be opt-in behind an explicit env flag with a guaranteed cleanup path — gated, not deleted. Confidence: 0.8
