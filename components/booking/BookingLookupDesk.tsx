@@ -4,14 +4,12 @@ import React, { useState } from 'react';
 import {
   Mail,
   Phone,
-  Key,
   Search,
   CheckCircle2,
   AlertTriangle,
   Clock,
   ArrowLeft,
   Loader2,
-  Ticket,
   Printer,
   CreditCard,
   XCircle,
@@ -49,6 +47,7 @@ export interface RecoveredBooking {
   cancellationDeadline?: string;
   refundBreakdown?: RefundCalculation;
   refundStatus?: string;
+  entryToken?: string;
 }
 
 interface BookingLookupDeskProps {
@@ -60,13 +59,9 @@ export default function BookingLookupDesk({
   onViewReceipt,
   onExitLookup,
 }: BookingLookupDeskProps) {
-  const [tab, setTab] = useState<'email' | 'key'>('email');
-
   // Form states
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [bookingId, setBookingId] = useState('');
-  const [recoveryToken, setRecoveryToken] = useState('');
 
   // Status & Results
   const [loading, setLoading] = useState(false);
@@ -117,42 +112,7 @@ export default function BookingLookupDesk({
     }
   };
 
-  // 2. Direct Key Recovery (for email-less bookings)
-  const handleKeyRecovery = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!bookingId.trim() || !recoveryToken.trim()) {
-      setError('Please provide both your Request ID and recovery key.');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const res = await fetch('/api/bookings/recover', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: bookingId.trim(),
-          recoveryToken: recoveryToken.trim(),
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        setError(data.error || 'Invalid booking reference or recovery key.');
-        setBookings([]);
-      } else {
-        setBookings([data.booking]);
-      }
-    } catch {
-      setError('Network connection error. Please verify your connection and try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 3. Revalidate single booking upon countdown expiry
+  // 2. Revalidate single booking upon countdown expiry
   const handleRevalidateBooking = async (bId: string) => {
     try {
       const res = await fetch(`/api/bookings/${encodeURIComponent(bId)}`);
@@ -273,38 +233,6 @@ export default function BookingLookupDesk({
             </p>
           </div>
 
-          {/* Sub-Tab Selector */}
-          <div className="flex rounded-xl bg-deep-plum/90 border border-antique-gold/30 p-1">
-            <button
-              type="button"
-              onClick={() => {
-                setTab('email');
-                setError('');
-              }}
-              className={`flex-1 py-2 rounded-lg text-xs font-body font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                tab === 'email'
-                  ? 'bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream shadow-md'
-                  : 'text-warm-cream/60 hover:text-bright-gold'
-              }`}
-            >
-              Email &amp; Mobile Lookup
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setTab('key');
-                setError('');
-              }}
-              className={`flex-1 py-2 rounded-lg text-xs font-body font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                tab === 'key'
-                  ? 'bg-gradient-to-r from-vermilion to-amber-glow text-warm-cream shadow-md'
-                  : 'text-warm-cream/60 hover:text-bright-gold'
-              }`}
-            >
-              Key Recovery (No Email)
-            </button>
-          </div>
-
           {/* Error Banner */}
           {error && (
             <div
@@ -316,9 +244,8 @@ export default function BookingLookupDesk({
             </div>
           )}
 
-          {/* Tab 1: Email + Phone */}
-          {tab === 'email' && (
-            <form onSubmit={handleEmailPhoneLookup} className="space-y-4">
+          {/* Email + Mobile Lookup */}
+          <form onSubmit={handleEmailPhoneLookup} className="space-y-4">
               <div>
                 <label className="block font-body text-xs font-bold uppercase tracking-wider text-bright-gold mb-1.5">
                   Email Address *
@@ -371,67 +298,6 @@ export default function BookingLookupDesk({
                 )}
               </button>
             </form>
-          )}
-
-          {/* Tab 2: Key Recovery */}
-          {tab === 'key' && (
-            <form onSubmit={handleKeyRecovery} className="space-y-4">
-              <div>
-                <label className="block font-body text-xs font-bold uppercase tracking-wider text-bright-gold mb-1.5">
-                  Booking Reference ID *
-                </label>
-                <div className="relative">
-                  <Ticket className="w-4 h-4 text-antique-gold/60 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    value={bookingId}
-                    onChange={(e) => setBookingId(e.target.value)}
-                    placeholder="e.g. RU26-REQ-4819"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border border-antique-gold/30 text-warm-cream placeholder-warm-cream/30 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-bright-gold uppercase"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-body text-xs font-bold uppercase tracking-wider text-bright-gold mb-1.5">
-                  Recovery Key *
-                </label>
-                <div className="relative">
-                  <Key className="w-4 h-4 text-antique-gold/60 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    value={recoveryToken}
-                    onChange={(e) => setRecoveryToken(e.target.value)}
-                    placeholder="Paste your 32-character recovery key"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-deep-plum/90 border border-antique-gold/30 text-warm-cream placeholder-warm-cream/30 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-bright-gold"
-                  />
-                </div>
-                <span className="text-[11px] text-warm-cream/60 font-body mt-1 block">
-                  Issued on receipt screen if you booked without providing an email address.
-                </span>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-vermilion to-amber-glow hover:from-amber-glow hover:to-vermilion text-warm-cream font-display text-base tracking-wider uppercase shadow-lg flex items-center justify-center gap-2 font-bold cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin text-bright-gold" />
-                    <span>Verifying Recovery Key...</span>
-                  </>
-                ) : (
-                  <>
-                    <Key className="w-4 h-4 text-bright-gold" />
-                    <span>Recover Reservation</span>
-                  </>
-                )}
-              </button>
-            </form>
-          )}
         </div>
       ) : (
         /* Recovered Bookings List */
@@ -586,15 +452,37 @@ export default function BookingLookupDesk({
                     <div className="p-3 rounded-xl bg-vermilion/15 border border-vermilion/40 text-[11px] font-body text-warm-cream/90 flex items-start gap-2">
                       <Clock className="w-4 h-4 text-vermilion shrink-0 mt-0.5" />
                       <span>
-                        The 24-hour reservation window for this booking has closed. Reserved inventory was safely released back to the event pool.
+                        This booking expired because payment was not completed within 24 hours. Reserved
+                        inventory was safely released back to the event pool, and no refund applies because no
+                        payment was collected.
                       </span>
                     </div>
                   ) : b.status === 'PENDING' ? (
-                    <div className="p-3 rounded-xl bg-royal-maroon/60 border border-antique-gold/30 text-[11px] font-body text-warm-cream/90 flex items-start gap-2">
-                      <Clock className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
-                      <span>
-                        Pass reservation is active. Payment completion is required before the timer expires to confirm admission.
-                      </span>
+                    <div className="p-3 rounded-xl bg-royal-maroon/60 border border-antique-gold/30 text-[11px] font-body text-warm-cream/90 space-y-1.5">
+                      <div className="flex items-start gap-2">
+                        <Clock className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
+                        <span>
+                          Pay Later is active for this booking: payment must be completed within 24 hours of
+                          booking. If payment is not completed before the deadline, the booking expires and the
+                          reserved pass is released. No entry QR is issued until payment is confirmed.
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <span className="text-warm-cream/60 uppercase tracking-wider text-[10px] font-bold">
+                          Payment deadline:
+                        </span>
+                        <span
+                          className="font-mono font-bold text-bright-gold"
+                          data-payment-deadline={b.publicId}
+                        >
+                          {new Date(b.expiresAt).toLocaleString('en-IN', {
+                            timeZone: 'Asia/Kolkata',
+                            dateStyle: 'medium',
+                            timeStyle: 'short',
+                          })}{' '}
+                          IST
+                        </span>
+                      </div>
                     </div>
                   ) : null}
 
@@ -648,6 +536,7 @@ export default function BookingLookupDesk({
                           expiresAt: b.expiresAt,
                           cancelledAt: b.cancelledAt,
                           refundBreakdown: b.refundBreakdown,
+                          entryToken: b.entryToken,
                         })
                       }
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-royal-maroon border border-antique-gold/40 text-warm-cream hover:text-bright-gold text-xs font-body uppercase font-semibold tracking-wider transition-colors cursor-pointer"

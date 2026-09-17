@@ -88,6 +88,9 @@ export async function syncBookingToSheets(
   }
 
   // 4. Construct payload from authoritative Neon values
+  // Entry columns (L/M/N) mirror the authoritative check-in state: YES + timestamp +
+  // authenticated organiser identity only when CHECKED_IN; NO and blanks otherwise.
+  const isCheckedIn = booking.checkInStatus === 'CHECKED_IN';
   const payload = {
     bookingId: booking.publicId,
     publicId: booking.publicId,
@@ -106,6 +109,9 @@ export async function syncBookingToSheets(
     timestamp: booking.confirmedAt
       ? booking.confirmedAt.toISOString()
       : booking.createdAt.toISOString(),
+    entryTaken: isCheckedIn ? 'YES' : 'NO',
+    entryTime: isCheckedIn && booking.checkedInAt ? booking.checkedInAt.toISOString() : '',
+    scannedBy: isCheckedIn ? booking.checkedInBy || '' : '',
   };
 
   // 5. Post to Apps Script Web App
@@ -175,7 +181,7 @@ export async function syncBookingToSheets(
     const diagnostic =
       err instanceof Error
         ? err.name === 'AbortError'
-          ? 'Apps Script request timed out after 15 seconds'
+          ? 'Apps Script request timed out after 30 seconds'
           : err.message.slice(0, 300)
         : 'Unknown network failure during Sheets synchronization';
 

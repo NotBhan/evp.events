@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { PrismaClient } from '@prisma/client';
+import { OPEN_BOOKING_WINDOW_ENV } from './helpers/booking-window-env.mjs';
 
 class InventoryInconsistencyError extends Error {
   constructor(message) {
@@ -96,10 +97,11 @@ async function runAudit() {
   console.log(`Connected to Neon PostgreSQL. Found ${initialPassCount} pass tiers in database.\n`);
 
   // Start Next.js production server
-  const serverProc = spawn('pnpm', ['exec', 'next', 'start', '-p', String(PORT)], {
+  const serverProc = spawn('node', ['./node_modules/next/dist/bin/next', 'start', '-p', String(PORT)], {
     stdio: 'pipe',
     env: {
       ...process.env,
+      ...OPEN_BOOKING_WINDOW_ENV,
       CRON_SECRET,
     },
   });
@@ -137,170 +139,118 @@ async function runAudit() {
     console.log(`Created temporary test pass "${auditPassType}" (₹850, total: 20, reserved: 0, sold: 0)\n`);
 
     // =========================================================================
-    // 1. EMAIL-LESS BOOKING + RECOVERY TOKEN
+    // 1. BOOKING CREATION REQUIRES EMAIL (the only self-service lookup key)
     // =========================================================================
     console.log('----------------------------------------------------------------');
-    console.log('TEST 1: EMAIL-LESS BOOKING + RECOVERY TOKEN');
+    console.log('TEST 1: BOOKING CREATION REQUIRES EMAIL');
     console.log('----------------------------------------------------------------');
     let emailLessBookingId = '';
-    let returnedRecoveryToken = '';
     {
-      const res = await fetch(`${BASE_URL}/api/bookings`, {
+      // A. Email-less booking must be rejected outright.
+      const noEmailRes = await fetch(`${BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: 'Aarav Kumar',
           phone: '+91 98765 43210',
           passId: auditPassType,
-          quantity: 2,
+        }),
+      });
+      assert.equal(noEmailRes.status, 400, 'Booking without email must be rejected with HTTP 400');
+      const noEmailData = await noEmailRes.json();
+      assert.equal(noEmailData.success, false);
+      assert.match(noEmailData.error, /email/i, 'Error must explain that email is required');
+
+      // B. Malformed email must be rejected.
+      const badEmailRes = await fetch(`${BASE_URL}/api/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: 'Aarav Kumar',
+          phone: '+91 98765 43210',
+          email: 'not-an-email',
+          passId: auditPassType,
+        }),
+      });
+      assert.equal(badEmailRes.status, 400, 'Malformed email must be rejected with HTTP 400');
+
+      // C. A valid booking succeeds without any recovery credential.
+      // Single-pass model: client quantity/unitPrice/total are ignored server-side.
+      const res = await fetch(`${BASE_URL}/api/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: 'Aarav Kumar',
+          email: 'audit.attendee@example.com',
+          phone: '+91 98765 43210',
+          passId: auditPassType,
+          quantity: 5,
+          unitPrice: 1,
+          total: 1,
         }),
       });
 
-      assert.equal(res.status, 201, 'Email-less booking must return HTTP 201');
+      assert.equal(res.status, 201, 'Booking with email must return HTTP 201');
       const data = await res.json();
       assert.equal(data.success, true);
       assert.equal(data.status, 'PENDING', 'Booking status must be PENDING');
       assert.equal(data.paymentStatus, 'NOT_STARTED', 'Payment status must be NOT_STARTED');
-      assert.ok(data.recoveryToken, 'recoveryToken must be present in response');
-      assert.equal(typeof data.recoveryToken, 'string');
-      assert.ok(data.recoveryToken.length >= 32, 'Recovery token must have >= 32 chars of secure entropy');
-      assert.match(data.recoveryToken, /^[A-Za-z0-9_-]+$/, 'Recovery token must be URL-safe base64url format');
+      assert.equal(data.quantity, 1, 'Stored quantity must be forced to 1 regardless of client value');
+      assert.equal(data.unitPrice, 850, 'Stored unit price must be the authoritative pass price');
+      assert.equal(data.total, 850, 'Stored total must equal the authoritative pass price');
+      assert.equal(data.recoveryToken, undefined, 'Response must not carry a recovery token (feature removed)');
 
       emailLessBookingId = data.bookingId;
-      returnedRecoveryToken = data.recoveryToken;
 
-      // Query database directly
-      const dbBooking = await prisma.booking.findUnique({
-        where: { publicId: emailLessBookingId },
-      });
+      const dbBooking = await prisma.booking.findUnique({ where: { publicId: emailLessBookingId } });
       assert.ok(dbBooking, 'Booking record must exist in Neon database');
       createdBookingIds.add(dbBooking.id);
 
-      assert.ok(dbBooking.recoveryTokenHash, 'database recoveryTokenHash must exist');
-      const expectedHash = crypto.createHash('sha256').update(returnedRecoveryToken).digest('hex');
-      assert.equal(dbBooking.recoveryTokenHash, expectedHash, 'database hash must equal SHA-256(raw recoveryToken)');
-      assert.notEqual(dbBooking.recoveryTokenHash, returnedRecoveryToken, 'raw recoveryToken must NOT be stored in database');
+      assert.equal(dbBooking.quantity, 1, 'DB quantity must be 1 (client quantity ignored)');
+      assert.equal(dbBooking.unitPrice, 850, 'DB unit price must be authoritative');
+      assert.equal(dbBooking.totalAmount, 850, 'DB total must be authoritative (client total ignored)');
+      assert.equal(dbBooking.email, 'audit.attendee@example.com', 'Email must be persisted for lookup');
+      assert.ok(!('recoveryTokenHash' in dbBooking), 'Booking model must no longer expose a recovery token hash');
+
+      // The recovery column must be gone from the database entirely.
+      const recoveryColumn = await prisma.$queryRawUnsafe(
+        "SELECT column_name FROM information_schema.columns WHERE table_name = 'bookings' AND column_name = 'recovery_token_hash'"
+      );
+      assert.equal(recoveryColumn.length, 0, 'recovery_token_hash column must be dropped from the database');
 
       // Verify inventory reserved
       const passInDb = await prisma.pass.findUnique({ where: { id: testPass.id } });
-      assert.equal(passInDb.reservedQuantity, 2, 'reservedQuantity in DB must be exactly 2');
+      assert.equal(passInDb.reservedQuantity, 1, 'reservedQuantity in DB must be exactly 1');
 
-      console.log(`TEST 1 | PASSED | Booking ${emailLessBookingId} created with HTTP 201, status=PENDING, paymentStatus=NOT_STARTED. Recovery token length=${returnedRecoveryToken.length} (base64url format). Neon record contains SHA-256 hash (64 hex chars); raw token not stored in database. Reserved quantity increased from 0 to 2.`);
+      console.log(`TEST 1 | PASSED | Email-less and malformed-email bookings rejected with HTTP 400. Booking ${emailLessBookingId} created with HTTP 201. Client tamper (quantity=5, unitPrice=1, total=1) ignored: stored quantity=1, unitPrice=850, total=850. No recovery token issued and recovery_token_hash column is absent. Reserved quantity increased from 0 to 1.`);
     }
 
     // =========================================================================
-    // 2. SUCCESSFUL DIRECT RECOVERY
+    // 2. KEY-RECOVERY PATH IS RETIRED
     // =========================================================================
     console.log('\n----------------------------------------------------------------');
-    console.log('TEST 2: SUCCESSFUL DIRECT RECOVERY');
+    console.log('TEST 2: KEY-RECOVERY PATH RETIRED');
     console.log('----------------------------------------------------------------');
-    let sessionCookieFromRecovery = '';
     {
       const res = await fetch(`${BASE_URL}/api/bookings/recover`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: emailLessBookingId,
-          recoveryToken: returnedRecoveryToken,
-        }),
+        body: JSON.stringify({ bookingId: emailLessBookingId, recoveryToken: 'irrelevant' }),
       });
+      assert.ok(
+        res.status === 404 || res.status === 405,
+        `Retired recovery endpoint must not process requests (got ${res.status})`
+      );
 
-      assert.equal(res.status, 200, 'Valid recovery must return HTTP 200');
-      const data = await res.json();
-      assert.equal(data.success, true);
-      assert.equal(data.booking.publicId, emailLessBookingId, 'Returned booking must match requested booking ID');
-      assert.equal(data.booking.fullName, 'Aarav Kumar');
-      assert.equal(data.booking.quantity, 2);
-
-      const setCookie = res.headers.get('set-cookie');
-      assert.ok(setCookie, 'set-cookie header must be present');
-      assert.match(setCookie, /ru26_lookup_session=/);
-      assert.match(setCookie, /HttpOnly/i);
-
-      sessionCookieFromRecovery = setCookie.split(';')[0];
-      console.log(`TEST 2 | PASSED | Direct recovery of ${emailLessBookingId} returned HTTP 200. HTTP-only session cookie issued. Returned exact booking details (Aarav Kumar, qty 2); zero unrelated bookings returned.`);
-    }
-
-    // =========================================================================
-    // 3. INVALID RECOVERY
-    // =========================================================================
-    console.log('\n----------------------------------------------------------------');
-    console.log('TEST 3: INVALID RECOVERY');
-    console.log('----------------------------------------------------------------');
-    {
-      // 3A. Wrong recovery token
-      const wrongTokenRes = await fetch(`${BASE_URL}/api/bookings/recover`, {
+      // Lookup still requires both email and mobile.
+      const emailOnly = await fetch(`${BASE_URL}/api/bookings/lookup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: emailLessBookingId,
-          recoveryToken: 'invalid-wrong-token-value-12345678901234567890',
-        }),
+        body: JSON.stringify({ email: 'audit.attendee@example.com' }),
       });
-      assert.equal(wrongTokenRes.status, 404, 'Wrong recovery token must return HTTP 404');
-      const wrongTokenData = await wrongTokenRes.json();
-      assert.equal(wrongTokenData.success, false);
+      assert.equal(emailOnly.status, 400, 'Lookup without a mobile number must be rejected with HTTP 400');
 
-      // 3B. Malformed token
-      const malformedRes = await fetch(`${BASE_URL}/api/bookings/recover`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: emailLessBookingId,
-          recoveryToken: '',
-        }),
-      });
-      assert.equal(malformedRes.status, 400, 'Empty recovery token must return HTTP 400');
-
-      // 3C. Valid token for booking A cannot recover booking B
-      const bookingBRes = await fetch(`${BASE_URL}/api/bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: 'Booking B Attendee',
-          phone: '+91 98765 43211',
-          passId: auditPassType,
-          quantity: 1,
-        }),
-      });
-      const bookingBData = await bookingBRes.json();
-      assert.equal(bookingBRes.status, 201);
-      const bookingBId = bookingBData.bookingId;
-      const dbBookingB = await prisma.booking.findUnique({ where: { publicId: bookingBId } });
-      createdBookingIds.add(dbBookingB.id);
-
-      const crossRecoveryRes = await fetch(`${BASE_URL}/api/bookings/recover`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: bookingBId,
-          recoveryToken: returnedRecoveryToken, // Token from Booking A
-        }),
-      });
-      assert.equal(crossRecoveryRes.status, 404, 'Using token A on booking B must return HTTP 404');
-
-      // 3D. Recovery of expired booking fails with 410
-      await prisma.booking.update({
-        where: { id: dbBookingB.id },
-        data: {
-          expiresAt: new Date(Date.now() - 3600000), // 1 hour ago
-          status: 'EXPIRED',
-        },
-      });
-
-      const expiredRecoveryRes = await fetch(`${BASE_URL}/api/bookings/recover`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: bookingBId,
-          recoveryToken: bookingBData.recoveryToken,
-        }),
-      });
-      assert.equal(expiredRecoveryRes.status, 410, 'Recovery of expired booking must return HTTP 410 Gone');
-      const expiredData = await expiredRecoveryRes.json();
-      assert.match(expiredData.error, /expired/i);
-
-      console.log('TEST 3 | PASSED | Wrong recovery token rejected (404). Malformed token rejected (400). Cross-booking recovery rejected (404). Expired booking recovery rejected with HTTP 410 Gone.');
+      console.log('TEST 2 | PASSED | /api/bookings/recover is gone (404/405) and lookup still requires email + mobile.');
     }
 
     // =========================================================================
@@ -340,7 +290,6 @@ async function runAudit() {
           email: lookupEmail,
           phone: lookupPhone,
           passId: auditPassType,
-          quantity: 2,
         }),
       });
       const b2Data = await b2Res.json();
@@ -483,15 +432,15 @@ async function runAudit() {
     console.log('TEST 6: EXPIRY (PENDING -> EXPIRED & EXACT INVENTORY DECREMENT)');
     console.log('----------------------------------------------------------------');
     {
-      // Create a temporary booking with qty = 3
+      // Create a temporary single-pass booking via the real API
       const bookingRes = await fetch(`${BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: 'Expiry Attendee',
+          email: 'audit.expiry@example.com',
           phone: '+91 98765 77777',
           passId: auditPassType,
-          quantity: 3,
         }),
       });
       const bookingData = await bookingRes.json();
@@ -522,8 +471,8 @@ async function runAudit() {
       const passAfter = await prisma.pass.findUnique({ where: { id: testPass.id } });
       assert.equal(
         passAfter.reservedQuantity,
-        reservedBefore - 3,
-        'Exact booking quantity (3) must be decremented from reserved_quantity'
+        reservedBefore - 1,
+        'Exact booking quantity (1) must be decremented from reserved_quantity'
       );
       assert.equal(passAfter.soldQuantity, soldBefore, 'sold_quantity must remain unchanged');
 
@@ -538,7 +487,7 @@ async function runAudit() {
         'reserved_quantity must NOT decrease a second time'
       );
 
-      console.log(`TEST 6 | PASSED | Stale pending booking transitioned PENDING -> EXPIRED. Reserved inventory decremented by exact quantity (3). Sold quantity unchanged. Second invocation is completely idempotent (zero duplicate releases).`);
+      console.log(`TEST 6 | PASSED | Stale pending booking transitioned PENDING -> EXPIRED. Reserved inventory decremented by exact quantity (1). Sold quantity unchanged. Second invocation is completely idempotent (zero duplicate releases).`);
     }
 
     // =========================================================================
@@ -548,28 +497,26 @@ async function runAudit() {
     console.log('TEST 7: EXPIRY TRANSACTION ROLLBACK ON INVENTORY INCONSISTENCY');
     console.log('----------------------------------------------------------------');
     {
-      // Create a temporary booking with qty = 5
-      const bookingRes = await fetch(`${BASE_URL}/api/bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      // Legacy multi-quantity row created directly (historical rows keep generic quantity math;
+      // the public API only ever creates single-pass bookings).
+      const legacyQuantity = 5;
+      const dbBooking = await prisma.booking.create({
+        data: {
+          publicId: `RU26-REQ-${Math.floor(1000 + Math.random() * 9000)}`,
           fullName: 'Rollback Attendee',
           phone: '+91 98765 88888',
-          passId: auditPassType,
-          quantity: 5,
-        }),
+          passId: testPass.id,
+          quantity: legacyQuantity,
+          unitPrice: 850,
+          totalAmount: 850 * legacyQuantity,
+          status: 'PENDING',
+          paymentStatus: 'NOT_STARTED',
+          expiresAt: new Date(Date.now() - 3600000), // In the past
+          source: 'audit-test',
+        },
       });
-      const bookingData = await bookingRes.json();
-      assert.equal(bookingRes.status, 201);
-      const rollbackBookingId = bookingData.bookingId;
-      const dbBooking = await prisma.booking.findUnique({ where: { publicId: rollbackBookingId } });
       createdBookingIds.add(dbBooking.id);
-
-      // Set expiresAt to past
-      await prisma.booking.update({
-        where: { id: dbBooking.id },
-        data: { expiresAt: new Date(Date.now() - 3600000) },
-      });
+      const rollbackBookingId = dbBooking.publicId;
 
       // Intentionally simulate an inconsistency: set reserved_quantity to 2, which is LESS than booking.quantity (5)
       await prisma.pass.update({
@@ -804,9 +751,11 @@ async function runAudit() {
     console.log('DATABASE CLEANUP & TEARDOWN');
     console.log('----------------------------------------------------------------');
     try {
-      if (createdBookingIds.size > 0) {
+      const suiteBookingIds = Array.from(createdBookingIds);
+
+      if (suiteBookingIds.length > 0) {
         const deletedBookings = await prisma.booking.deleteMany({
-          where: { id: { in: Array.from(createdBookingIds) } },
+          where: { id: { in: suiteBookingIds } },
         });
         console.log(`✓ Deleted ${deletedBookings.count} temporary test booking records from Neon.`);
       }
@@ -818,20 +767,21 @@ async function runAudit() {
         console.log(`✓ Deleted ${deletedPasses.count} temporary test pass tiers from Neon.`);
       }
 
-      // Verify no test records remain in Neon
+      // Verify no suite-created test records remain in Neon (live customer
+      // bookings are not test data and must never be asserted against).
       const remainingTestBookings = await prisma.booking.count({
-        where: { source: { in: ['web-booking-desk', 'audit-test'] } },
+        where: { id: { in: suiteBookingIds } },
       });
       const remainingPasses = await prisma.pass.findMany({ orderBy: { price: 'asc' } });
 
       console.log(`\nPost-Audit Neon Database State:`);
-      console.log(`- Remaining Bookings: ${remainingTestBookings}`);
+      console.log(`- Remaining Suite Bookings: ${remainingTestBookings}`);
       console.log(`- Official Passes in Catalog: ${remainingPasses.length}`);
       for (const p of remainingPasses) {
         console.log(`  • ${p.passType} (${p.name}): price ₹${p.price}, total=${p.totalQuantity}, reserved=${p.reservedQuantity}, sold=${p.soldQuantity}`);
       }
 
-      assert.equal(remainingTestBookings, 0, 'No bookings must remain in database');
+      assert.equal(remainingTestBookings, 0, 'All suite-created bookings must be removed');
       assert.equal(remainingPasses.length, 5, 'Exactly 5 official passes must exist in database');
     } catch (cleanupErr) {
       console.error('Error during cleanup:', cleanupErr);

@@ -13,6 +13,8 @@ async function run() {
     '/privacy-policy',
     '/refund-and-cancellation',
     '/shipping-policy',
+    '/policies',
+    '/faq',
     '/contact',
   ];
 
@@ -90,15 +92,33 @@ async function run() {
       throw new Error(`MISSING event venue on ${route}`);
     }
 
-    // Verify footer links exist
-    const footerLinksCount = await page.evaluate(() => {
+    // Verify the footer exposes direct links to every policy page (presence, not an
+    // exact global count: the same hrefs also appear in the explore column and the
+    // bottom bar by design) plus the Phase 3 FAQ / policies landing page.
+    const footerLinkPresence = await page.evaluate(() => {
       const footer = document.querySelector('footer');
-      if (!footer) return 0;
-      return footer.querySelectorAll('a[href="/pricing"], a[href="/terms-and-conditions"], a[href="/privacy-policy"], a[href="/refund-and-cancellation"], a[href="/shipping-policy"]').length;
+      if (!footer) return null;
+      const hrefs = [
+        '/pricing',
+        '/terms-and-conditions',
+        '/privacy-policy',
+        '/refund-and-cancellation',
+        '/shipping-policy',
+        '/faq',
+        '/policies',
+      ];
+      return Object.fromEntries(
+        hrefs.map((href) => [href, footer.querySelectorAll(`a[href="${href}"]`).length])
+      );
     });
 
-    if (footerLinksCount !== 5) {
-      throw new Error(`Expected 5 compliance footer links on ${route}, found ${footerLinksCount}`);
+    if (!footerLinkPresence) {
+      throw new Error(`Footer not found on ${route}`);
+    }
+    for (const [href, count] of Object.entries(footerLinkPresence)) {
+      if (count < 1) {
+        throw new Error(`Footer is missing a link to ${href} on ${route}`);
+      }
     }
   }
 

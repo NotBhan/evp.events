@@ -5,7 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { eventData } from '@/data/eventData';
-import { Menu, X, Ticket } from 'lucide-react';
+import { Menu, X, Ticket, Search } from 'lucide-react';
+import { getLenisInstance } from '@/lib/lenis-instance';
 
 /**
  * Navbar - Royal Indian Festival Architectural Masthead
@@ -47,6 +48,7 @@ export default function Navbar() {
     { label: 'Home', href: '/' },
     { label: 'About', href: '/about' },
     { label: 'Services', href: '/services' },
+    { label: 'Policies', href: '/policies' },
     { label: 'Contact', href: '/contact' },
   ];
 
@@ -60,7 +62,7 @@ export default function Navbar() {
   const handleNavClick = (href: string) => {
     if (href === pathname || (href === '/' && pathname === '/')) {
       if (typeof window !== 'undefined') {
-        const lenis = (window as any).lenis;
+        const lenis = getLenisInstance();
         if (lenis) {
           lenis.scrollTo(0, { immediate: false, duration: 0.8 });
         } else {
@@ -144,7 +146,22 @@ export default function Navbar() {
         {/* ============================================================== */}
         {/* Zone C (Right): Festival Ticket Campaign Action Button         */}
         {/* ============================================================== */}
-        <div className="hidden md:flex items-center gap-3 lg:gap-4 shrink-0">
+        <div className="hidden md:flex items-center gap-2 lg:gap-3 shrink-0">
+          <Link
+            href="/find-pass"
+            id="navbar-find-pass-cta"
+            onClick={() => handleNavClick('/find-pass')}
+            className="group inline-flex items-center justify-center gap-1.5 lg:gap-2 px-3 py-1.5 lg:px-4 lg:py-2.5 min-h-[40px] lg:min-h-[44px] rounded-md border border-antique-gold/70 bg-royal-maroon/40 text-bright-gold font-display text-xs lg:text-sm tracking-wider uppercase transition-colors duration-300 hover:border-bright-gold hover:bg-royal-maroon/70 hover:text-warm-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-bright-gold cursor-pointer"
+            aria-label="Find your existing Raas Utsav 2026 pass"
+          >
+            <Search
+              className="w-3.5 h-3.5 lg:w-4 lg:h-4 shrink-0 transition-colors group-hover:text-warm-cream"
+              aria-hidden="true"
+            />
+            <span className="font-bold whitespace-nowrap hidden lg:inline">Find Your Pass</span>
+            <span className="font-bold whitespace-nowrap lg:hidden">Find Pass</span>
+          </Link>
+
           <Link
             href="/booking"
             id="navbar-booking-cta"
@@ -218,12 +235,25 @@ export default function Navbar() {
           })}
 
           <Link
+            href="/find-pass"
+            onClick={() => {
+              setIsOpen(false);
+              handleNavClick('/find-pass');
+            }}
+            className="mt-3 w-full py-3.5 min-h-[48px] rounded-md border border-antique-gold/70 bg-royal-maroon/40 text-bright-gold font-display text-base tracking-wider uppercase flex items-center justify-center gap-2 font-bold cursor-pointer hover:bg-royal-maroon/70 hover:text-warm-cream transition-colors"
+            aria-label="Find your existing Raas Utsav 2026 pass"
+          >
+            <Search className="w-5 h-5 shrink-0" aria-hidden="true" />
+            <span>Find Your Pass</span>
+          </Link>
+
+          <Link
             href="/booking"
             onClick={() => {
               setIsOpen(false);
               handleNavClick('/booking');
             }}
-            className="mt-3 w-full py-3.5 min-h-[48px] rounded-md bg-gradient-to-r from-vermilion via-amber-glow to-vermilion text-warm-cream font-display text-base tracking-wider uppercase border border-antique-gold/80 shadow-lg flex items-center justify-center gap-2 font-bold cursor-pointer"
+            className="mt-2 w-full py-3.5 min-h-[48px] rounded-md bg-gradient-to-r from-vermilion via-amber-glow to-vermilion text-warm-cream font-display text-base tracking-wider uppercase border border-antique-gold/80 shadow-lg flex items-center justify-center gap-2 font-bold cursor-pointer"
           >
             <Ticket className="w-5 h-5 text-bright-gold shrink-0" />
             <span>{eventData.ctas.primary}</span>

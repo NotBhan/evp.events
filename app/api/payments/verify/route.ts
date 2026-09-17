@@ -9,6 +9,7 @@ import {
   BookingExpiredError,
   AmountMismatchError,
 } from '@/lib/payments';
+import { createEntryTokenForBooking } from '@/lib/entry-token';
 
 export async function POST(req: Request) {
   let body: Record<string, unknown>;
@@ -134,6 +135,7 @@ export async function POST(req: Request) {
         createdAt: booking.createdAt.toISOString(),
         expiresAt: booking.expiresAt.toISOString(),
         confirmedAt: booking.confirmedAt?.toISOString() || null,
+        entryToken: createEntryTokenForBooking(booking),
       },
     });
   }
@@ -242,6 +244,7 @@ export async function POST(req: Request) {
         createdAt: result.booking.createdAt.toISOString(),
         expiresAt: result.booking.expiresAt.toISOString(),
         confirmedAt: result.booking.confirmedAt?.toISOString() || null,
+        entryToken: createEntryTokenForBooking(result.booking),
       },
       paymentAttempt: {
         id: result.paymentAttempt.id,

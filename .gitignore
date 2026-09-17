@@ -41,4 +41,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /scratch/
-/scripts/
+# local QA/verification scripts are ignored, except the ones package.json depends on
+/scripts/*
+!/scripts/run-with-ipv4.sh
+!/scripts/organiser-admin.mjs
+!/scripts/set_inventory.mjs

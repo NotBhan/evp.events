@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { QRCodeSVG } from 'qrcode.react';
 import { eventData } from '@/data/eventData';
+import { getLenisInstance } from '@/lib/lenis-instance';
 import {
   Printer,
   MessageCircle,
@@ -14,7 +16,6 @@ import {
   Calendar,
   ShieldAlert,
   FileText,
-  Key,
   CheckCircle2,
   AlertTriangle,
   CreditCard,
@@ -41,9 +42,9 @@ export interface BookingReceiptProps {
   status?: 'PENDING' | 'CONFIRMED' | 'EXPIRED' | 'CANCELLED';
   paymentStatus?: 'NOT_STARTED' | 'PENDING' | 'FAILED' | 'PAID';
   expiresAt?: string;
-  recoveryToken?: string;
   cancelledAt?: string | null;
   refundBreakdown?: RefundCalculation;
+  entryToken?: string;
   onNewEnquiry?: () => void;
   onProceedToPayment?: () => void;
 }
@@ -62,9 +63,9 @@ export default function BookingReceipt({
   status = 'PENDING',
   paymentStatus = 'NOT_STARTED',
   expiresAt,
-  recoveryToken,
   cancelledAt,
   refundBreakdown,
+  entryToken,
   onNewEnquiry,
   onProceedToPayment,
 }: BookingReceiptProps) {
@@ -113,7 +114,7 @@ export default function BookingReceipt({
     if (typeof document !== 'undefined') {
       const el = document.getElementById('booking-receipt-document');
       if (el) {
-        const lenis = typeof window !== 'undefined' ? (window as any).lenis : null;
+        const lenis = getLenisInstance();
         if (lenis) {
           lenis.scrollTo(el, { offset: -80 });
         } else {
@@ -144,87 +145,14 @@ export default function BookingReceipt({
       });
 
   return (
-    <div className="w-full space-y-6">
-      {/* ====================================================================
-          TOP CONTEXT BANNER (ON SCREEN ONLY)
-          ==================================================================== */}
-      <div className={`no-print p-5 rounded-2xl border-2 text-center flex flex-col items-center shadow-2xl ${
-        status === 'CANCELLED'
-          ? 'bg-deep-plum/95 border-vermilion/80'
-          : status === 'EXPIRED'
-          ? 'bg-deep-plum/95 border-vermilion'
-          : status === 'CONFIRMED'
-          ? 'bg-deep-plum/95 border-emerald-400'
-          : 'bg-royal-maroon/90 border-bright-gold'
-      }`}>
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-deep-plum/90 border border-antique-gold/50 text-bright-gold text-xs font-mono tracking-widest uppercase mb-2">
-          <span>REQUEST ID:</span>
-          <span className="font-bold text-warm-cream">{bookingId}</span>
-        </div>
-        <h2 className="font-display text-2xl sm:text-3xl text-warm-cream tracking-wide uppercase">
-          {status === 'CANCELLED'
-            ? 'BOOKING CANCELLED'
-            : status === 'EXPIRED'
-            ? 'RESERVATION EXPIRED'
-            : status === 'CONFIRMED'
-            ? 'OFFICIAL PASS CONFIRMED'
-            : 'BOOKING REQUEST SUBMITTED'}
-        </h2>
-        <p className="font-body text-xs sm:text-sm text-warm-cream/80 max-w-lg mt-1 leading-relaxed">
-          {status === 'CANCELLED'
-            ? 'Your booking has been cancelled and festival pass allocation has been released. Refund requests and processing are handled separately.'
-            : status === 'EXPIRED'
-            ? 'This 24-hour pass reservation window has elapsed. Reserved allocation was returned to the festival pool.'
-            : status === 'CONFIRMED'
-            ? `Your festival pass allocation is officially confirmed with ${eventData.organizer.name}. Present this receipt at the venue counter.`
-            : `Your request has been securely recorded with the ${eventData.organizer.name} coordination desk. Review your official booking request receipt below.`}
-        </p>
-
-        {/* Quick Receipt Action Bar in Banner */}
-        <div className="flex flex-wrap items-center justify-center gap-2.5 mt-4">
-          <button
-            type="button"
-            onClick={handleScrollToReceipt}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-deep-plum border border-antique-gold/40 text-warm-cream text-xs font-body uppercase font-bold tracking-wider hover:border-bright-gold cursor-pointer"
-          >
-            <FileText className="w-3.5 h-3.5 text-bright-gold" />
-            <span>VIEW RECEIPT</span>
-          </button>
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-bright-gold text-deep-plum text-xs font-body uppercase font-bold tracking-wider hover:bg-amber-glow cursor-pointer"
-          >
-            <Printer className="w-3.5 h-3.5 text-deep-plum" />
-            <span>PRINT / SAVE PDF</span>
-          </button>
-          {status !== 'EXPIRED' && (
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#25D366] text-deep-plum text-xs font-body uppercase font-bold tracking-wider hover:bg-[#20ba59]"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-deep-plum" />
-              <span>{status === 'CANCELLED' ? 'REFUND ASSISTANCE VIA WHATSAPP' : 'EXPEDITE VIA WHATSAPP'}</span>
-            </a>
-          )}
-          <a
-            href={`tel:${eventData.contacts.phones[0].replace(/\s+/g, '')}`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-royal-maroon border border-antique-gold/40 text-warm-cream text-xs font-body uppercase font-bold tracking-wider hover:border-bright-gold"
-          >
-            <PhoneCall className="w-3.5 h-3.5 text-bright-gold" />
-            <span>CALL BOX OFFICE</span>
-          </a>
-        </div>
-      </div>
-
-      {/* ====================================================================
-          OFFICIAL BOOKING REQUEST RECEIPT (PRINTABLE STUB)
-          ==================================================================== */}
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 xl:gap-6 items-start">
+      {/* ======================================================================
+          THE PASS DOCUMENT — section order mirrors the printed pass one-to-one.
+          Capped width so the action sidebar fits beside it on large screens.
+          ====================================================================== */}
       <article
         id="booking-receipt-document"
-        className="booking-receipt-printable relative rounded-3xl bg-card-surface border-2 border-antique-gold/50 shadow-2xl p-6 sm:p-10 overflow-hidden text-warm-cream"
+        className="booking-receipt-printable relative w-full xl:col-span-8 xl:col-start-1 xl:max-w-[860px] rounded-3xl bg-card-surface border-2 border-antique-gold/50 shadow-2xl p-5 sm:p-6 md:p-8 overflow-hidden text-warm-cream"
       >
         {/* Perforated Ticket Notches (Decorative on screen, suppressed in print) */}
         <div
@@ -245,7 +173,7 @@ export default function BookingReceipt({
         {/* ------------------------------------------------------------------
             RECEIPT HEADER
             ------------------------------------------------------------------ */}
-        <header className="border-b-2 border-dashed border-antique-gold/30 pb-6 mb-6">
+        <header className="border-b-2 border-dashed border-antique-gold/30 pb-4 mb-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="flex items-center gap-3">
               <div className="relative w-16 h-12 rounded-xl bg-deep-plum border border-antique-gold/50 p-1 shrink-0 shadow-md">
@@ -254,6 +182,7 @@ export default function BookingReceipt({
                   alt="Event Point Official Logo"
                   fill
                   unoptimized
+                  sizes="64px"
                   className="object-contain"
                 />
               </div>
@@ -366,32 +295,15 @@ export default function BookingReceipt({
             </div>
           )}
 
-          {/* Recovery Key Callout (for email-less booking creations) */}
-          {recoveryToken && (
-            <div className="mt-4 p-3.5 rounded-xl bg-deep-plum/95 border border-bright-gold/70 flex items-start gap-3 text-left">
-              <Key className="w-5 h-5 text-bright-gold shrink-0 mt-0.5" />
-              <div className="w-full">
-                <span className="font-display text-xs sm:text-sm text-bright-gold uppercase tracking-wider font-bold block">
-                  RECOVERY KEY (SAVE THIS KEY)
-                </span>
-                <div className="font-mono text-xs sm:text-sm text-white font-bold tracking-wider my-1.5 select-all bg-card-surface px-3 py-1.5 rounded-lg border border-antique-gold/50 inline-block">
-                  {recoveryToken}
-                </div>
-                <p className="font-body text-[11px] text-warm-cream/80 leading-relaxed">
-                  Because this reservation was created without an email address, save this recovery key along with your Request ID ({bookingId}) to retrieve or verify your booking status later.
-                </p>
-              </div>
-            </div>
-          )}
         </header>
 
         {/* ------------------------------------------------------------------
             RECEIPT BODY: 2-COLUMN GRID (ATTENDEE & PASS SPECIFICATION)
             ------------------------------------------------------------------ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pb-6 mb-6 border-b-2 border-dashed border-antique-gold/30">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pb-4 mb-4 border-b-2 border-dashed border-antique-gold/30">
           {/* Attendee Details */}
-          <div className="space-y-3 font-body text-xs">
-            <span className="text-bright-gold font-bold uppercase tracking-wider text-[11px] block border-b border-antique-gold/20 pb-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5 font-body text-xs">
+            <span className="sm:col-span-2 text-bright-gold font-bold uppercase tracking-wider text-[11px] block border-b border-antique-gold/20 pb-1">
               ATTENDEE DETAILS
             </span>
 
@@ -469,7 +381,7 @@ export default function BookingReceipt({
             </div>
 
             {/* Total Section */}
-            <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/30 mt-4 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/30 mt-3 flex items-center justify-between">
               <span className="font-body text-xs font-bold uppercase tracking-wider text-warm-cream/80">
                 {status === 'CANCELLED' ? 'ORIGINAL AMOUNT PAID:' : 'REQUEST TOTAL:'}
               </span>
@@ -501,9 +413,42 @@ export default function BookingReceipt({
         </div>
 
         {/* ------------------------------------------------------------------
+            ENTRY QR — mirrors the printed pass: full-width gate admission band
+            ------------------------------------------------------------------ */}
+        {status === 'CONFIRMED' && paymentStatus === 'PAID' && entryToken && (
+          <div
+            id="receipt-entry-qr"
+            className="mb-4 p-4 rounded-2xl bg-warm-cream border-2 border-antique-gold/50 flex flex-col sm:flex-row items-center gap-4 sm:gap-6"
+          >
+            <div className="p-2 bg-white rounded-xl border border-deep-plum/15 shrink-0">
+              <QRCodeSVG
+                value={entryToken}
+                size={124}
+                level="M"
+                marginSize={2}
+                bgColor="#FFFFFF"
+                fgColor="#220D1A"
+              />
+            </div>
+            <div className="text-center sm:text-left">
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-glow block">
+                ✦ Official Gate Admission Pass ✦
+              </span>
+              <span className="font-display text-lg sm:text-xl text-deep-plum uppercase tracking-wide block mt-0.5">
+                Present this QR code at the event entrance.
+              </span>
+              <span className="font-mono text-sm font-bold text-deep-plum block mt-1">{bookingId}</span>
+              <span className="text-[10px] font-body text-deep-plum/70 block mt-1">
+                Entry is verified online at the gate by event staff. One scan admits this pass once.
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* ------------------------------------------------------------------
             EVENT & ORGANIZER METADATA
             ------------------------------------------------------------------ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-body">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-body">
           {/* Event Logistics */}
           <div className="space-y-2">
             <span className="text-bright-gold font-bold uppercase tracking-wider text-[11px] block">
@@ -546,44 +491,35 @@ export default function BookingReceipt({
             POST-PURCHASE INSTRUCTIONS (CONFIRMED RECEIPTS ONLY)
             ------------------------------------------------------------------ */}
         {status === 'CONFIRMED' && (
-          <section className="mt-6 pt-5 border-t border-antique-gold/20 text-left">
-            <span className="text-bright-gold font-bold uppercase tracking-wider text-[11px] block mb-3">
-              IMPORTANT INFORMATION
+          <section className="mt-4 pt-4 border-t border-antique-gold/20 text-left">
+            <span className="text-bright-gold font-bold uppercase tracking-wider text-[11px] block mb-2">
+              ✦ IMPORTANT INFORMATION
             </span>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-body text-[11px] leading-relaxed text-warm-cream/85">
-              <div className="space-y-1">
-                <span className="text-warm-cream font-bold uppercase tracking-wider text-[10px] block">
-                  Retrieve Your Receipt
-                </span>
-                <p>
-                  Use <strong className="text-warm-cream">Find / Recover Reservation</strong> on the
-                  booking page. Provide your Booking Reference ID (
-                  <span className="font-mono text-bright-gold">{bookingId}</span>) with your email
-                  &amp; mobile, or use <strong className="text-warm-cream">Key Recovery (No Email)</strong>{' '}
-                  if you booked without an email address.
-                </p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-warm-cream font-bold uppercase tracking-wider text-[10px] block">
-                  Cancellation
-                </span>
-                <p>
-                  Cancellations are requested through the website's booking recovery flow — open your
-                  confirmed booking and select <strong className="text-warm-cream">Cancel Booking</strong>.
-                  Cancellation requests close {CANCELLATION_DEADLINE_DISPLAY}.
-                </p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-warm-cream font-bold uppercase tracking-wider text-[10px] block">
-                  Refund Request
-                </span>
-                <p>
-                  Cancellation and refund are handled separately. After cancelling on the website,
-                  request your refund via the WhatsApp/email support contacts shown above. Approved
-                  refunds are returned to your original payment method, less the 18% GST included in
-                  the amount paid.
-                </p>
-              </div>
+            <div className="space-y-2 font-body text-[11px] leading-relaxed text-warm-cream/85">
+              <p>
+                <strong className="text-warm-cream">Retrieve Your Receipt:</strong> Use &ldquo;Find / Recover
+                Reservation&rdquo; on the website&apos;s Find Pass page with your Booking Reference ID (
+                <span className="font-mono text-bright-gold">{bookingId}</span>) together with the email address
+                and mobile number you booked with.
+              </p>
+              <p>
+                <strong className="text-warm-cream">Cancellation:</strong> Cancel through the website&apos;s
+                booking recovery flow — open your confirmed booking on the Find Pass page and select
+                &ldquo;Cancel Booking&rdquo;. Cancellation requests close on{' '}
+                <strong className="text-warm-cream">{CANCELLATION_DEADLINE_DISPLAY}</strong>, and a pass already
+                used for entry cannot be cancelled or refunded.
+              </p>
+              <p>
+                <strong className="text-warm-cream">Refund Request:</strong> Cancellation and refund are handled
+                separately. After cancelling on the website, request your refund via our support channels.
+                Approved refunds return to your original payment method, less the 18% GST included in the amount
+                paid.
+              </p>
+              <p>
+                <strong className="text-warm-cream">Entry Protocol:</strong> Entry is digital only — present the
+                entry QR from this receipt, on your phone or as a printed copy. Gates open at{' '}
+                {eventData.timeDisplay} on {eventData.dateDisplay}.
+              </p>
             </div>
           </section>
         )}
@@ -591,7 +527,7 @@ export default function BookingReceipt({
         {/* ------------------------------------------------------------------
             MANDATORY FORMAL NOTICE
             ------------------------------------------------------------------ */}
-        <footer className="mt-6 pt-4 border-t border-antique-gold/20 text-center space-y-2">
+        <footer className="mt-4 pt-3 border-t border-antique-gold/20 text-center space-y-2">
           {status === 'CANCELLED' ? (
             <p className="font-body text-[10px] sm:text-[11px] text-vermilion leading-relaxed max-w-xl mx-auto">
               Your booking has been cancelled. Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. Refund requests and processing are handled separately.
@@ -619,84 +555,132 @@ export default function BookingReceipt({
         </footer>
       </article>
 
-      {/* ====================================================================
-          RECEIPT ACTIONS BAR (ON SCREEN ONLY)
-          ==================================================================== */}
-      <div className="no-print space-y-3 pt-2">
-        {/* Primary Payment Action for PENDING Bookings */}
-        {status === 'PENDING' && (
-          <div className="space-y-2">
-            <button
-              id="receipt-pay-online-btn"
-              type="button"
-              onClick={handleOnlineCheckout}
-              disabled={isRedirecting}
-              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-amber-glow via-bright-gold to-amber-glow hover:brightness-110 text-deep-plum font-display text-lg sm:text-xl tracking-wider uppercase shadow-2xl flex items-center justify-center gap-3 font-bold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-bright-gold"
-            >
-              {isRedirecting ? (
-                <>
-                  <Loader2 className="w-6 h-6 animate-spin text-deep-plum" />
-                  <span>CONNECTING TO SECURE PAYMENT...</span>
-                </>
-              ) : (
-                <>
-                  <CreditCard className="w-6 h-6 text-deep-plum" />
-                  <span>PROCEED TO ONLINE PAYMENT · ₹{total.toLocaleString('en-IN')}</span>
-                </>
-              )}
-            </button>
+        {/* ====================================================================
+            ACTION CONTROL DESK — first on small screens (print/contact buttons
+            before the pass), right-hand sidebar on large screens
+            ==================================================================== */}
+        <div className="no-print order-first xl:order-none xl:col-span-4 xl:col-start-9 space-y-3">
+          {/* Status Summary Placard */}
+          <div className={`p-5 rounded-2xl border-2 text-center flex flex-col items-center shadow-xl ${
+            status === 'CANCELLED'
+              ? 'bg-deep-plum/95 border-vermilion/80'
+              : status === 'EXPIRED'
+              ? 'bg-deep-plum/95 border-vermilion'
+              : status === 'CONFIRMED'
+              ? 'bg-royal-maroon/95 border-emerald-400'
+              : 'bg-royal-maroon/95 border-bright-gold'
+          }`}>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-deep-plum/90 border border-antique-gold/50 text-bright-gold text-xs font-mono tracking-widest uppercase mb-2">
+              <span>BOOKING ID:</span>
+              <span className="font-bold text-warm-cream">{bookingId}</span>
+            </div>
+            <h3 className="font-display text-2xl text-warm-cream tracking-wide uppercase">
+              {status === 'CANCELLED'
+                ? 'BOOKING CANCELLED'
+                : status === 'EXPIRED'
+                ? 'RESERVATION EXPIRED'
+                : status === 'CONFIRMED'
+                ? 'PASS CONFIRMED & PAID'
+                : 'RESERVATION HELD'}
+            </h3>
+            <p className="font-body text-xs text-warm-cream/80 mt-1 leading-relaxed">
+              {status === 'CANCELLED'
+                ? 'Your reservation has been cancelled. For refund questions, contact support.'
+                : status === 'EXPIRED'
+                ? 'The 24-hour hold deadline has elapsed. Please start a new reservation.'
+                : status === 'CONFIRMED'
+                ? 'Your admission is officially locked in Neon. Download or print your pass stub.'
+                : 'Your booking is held for 24 hours. Complete payment to secure your QR entry pass.'}
+            </p>
+          </div>
 
-            {paymentError && (
-              <div className="p-3 rounded-xl bg-vermilion/20 border border-vermilion text-xs text-warm-cream flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-vermilion shrink-0" />
-                <span>{paymentError}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3 items-stretch">
+            {/* Primary Action 1: Pay Online (If Pending) */}
+            {status === 'PENDING' && (
+              <div className="space-y-2 sm:col-span-2 xl:col-span-1">
+              <button
+                id="receipt-pay-online-btn"
+                type="button"
+                onClick={handleOnlineCheckout}
+                disabled={isRedirecting}
+                className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-vermilion via-amber-glow to-vermilion hover:brightness-110 text-warm-cream font-display text-lg sm:text-xl tracking-wider uppercase shadow-2xl flex items-center justify-center gap-3 font-bold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-bright-gold"
+              >
+                {isRedirecting ? (
+                  <>
+                    <Loader2 className="w-6 h-6 animate-spin text-bright-gold" />
+                    <span>OPENING PAYMENT DESK...</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-6 h-6 text-bright-gold" />
+                    <span>PAY NOW ₹{total.toLocaleString('en-IN')} WITH RAZORPAY</span>
+                  </>
+                )}
+              </button>
+
+              {paymentError && (
+                <div className="p-3 rounded-xl bg-vermilion/20 border border-vermilion text-xs text-warm-cream flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-vermilion shrink-0" />
+                  <span>{paymentError}</span>
+                </div>
+              )}
               </div>
             )}
-          </div>
-        )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-amber-glow to-bright-gold hover:from-bright-gold hover:to-amber-glow text-deep-plum font-display text-lg tracking-wider uppercase shadow-lg flex items-center justify-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold cursor-pointer"
+            {/* Primary Action 2: Download / Print PDF Receipt */}
+            <button
+              type="button"
+              onClick={handlePrint}
+            className="w-full py-4 px-5 rounded-xl bg-gradient-to-r from-amber-glow to-bright-gold hover:from-bright-gold hover:to-amber-glow text-deep-plum font-display text-lg tracking-wider uppercase shadow-lg flex items-center justify-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold cursor-pointer border border-bright-gold/80"
           >
             <Printer className="w-5 h-5 text-deep-plum" />
-            <span>PRINT / SAVE PDF</span>
+            <span>DOWNLOAD / PRINT RECEIPT PDF</span>
           </button>
 
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-[#25D366] to-[#1EBE5D] hover:from-[#1EBE5D] hover:to-[#169C4B] text-white font-display text-lg tracking-wider uppercase shadow-lg flex items-center justify-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold"
-          >
-            <MessageCircle className="w-5 h-5 fill-white" />
-            <span>EXPEDITE VIA WHATSAPP</span>
-          </a>
-        </div>
+          {/* WhatsApp Support & Expedite Action */}
+          {status !== 'EXPIRED' && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 px-5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-deep-plum font-display text-base tracking-wider uppercase shadow-md flex items-center justify-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold"
+            >
+              <MessageCircle className="w-5 h-5 fill-deep-plum" />
+              <span>{status === 'CANCELLED' ? 'REFUND ASSISTANCE VIA WHATSAPP' : 'EXPEDITE PASS VIA WHATSAPP'}</span>
+            </a>
+          )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Call Box Office Action */}
           <a
             href={`tel:${eventData.contacts.phones[0].replace(/\s+/g, '')}`}
-            className="py-3 px-4 rounded-xl bg-royal-maroon/90 hover:bg-royal-maroon border border-antique-gold/40 text-warm-cream hover:text-bright-gold font-body text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+            className="w-full py-3 px-4 rounded-xl bg-royal-maroon/90 hover:bg-royal-maroon border border-antique-gold/40 text-warm-cream hover:text-bright-gold font-body text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
           >
             <PhoneCall className="w-4 h-4 text-bright-gold" />
-            <span>CALL BOX OFFICE</span>
+            <span>CALL BOX OFFICE ({eventData.contacts.phones[0]})</span>
           </a>
 
+          {/* Submit Another Request Action */}
           {onNewEnquiry && (
             <button
               type="button"
               onClick={onNewEnquiry}
-              className="py-3 px-4 rounded-xl bg-deep-plum/90 hover:bg-deep-plum border border-antique-gold/30 text-warm-cream hover:text-bright-gold font-body text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              className="w-full py-3 px-4 rounded-xl bg-deep-plum/90 hover:bg-deep-plum border border-antique-gold/30 text-warm-cream hover:text-bright-gold font-body text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
               <RefreshCw className="w-4 h-4 text-bright-gold" />
-              <span>SUBMIT ANOTHER REQUEST</span>
+              <span>BOOK ANOTHER FESTIVAL PASS</span>
             </button>
           )}
+
+          </div>
+
+          {/* Fast Policy Links */}
+          <div className="p-4 rounded-xl bg-deep-plum/60 border border-antique-gold/20 text-center space-y-1 text-[11px] text-warm-cream/60">
+            <span className="block font-bold uppercase tracking-wider text-bright-gold text-[10px]">
+              Official Policy Guarantee
+            </span>
+            <p>100% verified entry passes issued directly by Event Point.</p>
+          </div>
         </div>
-      </div>
     </div>
   );
 }

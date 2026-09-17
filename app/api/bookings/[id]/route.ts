@@ -8,6 +8,7 @@ import {
   CANCELLATION_DEADLINE_ISO,
   CANCELLATION_DEADLINE_DISPLAY,
 } from '@/lib/cancellation';
+import { createEntryTokenForBooking } from '@/lib/entry-token';
 
 function maskEmail(emailStr: string | null): string | null {
   if (!emailStr) return null;
@@ -107,6 +108,7 @@ export async function GET(
         cancellationDeadlineDisplay: CANCELLATION_DEADLINE_DISPLAY,
         refundBreakdown,
         refundStatus: booking.status === 'CANCELLED' ? 'Refund handled separately.' : null,
+        entryToken: createEntryTokenForBooking(booking),
       },
     });
   } catch (err: unknown) {

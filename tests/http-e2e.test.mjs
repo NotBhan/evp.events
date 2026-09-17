@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { PrismaClient } from '@prisma/client';
+import { OPEN_BOOKING_WINDOW_ENV } from './helpers/booking-window-env.mjs';
 
 const PORT = 3030;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -22,9 +23,9 @@ async function waitForServer(url, timeoutMs = 15000) {
 async function runHttpTests() {
   console.log('🚀 Launching Next.js production server on port 3030 for end-to-end API testing...');
 
-  const serverProc = spawn('pnpm', ['exec', 'next', 'start', '-p', String(PORT)], {
+  const serverProc = spawn('node', ['./node_modules/next/dist/bin/next', 'start', '-p', String(PORT)], {
     stdio: 'pipe',
-    env: { ...process.env },
+    env: { ...process.env, ...OPEN_BOOKING_WINDOW_ENV },
   });
 
   serverProc.stdout.on('data', (data) => {
@@ -35,6 +36,7 @@ async function runHttpTests() {
   });
 
   let testPass = null;
+  let emptyPass = null;
 
   try {
     await waitForServer(`${BASE_URL}/`, 15000);
@@ -76,15 +78,27 @@ async function runHttpTests() {
     assert.match(honeypotData.error, /anti-spam/i);
     console.log('  ✓ Honeypot spam submission rejected with HTTP 400');
 
-    // TEST C: Zero Inventory Production Pass
-    console.log('\n--- HTTP TEST 2: Production Inventory Protection ---');
+    // TEST C: Zero Inventory Pass (isolated tier — production inventory is not assumed empty)
+    console.log('\n--- HTTP TEST 2: Zero-Inventory Guard ---');
+    const emptyPassType = `http-test-empty-${Date.now()}`;
+    emptyPass = await prisma.pass.create({
+      data: {
+        passType: emptyPassType,
+        name: 'Zero Inventory Test Tier',
+        price: 999,
+        totalQuantity: 0,
+        reservedQuantity: 0,
+        soldQuantity: 0,
+        isActive: true,
+      },
+    });
     const prodRes = await fetch(`${BASE_URL}/api/bookings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        passId: 'solo-female',
-        quantity: 1,
+        passId: emptyPassType,
         fullName: 'Jane Doe',
+        email: 'zero.inventory@suitetest.example',
         phone: '9876543210',
       }),
     });
@@ -92,7 +106,9 @@ async function runHttpTests() {
     assert.equal(prodRes.status, 409);
     assert.equal(prodData.success, false);
     assert.match(prodData.error, /not available or sold out/i);
-    console.log('  ✓ Production pass with total_quantity=0 rejected with HTTP 409 Conflict');
+    const emptyPassBookings = await prisma.booking.count({ where: { passId: emptyPass.id } });
+    assert.equal(emptyPassBookings, 0, 'No booking rows may be created for the zero-inventory tier');
+    console.log('  ✓ Zero-inventory pass rejected with HTTP 409 and zero booking rows created');
 
     // TEST D: Controlled Test Pass with Capacity
     console.log('\n--- HTTP TEST 3: Successful Booking & Price Protection ---');
@@ -143,6 +159,7 @@ async function runHttpTests() {
         passId: testPassType,
         quantity: 1,
         fullName: 'Rahul Verma',
+        email: 'rahul.verma@suitetest.example',
         phone: '9931503961',
       }),
     });
@@ -159,6 +176,7 @@ async function runHttpTests() {
         passId: testPassType,
         quantity: 1,
         fullName: 'Extra Attendee',
+        email: 'extra.attendee@suitetest.example',
         phone: '9931503962',
       }),
     });
@@ -179,6 +197,12 @@ async function runHttpTests() {
       await prisma.booking.deleteMany({ where: { passId: testPass.id } });
       await prisma.pass.delete({ where: { id: testPass.id } });
       console.log('  ✓ Cleaned up HTTP test bookings and test pass from Neon');
+    }
+
+    if (emptyPass) {
+      await prisma.booking.deleteMany({ where: { passId: emptyPass.id } });
+      await prisma.pass.delete({ where: { id: emptyPass.id } });
+      console.log('  ✓ Cleaned up zero-inventory test pass from Neon');
     }
 
     serverProc.kill('SIGKILL');

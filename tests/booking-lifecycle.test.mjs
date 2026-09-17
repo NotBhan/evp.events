@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { OPEN_BOOKING_WINDOW_ENV } from './helpers/booking-window-env.mjs';
 const LOOKUP_SESSION_COOKIE_NAME = 'ru26_lookup_session';
 const SESSION_TTL_MS = 30 * 60 * 1000;
 
@@ -134,11 +135,11 @@ async function runTests() {
   // SUITE 2: NEXT.JS SERVER INTEGRATION TESTS
   // =========================================================================
   console.log('\n--- SUITE 2: HTTP Route Integration Tests ---');
-  const serverProc = spawn('pnpm', ['exec', 'next', 'start', '-p', String(PORT)], {
+  const serverProc = spawn('node', ['./node_modules/next/dist/bin/next', 'start', '-p', String(PORT)], {
     stdio: 'pipe',
     env: {
       ...process.env,
-      LD_PRELOAD: '/tmp/libipv4only.so',
+      ...OPEN_BOOKING_WINDOW_ENV,
       CRON_SECRET: 'test-cron-secret-3981',
     },
   });
@@ -185,31 +186,16 @@ async function runTests() {
       console.log('  ✓ Booking-ID-only lookup rejected with 400');
     }
 
-    // 2. Recovery Endpoint Validation
-    console.log('\n--- TEST 2.2: Direct Key Recovery Validation ---');
+    // 2. Key-recovery endpoint is retired
+    console.log('\n--- TEST 2.2: Key Recovery Endpoint Retired ---');
     {
-      // Missing token
-      const noTokenRes = await fetch(`${BASE_URL}/api/bookings/recover`, {
+      const res = await fetch(`${BASE_URL}/api/bookings/recover`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId: 'RU26-REQ-4819' }),
+        body: JSON.stringify({ bookingId: 'RU26-REQ-4819', recoveryToken: 'anything' }),
       });
-      assert.equal(noTokenRes.status, 400, 'Recovery without key must return 400');
-      const noTokenData = await noTokenRes.json();
-      assert.match(noTokenData.error, /recovery key/i);
-
-      // Missing bookingId
-      const noIdRes = await fetch(`${BASE_URL}/api/bookings/recover`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recoveryToken: 'some-token-key' }),
-      });
-      assert.equal(noIdRes.status, 400, 'Recovery without ID must return 400');
-      const noIdData = await noIdRes.json();
-      assert.match(noIdData.error, /booking reference/i);
-
-      console.log('  ✓ Missing recovery key rejected with 400');
-      console.log('  ✓ Missing booking ID rejected with 400');
+      assert.ok(res.status === 404 || res.status === 405, `retired recover endpoint must not process requests (got ${res.status})`);
+      console.log('  ✓ /api/bookings/recover no longer exists');
     }
 
     // 3. GET /api/bookings/[id] Authorization Guard
@@ -327,6 +313,7 @@ async function runTests() {
   }
 
   console.log('\n🎉 ALL PHASE 3 AUTOMATED TESTS PASSED SUCCESSFULLY!\n');
+  process.exit(0);
 }
 
 runTests().catch((err) => {

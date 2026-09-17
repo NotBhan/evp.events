@@ -37,6 +37,34 @@ enum SheetSyncStatus {
   FAILED
 }
 
+enum CheckInStatus {
+  NOT_CHECKED_IN
+  CHECKED_IN
+}
+
+enum OrganiserRole {
+  ENTRY_SCANNER
+  ADMIN
+}
+
+model Organiser {
+  id                  String        @id @default(cuid())
+  name                String
+  loginId             String        @unique @map("login_id")
+  credentialHash      String        @map("credential_hash")
+  role                OrganiserRole @default(ENTRY_SCANNER)
+  gateId              String        @map("gate_id")
+  active              Boolean       @default(true)
+  hidden              Boolean       @default(false)
+  failedLoginAttempts Int           @default(0) @map("failed_login_attempts")
+  lockedUntil         DateTime?     @map("locked_until")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+  lastLoginAt         DateTime?     @map("last_login_at")
+
+  @@map("organisers")
+}
+
 model Pass {
   id               String    @id @default(cuid())
   passType         String    @unique @map("pass_type")
@@ -71,13 +99,17 @@ model Booking {
   expiresAt       DateTime       @map("expires_at")
   updatedAt       DateTime       @updatedAt @map("updated_at")
   confirmedAt       DateTime?      @map("confirmed_at")
-  recoveryTokenHash String?        @map("recovery_token_hash")
   source            String         @default("web")
 
   sheetSyncStatus   SheetSyncStatus? @map("sheet_sync_status")
   sheetSyncedAt     DateTime?        @map("sheet_synced_at")
   sheetSyncAttempts Int              @default(0) @map("sheet_sync_attempts")
   sheetLastError    String?          @map("sheet_last_error")
+
+  checkInStatus     CheckInStatus    @default(NOT_CHECKED_IN) @map("check_in_status")
+  checkedInAt       DateTime?        @map("checked_in_at")
+  checkedInBy       String?          @map("checked_in_by")
+  checkedInById     String?          @map("checked_in_by_id")
 
   pass            Pass           @relation(fields: [passId], references: [id])
   paymentAttempts PaymentAttempt[]

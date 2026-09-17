@@ -150,7 +150,7 @@ export default function PaymentPlaceholderModal({
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          {/* Primary Action: Stripe Online Checkout */}
+          {/* Primary Action: Online Checkout */}
           <button
             type="button"
             onClick={handleOnlineCheckout}
@@ -160,7 +160,7 @@ export default function PaymentPlaceholderModal({
             {isRedirecting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin text-deep-plum" />
-                <span>REDIRECTING TO STRIPE...</span>
+                <span>REDIRECTING TO PAYMENT GATEWAY...</span>
               </>
             ) : (
               <>

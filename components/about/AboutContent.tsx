@@ -18,6 +18,8 @@ import {
   Clock,
   MapPin,
   Landmark,
+  Phone,
+  Mail,
 } from 'lucide-react';
 
 if (typeof window !== 'undefined') {
@@ -389,8 +391,7 @@ export default function AboutContent() {
                   }}
                 />
 
-                {/* Layer 0b: Physical Double-Keyline Border Inset & Corner Filigrees */}
-                <div className="absolute inset-2 sm:inset-2.5 rounded-xl border border-antique-gold/25 pointer-events-none z-30" />
+                {/* Layer 0b: Corner Filigree Accents */}
                 <div className="absolute top-2 left-2 text-antique-gold/70 text-xs select-none z-30">❖</div>
                 <div className="absolute top-2 right-2 text-antique-gold/70 text-xs select-none z-30">❖</div>
                 <div className="absolute bottom-2 left-2 text-antique-gold/70 text-xs select-none z-30">❖</div>
@@ -533,39 +534,34 @@ export default function AboutContent() {
                 {/* Layer 7: CENTER BODY — Authentic Title Artwork & Dandiya Night Lockup */}
                 <div
                   ref={titleLockupRef}
-                  className="absolute left-0 right-0 top-[27.5%] sm:top-[29%] z-30 flex flex-col items-center text-center px-3 sm:px-4 pointer-events-none"
+                  className="absolute left-0 right-0 top-[26.5%] sm:top-[27.5%] z-30 flex flex-col items-center text-center px-3 sm:px-4 pointer-events-none"
                 >
                   {/* Authentic Title Artwork — 4× upscaled */}
-                  <div className="relative w-[64%] sm:w-[68%] h-[46px] sm:h-[64px] md:h-[76px] drop-shadow-[0_6px_18px_rgba(0,0,0,0.9)]">
+                  <div className="relative w-[60%] sm:w-[64%] h-[42px] sm:h-[54px] md:h-[66px] drop-shadow-[0_6px_18px_rgba(0,0,0,0.9)]">
                     <Image
                       src="/images/client/raascdr/web/title-raas-utsav-4x.webp"
                       alt="रास Utsav 2026 Title Artwork"
                       fill
                       className="object-contain object-center"
-                      
-                      sizes="(max-width: 640px) 260px, (max-width: 1024px) 380px, 500px"
+                      sizes="(max-width: 640px) 260px, (max-width: 1024px) 380px, 480px"
                       priority
                       unoptimized
                     />
                   </div>
 
-                  {/* Monumental Headline Lockup matching Reference A */}
-                  <span className="block font-antiqua text-[6px] sm:text-[8.5px] text-warm-cream/90 tracking-[0.14em] uppercase font-bold mt-0.5">
+                  {/* Monumental Headline */}
+                  <span className="block font-antiqua text-[7px] sm:text-[9px] text-warm-cream/90 tracking-[0.16em] uppercase font-bold mt-1">
                     JHARKHAND&apos;S GRANDEST
                   </span>
                   <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-bright-gold mt-0.5">
                     <span className="text-bright-gold text-[8px] sm:text-xs select-none" aria-hidden="true">❧</span>
-                    <h2 className="font-antiqua text-xs sm:text-lg md:text-[22px] text-bright-gold tracking-[0.06em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.35)] leading-none font-bold">
+                    <h3 className="font-antiqua text-xs sm:text-base md:text-lg lg:text-xl text-bright-gold tracking-[0.08em] uppercase drop-shadow-[0_2px_12px_rgba(243,198,76,0.4)] leading-tight font-bold">
                       DANDIYA NIGHT
-                    </h2>
+                    </h3>
                     <span className="text-bright-gold text-[8px] sm:text-xs select-none scale-x-[-1]" aria-hidden="true">❧</span>
                   </div>
 
-                  <p className="font-bangle text-[6.5px] sm:text-[9.5px] text-warm-cream font-medium italic mt-0.5">
-                    Navratri Celebration like never before
-                  </p>
-
-                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[5.5px] sm:text-[8px] text-amber-glow font-bangle tracking-[0.16em] uppercase font-semibold mt-0.5">
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[5.5px] sm:text-[7.5px] text-amber-glow font-bangle tracking-[0.16em] uppercase font-semibold mt-1">
                     <span>Dance</span>
                     <span className="text-antique-gold/60">•</span>
                     <span>Devotion</span>
@@ -574,53 +570,54 @@ export default function AboutContent() {
                   </div>
                 </div>
 
-                {/* Layer 8: MIDDLE — Golden Date / Time / Venue Pill Strip */}
+                {/* Layer 8: MIDDLE — Royal Maroon & Gold Date / Time / Venue Plaque */}
                 <div
                   ref={dateStripRef}
-                  className="absolute left-[4.5%] right-[4.5%] sm:left-[6%] sm:right-[6%] top-[51%] sm:top-[51.5%] z-30"
+                  className="absolute left-[4%] right-[4%] sm:left-[5%] sm:right-[5%] top-[46.5%] sm:top-[47%] z-30"
                 >
-                  <div className="flex items-center justify-between bg-gradient-to-r from-[#F7C647] via-[#E4A936] to-[#F7C647] text-[#19060F] px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full border border-antique-gold shadow-[0_4px_14px_rgba(0,0,0,0.6)] font-body text-[6.5px] sm:text-[9px] font-bold">
+                  <div className="flex items-center justify-between bg-gradient-to-r from-[#220716]/95 via-[#380B22]/95 to-[#220716]/95 text-warm-cream px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-antique-gold/70 shadow-[0_4px_18px_rgba(0,0,0,0.85)] ring-1 ring-bright-gold/20 backdrop-blur-md font-body text-[6.5px] sm:text-[9px]">
                     {/* Date */}
                     <div className="flex items-center gap-1 sm:gap-1.5">
-                      <Calendar className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#3D1400] shrink-0" aria-hidden="true" />
+                      <Calendar className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-bright-gold shrink-0" aria-hidden="true" />
                       <div>
-                        <span className="block text-[4.5px] sm:text-[6.5px] uppercase tracking-wider text-[#3D1400]">Date:</span>
-                        <span className="font-extrabold tracking-tight">16 Oct 2026</span>
+                        <span className="block text-[4.5px] sm:text-[6.5px] uppercase tracking-wider text-bright-gold/80 font-bold leading-none">Date:</span>
+                        <span className="font-extrabold tracking-tight text-warm-cream leading-tight">16 Oct 2026</span>
                       </div>
                     </div>
-                    <div className="w-[1px] h-3.5 sm:h-5 bg-[#3D1400]/25" />
+                    <div className="w-[1px] h-3.5 sm:h-4.5 bg-antique-gold/35" />
                     {/* Time */}
                     <div className="flex items-center gap-1 sm:gap-1.5">
-                      <Clock className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#3D1400] shrink-0" aria-hidden="true" />
+                      <Clock className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-bright-gold shrink-0" aria-hidden="true" />
                       <div>
-                        <span className="block text-[4.5px] sm:text-[6.5px] uppercase tracking-wider text-[#3D1400]">Time:</span>
-                        <span className="font-extrabold tracking-tight">5:00 - 11:00pm</span>
+                        <span className="block text-[4.5px] sm:text-[6.5px] uppercase tracking-wider text-bright-gold/80 font-bold leading-none">Time:</span>
+                        <span className="font-extrabold tracking-tight text-warm-cream leading-tight">5:00 - 11:00pm</span>
                       </div>
                     </div>
-                    <div className="w-[1px] h-3.5 sm:h-5 bg-[#3D1400]/25" />
+                    <div className="w-[1px] h-3.5 sm:h-4.5 bg-antique-gold/35" />
                     {/* Venue */}
                     <div className="flex items-center gap-1 sm:gap-1.5 max-w-[42%]">
-                      <MapPin className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#3D1400] shrink-0" aria-hidden="true" />
+                      <MapPin className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-bright-gold shrink-0" aria-hidden="true" />
                       <div className="truncate">
-                        <span className="block text-[4.5px] sm:text-[6.5px] uppercase tracking-wider text-[#3D1400]">Venue:</span>
-                        <span className="font-extrabold tracking-tight truncate block">Upwan Lawn, BNR Chanakya</span>
+                        <span className="block text-[4.5px] sm:text-[6.5px] uppercase tracking-wider text-bright-gold/80 font-bold leading-none">Venue:</span>
+                        <span className="font-extrabold tracking-tight text-warm-cream truncate block leading-tight">Upwan Lawn, BNR Chanakya</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Layer 9: LOWER HALF — Dancing Couple & Corner Dandiya Diya Artwork */}
+                {/* Layer 9: LOWER HALF — Dancing Couple Presentation */}
                 <div
                   ref={dancersRef}
-                  className="absolute left-[4%] right-[4%] sm:left-[5%] sm:right-[5%] top-[54%] bottom-[7%] z-25 pointer-events-none"
+                  className="absolute left-[4%] right-[4%] sm:left-[5%] sm:right-[5%] top-[52.5%] bottom-[6%] z-25 pointer-events-none"
                 >
-                  <div className="relative w-full h-full drop-shadow-[0_10px_35px_rgba(0,0,0,0.92)]">
+                  <div className="relative w-full h-full drop-shadow-[0_12px_32px_rgba(0,0,0,0.92)]">
                     <Image
                       src="/images/client/raascdr/web/dancers-composite-new.webp"
                       alt="Female and Male Dandiya Dancers"
                       fill
                       className="object-contain object-bottom"
                       sizes="(max-width: 640px) 300px, 420px"
+                      priority
                     />
                   </div>
                 </div>
@@ -631,6 +628,7 @@ export default function AboutContent() {
                     src="/images/client/raascdr/web/dandiya-sticks.webp"
                     alt=""
                     fill
+                    sizes="120px"
                     className="object-contain object-bottom-left"
                     unoptimized
                   />
@@ -640,6 +638,7 @@ export default function AboutContent() {
                     src="/images/client/raascdr/web/dandiya-sticks.webp"
                     alt=""
                     fill
+                    sizes="120px"
                     className="object-contain object-bottom-left"
                     unoptimized
                   />
@@ -648,16 +647,18 @@ export default function AboutContent() {
                 {/* Layer 10: BOTTOM STRIP — Sponsorship Contact Info */}
                 <div
                   ref={sponsorRef}
-                  className="absolute left-[3%] right-[3%] bottom-[1.8%] z-30 text-center font-body text-warm-cream/90"
+                  className="absolute left-[3%] right-[3%] bottom-[1.6%] z-30 text-center font-body text-warm-cream/90"
                 >
-                  <div className="inline-flex items-center justify-center gap-1.5 px-3 py-0.5 rounded-full bg-royal-maroon/90 border border-antique-gold/60 text-bright-gold font-bold tracking-wider uppercase text-[7px] sm:text-[8px] mb-0.5">
+                  <div className="inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded-full bg-royal-maroon/90 border border-antique-gold/60 text-bright-gold font-bold tracking-wider uppercase text-[6.5px] sm:text-[7.5px] mb-0.5 shadow-sm">
                     <span>FOR SPONSORSHIP CONTACT</span>
                   </div>
-                  <div className="text-[7.5px] sm:text-[9px] font-bold text-warm-cream tracking-tight">
-                    📞 9931503960 | 8540006033 | 9430112440
+                  <div className="flex items-center justify-center gap-1.5 text-[7px] sm:text-[8.5px] font-bold text-warm-cream tracking-tight">
+                    <Phone className="w-2.5 h-2.5 text-bright-gold shrink-0" aria-hidden="true" />
+                    <span>9931503960 | 8540006033 | 9430112440</span>
                   </div>
-                  <div className="text-[6.5px] sm:text-[8px] text-warm-cream/70">
-                    ✉ eventpoint42@gmail.com | eventpointranchi18@gmail.com
+                  <div className="flex items-center justify-center gap-1.5 text-[6px] sm:text-[7.5px] text-warm-cream/70 mt-0.5">
+                    <Mail className="w-2.5 h-2.5 text-bright-gold/80 shrink-0" aria-hidden="true" />
+                    <span>eventpoint42@gmail.com | eventpointranchi18@gmail.com</span>
                   </div>
                 </div>
               </div>

@@ -73,11 +73,9 @@ async function executeBookingTransaction({
       ? city.trim().substring(0, 80)
       : 'Ranchi';
 
-  // 3. Validate quantity
-  const qty = Number(quantity);
-  if (!Number.isInteger(qty) || qty < 1 || qty > 20) {
-    return { status: 400, error: 'Quantity must be an integer between 1 and 20.' };
-  }
+  // 3. Single-pass model: the client-supplied quantity is ignored entirely.
+  void quantity;
+  const qty = 1;
 
   // 4. Authoritative transaction with collision retry loop
   const MAX_COLLISION_RETRIES = 5;
@@ -124,7 +122,7 @@ async function executeBookingTransaction({
 
         // Authoritative pricing: client values are completely ignored
         const unitPrice = pass.price;
-        const totalAmount = unitPrice * qty;
+        const totalAmount = unitPrice;
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         const booking = await tx.booking.create({
@@ -188,6 +186,8 @@ async function executeBookingTransaction({
 async function runAllTests() {
   console.log('🚀 STARTING PHASE 2 AUTOMATED INTEGRATION & CONCURRENCY SUITE\n');
 
+  let zeroInventoryPass = null;
+
   // TEST 1: Validation Rules
   console.log('--- TEST 1: Server-Side Validation Integrity ---');
   {
@@ -218,22 +218,25 @@ async function runAllTests() {
     });
     assert.equal(honeypotRes.status, 400, 'Honeypot trigger must return 400');
     console.log('  ✓ Honeypot spam submission rejected with HTTP 400');
-
-    const invalidQtyRes = await executeBookingTransaction({
-      passIdentifier: 'solo-female',
-      quantity: 25,
-      fullName: 'Valid Name',
-      phone: '9876543210',
-    });
-    assert.equal(invalidQtyRes.status, 400, 'Quantity > 20 must return 400');
-    console.log('  ✓ Quantity > 20 rejected with HTTP 400');
   }
 
-  // TEST 2: Production Inventory Protection (0 Inventory Policy)
-  console.log('\n--- TEST 2: Production Zero-Inventory Guard ---');
+  // TEST 2: Zero-Inventory Guard (isolated tier — production inventory is not assumed empty)
+  console.log('\n--- TEST 2: Zero-Inventory Guard ---');
   {
+    zeroInventoryPass = await prisma.pass.create({
+      data: {
+        passType: `zero-inventory-${Date.now()}`,
+        name: 'Zero Inventory Tier',
+        price: 999,
+        totalQuantity: 0,
+        reservedQuantity: 0,
+        soldQuantity: 0,
+        isActive: true,
+      },
+    });
+
     const prodBookingRes = await executeBookingTransaction({
-      passIdentifier: 'solo-female',
+      passIdentifier: zeroInventoryPass.passType,
       quantity: 1,
       fullName: 'Test Attendee',
       phone: '9876543210',
@@ -249,13 +252,13 @@ async function runAllTests() {
       /not available or sold out/i,
       'Error message must indicate inventory unavailable'
     );
-    console.log('  ✓ Production pass with total_quantity=0 correctly rejected with HTTP 409');
+    console.log('  ✓ Zero-inventory pass correctly rejected with HTTP 409');
 
     const prodBookingsInDb = await prisma.booking.count({
-      where: { pass: { passType: 'solo-female' } },
+      where: { passId: zeroInventoryPass.id },
     });
     assert.equal(prodBookingsInDb, 0, 'Zero bookings must be created for rejected request');
-    console.log('  ✓ Verified 0 booking records created in Neon for failed production request');
+    console.log('  ✓ Verified 0 booking records created in Neon for rejected request');
   }
 
   // TEST 3: Price Manipulation Protection
@@ -277,10 +280,10 @@ async function runAllTests() {
     });
     console.log(`  ✓ Created isolated test pass tier "${testPassType}" (₹750, total: 5)`);
 
-    // Client attempts to pay ₹1
+    // Client attempts to pay ₹1 and to book 25 passes (both ignored server-side)
     const tamperedRes = await executeBookingTransaction({
       passIdentifier: testPassType,
-      quantity: 1,
+      quantity: 25,
       fullName: 'Tamper Tester',
       phone: '9876543210',
       clientUnitPrice: 1, // Tampered client price
@@ -288,9 +291,10 @@ async function runAllTests() {
     });
 
     assert.equal(tamperedRes.status, 201, 'Valid booking with available inventory succeeds');
+    assert.equal(tamperedRes.quantity, 1, 'Server must force quantity to 1 (client quantity ignored)');
     assert.equal(tamperedRes.unitPrice, 750, 'Server must enforce authoritative unitPrice (₹750)');
     assert.equal(tamperedRes.totalAmount, 750, 'Server must enforce authoritative total (₹750)');
-    console.log('  ✓ Client-submitted unitPrice=1 ignored; server recorded authoritative ₹750');
+    console.log('  ✓ Client-submitted quantity=25 and unitPrice=1 ignored; server recorded quantity=1 at authoritative ₹750');
 
     // Clean up this single probe booking so test pass is reset to 0 reserved
     await prisma.booking.deleteMany({ where: { passId: testPass.id } });
@@ -371,7 +375,14 @@ async function runAllTests() {
     }
     console.log('  ✓ Initial booking status=PENDING, paymentStatus=NOT_STARTED, expiresAt=now+24h verified');
   } finally {
-    // Teardown: cleanly delete test bookings and test pass
+    // Teardown: cleanly delete test bookings and test passes
+    if (zeroInventoryPass) {
+      console.log('\n--- CLEANUP & TEARDOWN ---');
+      await prisma.booking.deleteMany({ where: { passId: zeroInventoryPass.id } });
+      await prisma.pass.delete({ where: { id: zeroInventoryPass.id } });
+      console.log(`  ✓ Cleaned up zero-inventory test pass tier "${zeroInventoryPass.passType}"`);
+    }
+
     if (testPass) {
       console.log('\n--- CLEANUP & TEARDOWN ---');
       const deletedBookings = await prisma.booking.deleteMany({

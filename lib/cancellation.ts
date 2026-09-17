@@ -12,12 +12,17 @@ export * from './cancellation-constants';
 
 export class CancellationError extends Error {
   statusCode: number;
-  constructor(message: string, statusCode: number = 400) {
+  code?: string;
+  constructor(message: string, statusCode: number = 400, code?: string) {
     super(message);
     this.name = 'CancellationError';
     this.statusCode = statusCode;
+    this.code = code;
   }
 }
+
+export const PASS_ALREADY_USED_MESSAGE =
+  'This pass has already been used for entry and cannot be cancelled or refunded.';
 
 export interface CancelBookingResult {
   alreadyCancelled: boolean;
@@ -115,6 +120,11 @@ export async function cancelConfirmedBooking(
     );
   }
 
+  // 4b. Checked-in passes cannot be cancelled or refunded (server-authoritative)
+  if (booking.checkInStatus === 'CHECKED_IN') {
+    throw new CancellationError(PASS_ALREADY_USED_MESSAGE, 409, 'PASS_ALREADY_USED');
+  }
+
   // 5. Server-authoritative cancellation cutoff check
   if (!isCancellationAllowed()) {
     throw new CancellationError(
@@ -127,16 +137,28 @@ export async function cancelConfirmedBooking(
   // A. Booking CONFIRMED -> CANCELLED
   // B. Pass soldQuantity -= booking.quantity
   const updatedBooking = await prisma.$transaction(async (tx) => {
-    // A. Update booking status
+    // A. Update booking status (guarded on both CONFIRMED and NOT_CHECKED_IN so a
+    //    concurrent check-in either wins outright or loses cleanly)
     const bookingUpdateCount = await tx.$executeRaw`
       UPDATE bookings
       SET status = 'CANCELLED'::"BookingStatus",
           updated_at = NOW()
       WHERE id = ${booking.id}
         AND status = 'CONFIRMED'::"BookingStatus"
+        AND check_in_status = 'NOT_CHECKED_IN'::"CheckInStatus"
     `;
 
     if (bookingUpdateCount === 0) {
+      // Classify the failed conditional update from authoritative DB state.
+      const current = await tx.booking.findUnique({
+        where: { id: booking.id },
+        select: { status: true, checkInStatus: true },
+      });
+
+      if (current?.checkInStatus === 'CHECKED_IN') {
+        throw new CancellationError(PASS_ALREADY_USED_MESSAGE, 409, 'PASS_ALREADY_USED');
+      }
+
       throw new CancellationError(
         `Failed to cancel booking ${cleanId}. Concurrent modification detected.`,
         409

@@ -1,8 +1,13 @@
 import 'server-only';
-import crypto from 'node:crypto';
 import { prisma } from '@/lib/db';
 import { resolvePass } from '@/lib/passes';
 import { setLookupSessionCookie, getAuthorizedBookingIdsFromCookie } from '@/lib/session';
+import { getBookingWindowState } from '@/lib/booking-window';
+import {
+  withUniqueBookingId,
+  BookingIdExhaustedError,
+  MAX_COLLISION_RETRIES,
+} from '@/lib/booking-id';
 import { Prisma } from '@prisma/client';
 
 export class InventoryUnavailableError extends Error {
@@ -42,15 +47,6 @@ function normalizeIndianPhone(phoneInput: unknown): string | null {
   return `+91 ${tenDigits.substring(0, 5)} ${tenDigits.substring(5)}`;
 }
 
-/**
- * Generates a collision-resistant public booking reference in the existing
- * RU26-REQ-XXXX format (e.g. RU26-REQ-4819).
- */
-function generatePublicBookingId(): string {
-  const randomDigits = Math.floor(1000 + Math.random() * 9000);
-  return `RU26-REQ-${randomDigits}`;
-}
-
 export async function POST(req: Request) {
   let body: Record<string, unknown>;
 
@@ -63,7 +59,32 @@ export async function POST(req: Request) {
     );
   }
 
-  // 1. Anti-Spam Honeypot Check
+  // 1. Booking Window Enforcement (server-authoritative, new bookings only)
+  // Uses authoritative server time; the browser never provides "now".
+  const windowState = getBookingWindowState();
+  if (!windowState.isOpen) {
+    if (windowState.status === 'INVALID') {
+      console.error(
+        '[Booking Window] New booking creation blocked: invalid booking window configuration.',
+        { invalidVariables: windowState.invalidVariables }
+      );
+    }
+    return Response.json(
+      {
+        success: false,
+        code: windowState.reason,
+        error:
+          windowState.reason === 'BOOKING_NOT_OPEN'
+            ? 'Bookings are not open yet. Please check back when the booking window opens.'
+            : windowState.reason === 'BOOKING_CLOSED'
+              ? 'The booking window has closed. New reservations are no longer accepted.'
+              : 'Bookings are temporarily unavailable. Please try again later.',
+      },
+      { status: 403 }
+    );
+  }
+
+  // 2. Anti-Spam Honeypot Check
   if (
     body.hp_company_field &&
     typeof body.hp_company_field === 'string' &&
@@ -75,7 +96,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // 2. Validate Attendee Fields
+  // 3. Validate Attendee Fields
   const fullName = typeof body.fullName === 'string' ? body.fullName.trim() : '';
   if (fullName.length < 2 || fullName.length > 80) {
     return Response.json(
@@ -95,26 +116,28 @@ export async function POST(req: Request) {
     );
   }
 
-  let email: string | null = null;
-  if (body.email && typeof body.email === 'string') {
-    const trimmedEmail = body.email.trim();
-    if (trimmedEmail.length > 0 && trimmedEmail.toUpperCase() !== 'N/A') {
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-        return Response.json(
-          { success: false, error: 'Please provide a valid email address.' },
-          { status: 400 }
-        );
-      }
-      email = trimmedEmail.toLowerCase();
-    }
+  // Email is required: it is the only lookup key for retrieving a booking later.
+  const rawEmail = typeof body.email === 'string' ? body.email.trim() : '';
+  if (!rawEmail) {
+    return Response.json(
+      { success: false, error: 'Please provide an email address so you can retrieve your pass later.' },
+      { status: 400 }
+    );
   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+    return Response.json(
+      { success: false, error: 'Please provide a valid email address.' },
+      { status: 400 }
+    );
+  }
+  const email: string = rawEmail.toLowerCase();
 
   const city =
     typeof body.city === 'string' && body.city.trim().length > 0
       ? body.city.trim().substring(0, 80)
       : 'Ranchi';
 
-  // 3. Validate Pass Tier and Quantity
+  // 4. Pass Tier Selection (single pass per booking — client quantity/price/total are ignored)
   const passIdentifier = typeof body.passId === 'string' ? body.passId.trim() : '';
   if (!passIdentifier) {
     return Response.json(
@@ -123,31 +146,20 @@ export async function POST(req: Request) {
     );
   }
 
-  const quantity = Number(body.quantity);
-  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
-    return Response.json(
-      { success: false, error: 'Quantity must be an integer between 1 and 20.' },
-      { status: 400 }
-    );
-  }
+  const quantity = 1;
 
-  // 4. Authoritative Transaction with Unique Collision Retry Loop
-  const MAX_COLLISION_RETRIES = 5;
-  let retryCount = 0;
-
-  while (retryCount < MAX_COLLISION_RETRIES) {
-    retryCount++;
-    const publicBookingId = generatePublicBookingId();
-
-    try {
-      const result = await prisma.$transaction(async (tx) => {
+  // 5. Authoritative Transaction with Unique Collision Retry Loop
+  try {
+    const result = await withUniqueBookingId(
+      async (publicBookingId) =>
+        prisma.$transaction(async (tx) => {
         // A. Resolve authoritative pass record
         const pass = await resolvePass(passIdentifier, tx);
         if (!pass || !pass.isActive) {
           throw new PassNotFoundError();
         }
 
-        // B. Atomic conditional inventory reservation
+        // B. Atomic conditional inventory reservation (exactly one pass per booking)
         // Guarantees zero overselling; backed by PostgreSQL CHECK constraint
         const updatedRows = await tx.$executeRaw`
           UPDATE passes
@@ -165,19 +177,12 @@ export async function POST(req: Request) {
         }
 
         // C. Snapshot authoritative pricing and server expiry
+        // One booking = one purchased pass; the pass tier alone determines admission capacity.
         const unitPrice = pass.price;
-        const totalAmount = unitPrice * quantity;
+        const totalAmount = unitPrice;
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from server time
 
-        // D. Cryptographic recovery token generation for email-less bookings (atomic with booking creation)
-        let rawRecoveryToken: string | null = null;
-        let recoveryTokenHash: string | null = null;
-        if (!email) {
-          rawRecoveryToken = crypto.randomBytes(24).toString('base64url');
-          recoveryTokenHash = crypto.createHash('sha256').update(rawRecoveryToken).digest('hex');
-        }
-
-        // E. Create Booking record
+        // D. Create Booking record
         const booking = await tx.booking.create({
           data: {
             publicId: publicBookingId,
@@ -192,81 +197,87 @@ export async function POST(req: Request) {
             status: 'PENDING',
             paymentStatus: 'NOT_STARTED',
             expiresAt,
-            recoveryTokenHash,
             source: 'web-booking-desk',
           },
         });
 
-        return { booking, pass, rawRecoveryToken };
-      });
-
-      // Authorize newly created booking in the user's lookup session
-      try {
-        const existingAuthorized = await getAuthorizedBookingIdsFromCookie();
-        await setLookupSessionCookie([...existingAuthorized, result.booking.publicId]);
-      } catch (sessionErr) {
-        console.warn('[Booking API] Failed to issue lookup session cookie:', sessionErr);
+        return { booking, pass };
+      }),
+      {
+        onCollision: (publicId, attempt) => {
+          console.warn(
+            `[Booking API] Public ID collision detected for "${publicId}". Retrying (${attempt}/${MAX_COLLISION_RETRIES})...`
+          );
+        },
       }
+    );
 
-      // Return sanitized public booking information
+    // Authorize newly created booking in the user's lookup session
+    try {
+      const existingAuthorized = await getAuthorizedBookingIdsFromCookie();
+      await setLookupSessionCookie([...existingAuthorized, result.booking.publicId]);
+    } catch (sessionErr) {
+      console.warn('[Booking API] Failed to issue lookup session cookie:', sessionErr);
+    }
+
+    // Return sanitized public booking information
+    return Response.json(
+      {
+        success: true,
+        bookingId: result.booking.publicId,
+        passId: result.pass.passType,
+        passType: result.pass.name,
+        quantity: result.booking.quantity,
+        unitPrice: result.booking.unitPrice,
+        totalAmount: result.booking.totalAmount,
+        total: result.booking.totalAmount,
+        customerName: result.booking.fullName,
+        fullName: result.booking.fullName,
+        phone: result.booking.phone,
+        email: result.booking.email,
+        city: result.booking.city,
+        status: result.booking.status,
+        paymentStatus: result.booking.paymentStatus,
+        createdAt: result.booking.createdAt.toISOString(),
+        expiresAt: result.booking.expiresAt.toISOString(),
+        message: 'Booking request recorded successfully.',
+      },
+      { status: 201 }
+    );
+  } catch (err: unknown) {
+    if (err instanceof PassNotFoundError) {
+      return Response.json(
+        { success: false, error: err.message },
+        { status: 404 }
+      );
+    }
+
+    if (err instanceof InventoryUnavailableError) {
+      return Response.json(
+        { success: false, error: err.message },
+        { status: 409 }
+      );
+    }
+
+    // Retry budget exhausted: never reuse or overwrite an existing booking id.
+    if (err instanceof BookingIdExhaustedError) {
+      console.error(
+        `[Booking API] Unique booking reference could not be assigned after ${MAX_COLLISION_RETRIES} attempts.`
+      );
       return Response.json(
         {
-          success: true,
-          bookingId: result.booking.publicId,
-          passId: result.pass.passType,
-          passType: result.pass.name,
-          quantity: result.booking.quantity,
-          unitPrice: result.booking.unitPrice,
-          totalAmount: result.booking.totalAmount,
-          total: result.booking.totalAmount,
-          customerName: result.booking.fullName,
-          fullName: result.booking.fullName,
-          phone: result.booking.phone,
-          email: result.booking.email,
-          city: result.booking.city,
-          status: result.booking.status,
-          paymentStatus: result.booking.paymentStatus,
-          createdAt: result.booking.createdAt.toISOString(),
-          expiresAt: result.booking.expiresAt.toISOString(),
-          ...(result.rawRecoveryToken ? { recoveryToken: result.rawRecoveryToken } : {}),
-          message: 'Booking request recorded successfully.',
+          success: false,
+          error: 'Unable to assign a unique booking reference. Please try again.',
         },
-        { status: 201 }
+        { status: 500 }
       );
-    } catch (err: unknown) {
-      if (err instanceof PassNotFoundError) {
-        return Response.json(
-          { success: false, error: err.message },
-          { status: 404 }
-        );
-      }
+    }
 
-      if (err instanceof InventoryUnavailableError) {
-        return Response.json(
-          { success: false, error: err.message },
-          { status: 409 }
-        );
-      }
-
-      // Check for Prisma unique constraint collision on public_id
-      if (
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === 'P2002' &&
-        (Array.isArray(err.meta?.target)
-          ? err.meta.target.includes('public_id')
-          : String(err.meta?.target || '').includes('public_id'))
-      ) {
-        console.warn(
-          `[Booking API] Public ID collision detected for "${publicBookingId}". Retrying (${retryCount}/${MAX_COLLISION_RETRIES})...`
-        );
-        continue;
-      }
-
-      // Server-side diagnostic capture: full stack trace for development
-      console.error(
-        '[Booking API Error]',
-        err instanceof Error ? err.stack : err
-      );
+    // Server-side diagnostic capture: full stack trace for development
+    console.error(
+      '[Booking API Error]',
+      err instanceof Error ? err.stack : err
+    );
 
       if (err instanceof Prisma.PrismaClientInitializationError) {
         return Response.json(
@@ -285,16 +296,6 @@ export async function POST(req: Request) {
         },
         { status: 500 }
       );
-    }
   }
-
-  // If retries exhausted
-  return Response.json(
-    {
-      success: false,
-      error: 'Unable to assign a unique booking reference. Please try again.',
-    },
-    { status: 500 }
-  );
 }
 

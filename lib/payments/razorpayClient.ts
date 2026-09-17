@@ -52,7 +52,7 @@ export function loadRazorpayCheckoutScript(): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  if ((window as any).Razorpay) {
+  if (window.Razorpay) {
     return Promise.resolve(true);
   }
 
@@ -141,7 +141,8 @@ export async function launchRazorpayCheckout(
   params: LaunchRazorpayCheckoutParams
 ): Promise<boolean> {
   const isLoaded = await loadRazorpayCheckoutScript();
-  if (!isLoaded || typeof window === 'undefined' || !(window as any).Razorpay) {
+  const RazorpayCtor = typeof window !== 'undefined' ? window.Razorpay : undefined;
+  if (!isLoaded || !RazorpayCtor) {
     throw new Error(
       'Failed to load Razorpay payment checkout script. Please check your network connection.'
     );
@@ -160,7 +161,7 @@ export async function launchRazorpayCheckout(
     onDismiss,
   } = params;
 
-  const options: Record<string, any> = {
+  const options: Record<string, unknown> = {
     key: keyId,
     amount: amountPaise,
     currency,
@@ -183,7 +184,7 @@ export async function launchRazorpayCheckout(
     },
   };
 
-  const rzp = new (window as any).Razorpay(options);
+  const rzp = new RazorpayCtor(options);
 
   if (onFailure) {
     rzp.on('payment.failed', function (response: RazorpayFailureResponse) {

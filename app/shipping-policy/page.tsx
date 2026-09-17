@@ -8,7 +8,7 @@ import { Truck, CheckCircle2, Clock, FileText, AlertCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: `Shipping & Delivery Policy | ${eventData.eventName} ${eventData.year}`,
-  description: `Official fulfillment and delivery policy for ${eventData.eventName} ${eventData.year}. Details instant digital pass confirmation receipt issuance and online retrieval.`,
+  description: `Official digital-only pass fulfillment policy for ${eventData.eventName} ${eventData.year}. Instant on-screen confirmation receipt issuance, online retrieval, and why no physical ticket is printed or shipped.`,
 };
 
 export default function ShippingPolicyPage() {
@@ -31,7 +31,7 @@ export default function ShippingPolicyPage() {
           <div className="h-0.5 max-w-xs mx-auto bg-gradient-to-r from-transparent via-bright-gold to-transparent my-4" />
 
           <p className="font-body text-xs sm:text-sm text-warm-cream/80 max-w-xl mx-auto leading-relaxed">
-            Information regarding electronic pass confirmation and digital delivery for {eventData.eventName} {eventData.year}.
+            Information regarding digital-only pass confirmation and delivery for {eventData.eventName} {eventData.year}.
           </p>
 
           <span className="inline-block mt-3 text-[11px] font-body text-antique-gold/70">
@@ -45,10 +45,15 @@ export default function ShippingPolicyPage() {
             <AlertCircle className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
             <div>
               <span className="font-bold text-bright-gold uppercase tracking-wider block mb-1">
-                Event Service Notice (Digital Fulfillment):
+                Event Service Notice (Digital Only — No Physical Shipment):
               </span>
               <p className="leading-relaxed">
-                {eventData.eventName} is a live cultural festival event. All pass reservations and confirmations are fulfilled electronically through on-screen booking confirmation receipts. We do not dispatch physical items via courier or postal mail.
+                {eventData.eventName} is a live cultural festival event. All passes are issued{' '}
+                <strong>exclusively in digital form</strong> — your official booking confirmation receipt and its
+                entry QR, shown on this website. No physical tickets are printed or dispatched: there is no courier,
+                postal or hand delivery, no will-call or counter collection, and no physical ticket is available at
+                the venue. A printout or screenshot of your digital receipt is only a copy of that same digital pass,
+                not a separately issued ticket.
               </p>
             </div>
           </div>
@@ -63,9 +68,16 @@ export default function ShippingPolicyPage() {
               <span>1. DIGITAL PASS CONFIRMATION (INSTANT ELECTRONIC DELIVERY)</span>
             </h2>
             <p>
-              Upon completing a reservation request and payment transaction, your official Booking Request Receipt is generated <strong>immediately on-screen</strong>.
+              Upon completing a reservation request and payment transaction, your official Booking Request Receipt is generated <strong>immediately on-screen</strong>. That digital receipt, with its entry QR, <strong>is</strong> your pass — no separate physical ticket exists.
             </p>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <p className="text-xs">
+                  <strong>Pass Format:</strong> Digital only. The pass exists solely as the on-screen receipt with its
+                  entry QR. No physical ticket is printed, posted, couriered or available for collection at the venue.
+                </p>
+              </div>
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <p className="text-xs">
@@ -81,7 +93,16 @@ export default function ShippingPolicyPage() {
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <p className="text-xs">
-                  <strong>Printable / PDF Access:</strong> You can download or print your reservation receipt at any time directly from the receipt screen.
+                  <strong>Printable / PDF Access:</strong> You can download or print your reservation receipt at any time directly from the receipt screen. A printed copy is a convenience copy of the same digital pass, not a separate ticket.
+                </p>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <p className="text-xs">
+                  <strong>Entry QR Delivery:</strong> The entry QR is part of the digital receipt and appears{' '}
+                  <strong>only once the booking is confirmed and paid</strong>. A Pay Later booking that is still
+                  awaiting payment shows no entry QR until payment is completed; if the 24-hour payment deadline
+                  passes without payment, the booking expires and no admission QR is issued.
                 </p>
               </div>
             </div>

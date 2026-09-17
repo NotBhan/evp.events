@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import PageHero from '@/components/pages/PageHero';
 import Footer from '@/components/Footer';
 import BookingDesk from '@/components/booking/BookingDesk';
+import PassOwnershipDisclaimer from '@/components/booking/PassOwnershipDisclaimer';
 import DandiyaSticks from '@/components/decorations/DandiyaSticks';
 import InteriorReveal from '@/components/animations/InteriorReveal';
 import { eventData } from '@/data/eventData';
@@ -76,7 +77,7 @@ export default function BookingPage({ searchParams }: BookingPageProps) {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-45 scale-105 transition-transform duration-1000"
+            className="object-cover object-center opacity-45"
           />
           {/* Deep Plum Overlay for Legibility */}
           <div className="absolute inset-0 bg-deep-plum/60" />
@@ -84,7 +85,7 @@ export default function BookingPage({ searchParams }: BookingPageProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-deep-plum/50 via-transparent to-deep-plum/50" />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto">
+        <div className="relative z-10 max-w-5xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1360px] mx-auto">
           <Suspense fallback={<div className="p-12 text-center text-bright-gold font-body">Loading Festival Box Office...</div>}>
             <BookingDeskWrapper searchParams={searchParams} />
           </Suspense>
@@ -139,11 +140,11 @@ export default function BookingPage({ searchParams }: BookingPageProps) {
                     Digital Pass Confirmation
                   </h3>
                   <p className="font-body text-xs sm:text-sm text-warm-cream/80 leading-relaxed">
-                    Upon completing your booking and payment, your official digital booking receipt is generated immediately on-screen with zero delivery charges.
+                    Upon completing your booking and payment, your official digital booking receipt is generated immediately on-screen with zero delivery charges. Passes are <strong>digital only</strong> — no physical ticket is printed, posted or handed over at the venue.
                   </p>
                 </div>
                 <div className="pt-4 mt-6 border-t border-antique-gold/20 text-xs text-bright-gold font-body font-semibold">
-                  Instant Electronic Fulfillment
+                  Digital-Only Fulfillment
                 </div>
               </div>
             </InteriorReveal>
@@ -184,6 +185,33 @@ export default function BookingPage({ searchParams }: BookingPageProps) {
                 <span>Contact Organizers</span>
                 <span>→</span>
               </Link>
+            </div>
+          </InteriorReveal>
+
+          {/* Pass Ownership Disclaimer & Site-Wide Terms Acceptance */}
+          <InteriorReveal variant="up" delay={0.35}>
+            <div className="mt-8 max-w-3xl mx-auto space-y-4">
+              <PassOwnershipDisclaimer />
+
+              <p className="text-center text-[11px] font-body text-warm-cream/70 leading-relaxed">
+                By using this website or booking a pass you agree to our{' '}
+                <Link href="/terms-and-conditions" className="text-bright-gold underline hover:text-warm-cream">
+                  Terms &amp; Conditions
+                </Link>
+                ,{' '}
+                <Link href="/privacy-policy" className="text-bright-gold underline hover:text-warm-cream">
+                  Privacy Policy
+                </Link>{' '}
+                and all other{' '}
+                <Link href="/policies" className="text-bright-gold underline hover:text-warm-cream">
+                  Policies
+                </Link>
+                . Already booked?{' '}
+                <Link href="/find-pass" className="text-bright-gold underline hover:text-warm-cream">
+                  Find your pass
+                </Link>
+                .
+              </p>
             </div>
           </InteriorReveal>
         </div>

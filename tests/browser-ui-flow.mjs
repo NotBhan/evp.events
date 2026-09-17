@@ -7,8 +7,16 @@ const prisma = new PrismaClient();
 async function runBrowserTest() {
   console.log('🧪 Starting Real Chromium UI Browser Submission Test...');
 
-  // 1. Prepare Neon pass inventory for test
-  console.log('1. Setting solo-female inventory: totalQuantity = 10, reserved = 0, sold = 0');
+  // 1. Snapshot the live solo-female inventory, then open headroom for the test.
+  // The snapshot is ALWAYS restored in the finally block so production counts
+  // (total 50 / real reserved / real sold) are never left clobbered.
+  const inventorySnapshot = await prisma.pass.findUnique({ where: { passType: 'solo-female' } });
+  if (!inventorySnapshot) {
+    throw new Error('solo-female pass tier not found — cannot run the browser flow');
+  }
+  console.log(
+    `1. Snapshot: solo-female total=${inventorySnapshot.totalQuantity} reserved=${inventorySnapshot.reservedQuantity} sold=${inventorySnapshot.soldQuantity}; opening headroom for the test`
+  );
   await prisma.pass.update({
     where: { passType: 'solo-female' },
     data: { totalQuantity: 10, reservedQuantity: 0, soldQuantity: 0 },
@@ -21,6 +29,29 @@ async function runBrowserTest() {
   await prisma.booking.deleteMany({
     where: { fullName: 'nehal' },
   });
+
+  // The booking window is enforced server-side. Fail fast with a clear message
+  // if the externally started server on :3000 has a closed/invalid window.
+  {
+    const probe = await fetch('http://localhost:3000/api/bookings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: 'Window Probe',
+        phone: 'invalid',
+        passId: 'solo-female',
+        quantity: 1,
+      }),
+    });
+    const probeBody = await probe.json().catch(() => ({}));
+    assert.notEqual(
+      probe.status,
+      403,
+      `Server under test has a closed booking window (${probeBody.code || 'BOOKING_WINDOW'}). ` +
+        'Start it with BOOKING_OPEN_AT/BOOKING_CLOSE_AT set to an open window; ' +
+        'see tests/helpers/booking-window-env.mjs.'
+    );
+  }
 
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium',
@@ -71,10 +102,11 @@ async function runBrowserTest() {
     await enterDetailsBtn.click();
     console.log('  ✓ Clicked Enter Attendee Details');
 
-    // Step 2: Fill Name and Phone
-    console.log('4. Entering Name "nehal" and Phone "9874056123"...');
+    // Step 2: Fill Name, Email and Phone
+    console.log('4. Entering Name "nehal", Email and Phone "9874056123"...');
     await page.waitForSelector('#fullName', { timeout: 10000 });
     await page.type('#fullName', 'nehal');
+    await page.type('#email', 'nehal.browserflow@example.com');
     await page.type('#phone', '9874056123');
 
     // Click Review & Submit
@@ -167,15 +199,22 @@ async function runBrowserTest() {
     await prisma.booking.delete({
       where: { id: dbBooking.id },
     });
-    await prisma.pass.update({
-      where: { passType: 'solo-female' },
-      data: { totalQuantity: 0, reservedQuantity: 0, soldQuantity: 0 },
-    });
-    console.log('  ✓ Cleaned up test booking and restored solo-female totalQuantity = 0, reserved = 0');
+    console.log('  ✓ Cleaned up test booking');
   } catch (err) {
     console.error('❌ BROWSER TEST FAILED:', err);
     throw err;
   } finally {
+    await prisma.pass.update({
+      where: { passType: 'solo-female' },
+      data: {
+        totalQuantity: inventorySnapshot.totalQuantity,
+        reservedQuantity: inventorySnapshot.reservedQuantity,
+        soldQuantity: inventorySnapshot.soldQuantity,
+      },
+    });
+    console.log(
+      `  ✓ Restored live solo-female inventory: total=${inventorySnapshot.totalQuantity} reserved=${inventorySnapshot.reservedQuantity} sold=${inventorySnapshot.soldQuantity}`
+    );
     await browser.close();
     await prisma.$disconnect();
   }

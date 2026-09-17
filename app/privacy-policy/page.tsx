@@ -59,11 +59,13 @@ export default function PrivacyPolicyPage() {
               We collect only the information necessary to process your pass reservation and support services:
             </p>
             <ul className="space-y-2 list-disc list-inside text-warm-cream/85">
-              <li><strong>Contact Details:</strong> Primary attendee name, 10-digit mobile number, and optional email address.</li>
+              <li><strong>Contact Details:</strong> Primary attendee name, 10-digit mobile number, and email address.</li>
               <li><strong>Location:</strong> City of residence (e.g., Ranchi).</li>
-              <li><strong>Pass Details:</strong> Selected pass tier, quantity, booking amount, and generated Request ID.</li>
-              <li><strong>Session &amp; Lookup Data:</strong> Cryptographic SHA-256 hash of booking recovery tokens and HMAC-signed session cookies to allow reservation retrieval without a password.</li>
+              <li><strong>Pass Details:</strong> Selected pass tier, booking amount, and generated Request ID.</li>
+              <li><strong>Session &amp; Lookup Data:</strong> HMAC-signed session cookies that allow reservation retrieval without a password once you verify your booking with your email address and mobile number.</li>
               <li><strong>Payment Identifiers:</strong> Gateway order identifiers, payment attempt IDs, and transaction statuses (such as <code>NOT_STARTED</code>, <code>PENDING</code>, <code>PAID</code>, <code>FAILED</code>).</li>
+              <li><strong>Pay Later Booking State:</strong> Whether a booking is awaiting payment, and its fixed 24-hour payment deadline, so the hold can be released automatically if payment is not completed.</li>
+              <li><strong>Entry &amp; Check-in Record:</strong> For admitted passes, the entry timestamp and the organiser account that confirmed entry, recorded with the booking for venue audit and duplicate-entry prevention.</li>
             </ul>
           </section>
 
@@ -112,6 +114,13 @@ export default function PrivacyPolicyPage() {
                 <CheckCircle2 className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
                 <p>Communicating important updates or responding to attendee inquiries.</p>
               </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
+                <p>
+                  Validating passes and recording entry at the venue gate, including which organiser account admitted
+                  a pass and when, so a pass can only be admitted once.
+                </p>
+              </div>
             </div>
           </section>
 
@@ -126,6 +135,7 @@ export default function PrivacyPolicyPage() {
             <ul className="space-y-1.5 list-disc list-inside text-warm-cream/80">
               <li><strong>Payment Processors:</strong> Necessary transaction amounts and booking identifiers to facilitate payment processing.</li>
               <li><strong>Operational Infrastructure:</strong> Secure database hosting infrastructure and authorized Event Point coordination personnel.</li>
+              <li><strong>Gate Validation:</strong> Authenticated organiser accounts can look up a booking by its QR code or Booking ID during admission. The gate view shows the booking reference, attendee name, pass type and booking/entry status only — not full contact details or payment information.</li>
               <li><strong>Legal Authorities:</strong> Where required under applicable law or valid legal process.</li>
             </ul>
           </section>
@@ -140,7 +150,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="space-y-1.5 list-disc list-inside text-warm-cream/80">
               <li>HTTPS/TLS encryption for data transmission between the browser and our servers.</li>
-              <li>Cryptographic one-way SHA-256 hashing for booking recovery tokens. Raw recovery tokens are never stored in the database.</li>
+              <li>Cryptographic one-way SHA-256 hashing for session signatures. Passwords are never stored, and no raw recovery credentials are kept in the database.</li>
               <li>HMAC-SHA256 signed HTTP-only cookies for lookup session authorization.</li>
             </ul>
           </section>

@@ -445,8 +445,6 @@ export const eventData: EventConfig = {
   },
 
   socialLinks: [
-    { label: "Instagram", href: "#" },
-    { label: "YouTube", href: "#" },
-    { label: "Facebook", href: "#" },
+    { label: "Instagram", href: "https://www.instagram.com/raas_utsav_2026/" },
   ],
 };

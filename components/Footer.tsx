@@ -214,6 +214,15 @@ export default function Footer() {
                   <span>Book Passes Online</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/find-pass"
+                  className="text-bright-gold font-semibold hover:text-amber-glow hover:translate-x-1 transition-all inline-flex items-center gap-2 pt-1"
+                >
+                  <span className="text-vermilion text-[8px]">♦</span>
+                  <span>Find Your Pass</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -269,6 +278,24 @@ export default function Footer() {
                   <span>Pass Delivery &amp; Fulfillment</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/faq"
+                  className="hover:text-bright-gold hover:translate-x-1 transition-all inline-flex items-center gap-2"
+                >
+                  <span className="text-bright-gold/70 text-[8px]">♦</span>
+                  <span>FAQ — Payment, Refunds &amp; Entry</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/policies"
+                  className="hover:text-bright-gold hover:translate-x-1 transition-all inline-flex items-center gap-2"
+                >
+                  <span className="text-bright-gold/70 text-[8px]">♦</span>
+                  <span>All Policies &amp; Legal</span>
+                </Link>
+              </li>
             </ul>
 
             <div className="mt-4 p-2.5 rounded-lg bg-royal-maroon/30 border border-antique-gold/20 flex items-center gap-2.5">
@@ -312,7 +339,7 @@ export default function Footer() {
                 </div>
               </div>
 
-              {/* Contact Direct Links */}
+              {/* Contact Direct Links & Official Social */}
               <div className="pt-1 space-y-1.5 text-[11px]">
                 <a
                   href={`tel:${eventData.contacts.phones[0].replace(/\s+/g, '')}`}
@@ -328,6 +355,29 @@ export default function Footer() {
                   <Mail className="w-3.5 h-3.5 text-bright-gold shrink-0" />
                   <span>{eventData.contacts.emails[0]}</span>
                 </a>
+                {eventData.socialLinks.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-bright-gold/90 hover:text-bright-gold transition-colors font-semibold"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5 text-bright-gold shrink-0 fill-none stroke-current"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                    </svg>
+                    <span>Official {social.label}</span>
+                    <ExternalLink className="w-3 h-3 opacity-70" />
+                  </a>
+                ))}
               </div>
             </div>
           </div>
@@ -342,6 +392,21 @@ export default function Footer() {
             <p className="text-[10px] text-warm-cream/50">
               {eventData.business.address.display} · GSTIN: {eventData.business.gstin}
             </p>
+            <p className="text-[10px] text-warm-cream/50">
+              By using this website or booking a pass you agree to our{' '}
+              <Link href="/terms-and-conditions" className="hover:text-bright-gold transition-colors underline">
+                Terms
+              </Link>
+              ,{' '}
+              <Link href="/privacy-policy" className="hover:text-bright-gold transition-colors underline">
+                Privacy Policy
+              </Link>{' '}
+              and all{' '}
+              <Link href="/policies" className="hover:text-bright-gold transition-colors underline">
+                Policies
+              </Link>
+              .
+            </p>
           </div>
 
           <div className="flex items-center gap-4 text-[11px] text-antique-gold/90 shrink-0">
@@ -355,6 +420,10 @@ export default function Footer() {
             <span>·</span>
             <Link href="/refund-and-cancellation" className="hover:text-bright-gold transition-colors">
               Refunds
+            </Link>
+            <span>·</span>
+            <Link href="/faq" className="hover:text-bright-gold transition-colors">
+              FAQ
             </Link>
             <span>·</span>
             <Link href="/contact" className="hover:text-bright-gold transition-colors">

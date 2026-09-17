@@ -61,7 +61,11 @@ export async function POST(
   } catch (err: unknown) {
     if (err instanceof CancellationError) {
       return Response.json(
-        { success: false, error: err.message },
+        {
+          success: false,
+          ...(err.code ? { code: err.code } : {}),
+          error: err.message,
+        },
         { status: err.statusCode }
       );
     }

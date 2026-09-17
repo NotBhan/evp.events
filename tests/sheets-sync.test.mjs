@@ -10,13 +10,13 @@ if (typeof dns.setDefaultResultOrder === 'function') {
 const prisma = new PrismaClient();
 
 /**
- * Mock Google Apps Script server that replicates the 11-column sheet and Column B upsert behavior
+ * Mock Google Apps Script server that replicates the 14-column sheet and Column B upsert behavior
  */
 class MockAppsScriptServer {
   constructor(port = 3999) {
     this.port = port;
     this.server = null;
-    this.sheetRows = []; // 11 columns
+    this.sheetRows = []; // 14 columns
     this.mode = 'normal'; // 'normal' | 'fail_500' | 'fail_error_json' | 'timeout'
     this.requestLog = [];
   }
@@ -68,6 +68,9 @@ class MockAppsScriptServer {
             const email = data.email || '';
             const submissionStatus = data.submissionStatus || data.status || 'CONFIRMED';
             const source = data.source || 'Web Booking Desk';
+            const entryTaken = data.entryTaken || 'NO';
+            const entryTime = data.entryTime || '';
+            const scannedBy = data.scannedBy || '';
 
             const rowData = [
               timestamp,
@@ -81,6 +84,9 @@ class MockAppsScriptServer {
               email,
               submissionStatus,
               source,
+              entryTaken,
+              entryTime,
+              scannedBy,
             ];
 
             // Search Column B (index 1) for bookingId
@@ -197,6 +203,12 @@ async function syncBookingToSheetsHelper(bookingIdOrPublicId, endpointOverride) 
     submissionStatus: 'CONFIRMED',
     source: booking.source || 'Web Booking Desk (/booking)',
     timestamp: booking.confirmedAt ? booking.confirmedAt.toISOString() : booking.createdAt.toISOString(),
+    entryTaken: booking.checkInStatus === 'CHECKED_IN' ? 'YES' : 'NO',
+    entryTime:
+      booking.checkInStatus === 'CHECKED_IN' && booking.checkedInAt
+        ? booking.checkedInAt.toISOString()
+        : '',
+    scannedBy: booking.checkInStatus === 'CHECKED_IN' ? booking.checkedInBy || '' : '',
   };
 
   try {
@@ -355,6 +367,9 @@ async function runAllSpecificationTests() {
   assert.ok(testPass, 'An active pass must exist in the database');
 
   const createdBookingIds = [];
+  // Confirmed payments move one reserved unit into sold on the shared pass; the
+  // exact counter movement is recorded here and undone in the teardown.
+  const confirmedPayments = [];
 
   try {
     // ------------------------------------------------------------------
@@ -426,6 +441,7 @@ async function runAllSpecificationTests() {
     assert.ok(dbBookingA.sheetSyncedAt instanceof Date, 'sheetSyncedAt must be set to Date');
     assert.equal(dbBookingA.sheetLastError, null, 'sheetLastError must be null on success');
     assert.equal(dbBookingA.sheetSyncAttempts, 1, 'sheetSyncAttempts must be 1');
+    confirmedPayments.push({ passId: testPass.id, quantity: testABooking.quantity });
     console.log('✓ PASS: Test A confirmed booking produced exactly 1 Sheet row and status SYNCED.\n');
 
     // ------------------------------------------------------------------
@@ -504,6 +520,7 @@ async function runAllSpecificationTests() {
     const dbBookingC = await prisma.booking.findUnique({ where: { id: testCBooking.id } });
     assert.equal(dbBookingC.status, 'CONFIRMED', 'Booking status must remain CONFIRMED in Neon');
     assert.equal(dbBookingC.paymentStatus, 'PAID', 'Payment status must remain PAID in Neon');
+    confirmedPayments.push({ passId: testPass.id, quantity: testCBooking.quantity });
     console.log('✓ PASS: Test C payment succeeded and booking remains CONFIRMED/PAID in Neon.\n');
 
     // ------------------------------------------------------------------
@@ -679,9 +696,140 @@ async function runAllSpecificationTests() {
     console.log('✓ PASS: Test J CANCELLED booking produced no new row.\n');
 
     // ------------------------------------------------------------------
+    // TEST K: Entry columns — non-checked-in booking mirrors Entry Taken=NO
+    // ------------------------------------------------------------------
+    console.log('--- Test K: Entry columns before check-in (NO / blank / blank) ---');
+    const testKBooking = await prisma.booking.create({
+      data: {
+        publicId: `RU26-TEST-K-${Date.now().toString().slice(-4)}`,
+        fullName: 'Entry Mirror Attendee',
+        phone: '+91 99315 03966',
+        email: 'entrymirror@example.com',
+        city: 'Ranchi',
+        passId: testPass.id,
+        quantity: 1,
+        unitPrice: testPass.price,
+        totalAmount: testPass.price,
+        status: 'CONFIRMED',
+        paymentStatus: 'PAID',
+        confirmedAt: new Date(),
+        expiresAt: new Date(Date.now() + 3600000),
+      },
+    });
+    createdBookingIds.push(testKBooking.id);
+
+    const syncK = await syncBookingToSheetsHelper(testKBooking.id, mockEndpoint);
+    assert.equal(syncK.success, true, 'Confirmed/paid booking must sync');
+    const rowsK = mockServer.getRowsForBooking(testKBooking.publicId);
+    assert.equal(rowsK.length, 1);
+    assert.equal(rowsK[0][11], 'NO', 'Column L must be NO before check-in');
+    assert.equal(rowsK[0][12], '', 'Column M must be blank before check-in');
+    assert.equal(rowsK[0][13], '', 'Column N must be blank before check-in');
+    console.log('✓ PASS: Test K non-checked-in booking mirrored Entry Taken=NO with blank time/scanner.\n');
+
+    // ------------------------------------------------------------------
+    // TEST L: Check-in mirrors YES + timestamp + organiser identity (full-row upsert)
+    // ------------------------------------------------------------------
+    console.log('--- Test L: Check-in mirrors Entry Taken=YES + time + scanned-by ---');
+    await prisma.$executeRaw`
+      UPDATE bookings
+      SET check_in_status = 'CHECKED_IN'::"CheckInStatus",
+          checked_in_at = NOW(),
+          checked_in_by = 'GATE-01 / Test Organiser',
+          checked_in_by_id = 'test-organiser-id',
+          sheet_sync_status = 'PENDING'::"SheetSyncStatus",
+          sheet_last_error = NULL,
+          updated_at = NOW()
+      WHERE id = ${testKBooking.id}
+    `;
+
+    const syncL = await syncBookingToSheetsHelper(testKBooking.id, mockEndpoint);
+    assert.equal(syncL.success, true, 'Check-in mirror sync must succeed');
+    const rowsL = mockServer.getRowsForBooking(testKBooking.publicId);
+    assert.equal(rowsL.length, 1, 'Check-in update must NOT create a duplicate row (full-row upsert)');
+    assert.equal(rowsL[0][11], 'YES', 'Column L must be YES after check-in');
+    assert.ok(rowsL[0][12], 'Column M must contain the entry timestamp');
+    assert.ok(
+      !Number.isNaN(Date.parse(rowsL[0][12])),
+      'Column M entry time must be a parseable server timestamp'
+    );
+    assert.equal(rowsL[0][13], 'GATE-01 / Test Organiser', 'Column N must contain the organiser identity');
+    assert.equal(rowsL[0][6], 'Entry Mirror Attendee', 'Existing booking columns must be intact after update');
+    assert.equal(rowsL[0][9], 'CONFIRMED', 'Submission status column must remain intact');
+    console.log('✓ PASS: Test L check-in mirrored YES + timestamp + organiser identity without duplicating the row.\n');
+
+    // ------------------------------------------------------------------
+    // TEST M: Sheets outage never alters the booking; reconciliation restores the mirror
+    // ------------------------------------------------------------------
+    console.log('--- Test M: Sheets outage → FAILED, retry restores mirror ---');
+    mockServer.setMode('fail_500');
+
+    const testMBooking = await prisma.booking.create({
+      data: {
+        publicId: `RU26-TEST-M-${Date.now().toString().slice(-4)}`,
+        fullName: 'Outage Attendee',
+        phone: '+91 99315 03967',
+        email: 'outage@example.com',
+        city: 'Ranchi',
+        passId: testPass.id,
+        quantity: 1,
+        unitPrice: testPass.price,
+        totalAmount: testPass.price,
+        status: 'CONFIRMED',
+        paymentStatus: 'PAID',
+        confirmedAt: new Date(),
+        expiresAt: new Date(Date.now() + 3600000),
+      },
+    });
+    createdBookingIds.push(testMBooking.id);
+
+    const failM = await syncBookingToSheetsHelper(testMBooking.id, mockEndpoint);
+    assert.equal(failM.success, false, 'Sheets outage must be reported as a failed sync');
+
+    const dbFailedM = await prisma.booking.findUnique({ where: { id: testMBooking.id } });
+    assert.equal(dbFailedM.sheetSyncStatus, 'FAILED', 'Failure must be persisted for reconciliation');
+    assert.ok(dbFailedM.sheetLastError, 'Failure must record an error');
+    assert.equal(dbFailedM.status, 'CONFIRMED', 'Primary booking state must be untouched');
+    assert.equal(dbFailedM.paymentStatus, 'PAID', 'Payment state must be untouched');
+    assert.equal(dbFailedM.checkInStatus, 'NOT_CHECKED_IN');
+
+    // Simulate the gate check-in while Sheets is down, then recover and retry the mirror.
+    await prisma.$executeRaw`
+      UPDATE bookings
+      SET check_in_status = 'CHECKED_IN'::"CheckInStatus",
+          checked_in_at = NOW(),
+          checked_in_by = 'GATE-04 / Recovery Organiser',
+          checked_in_by_id = 'recovery-organiser-id',
+          sheet_sync_status = 'PENDING'::"SheetSyncStatus",
+          sheet_last_error = NULL,
+          updated_at = NOW()
+      WHERE id = ${testMBooking.id}
+    `;
+    mockServer.setMode('normal');
+
+    const retryM = await syncBookingToSheetsHelper(testMBooking.id, mockEndpoint);
+    assert.equal(retryM.success, true, 'Retry after recovery must succeed');
+
+    const dbSyncedM = await prisma.booking.findUnique({ where: { id: testMBooking.id } });
+    assert.equal(dbSyncedM.sheetSyncStatus, 'SYNCED', 'Reconciliation must restore SYNCED state');
+    assert.equal(dbSyncedM.checkInStatus, 'CHECKED_IN', 'Check-in must survive the Sheets outage');
+
+    const rowsM = mockServer.getRowsForBooking(testMBooking.publicId);
+    assert.equal(rowsM.length, 1, 'Recovery must not duplicate the row');
+    assert.equal(rowsM[0][11], 'YES', 'Recovered mirror must include the entry state');
+    assert.equal(rowsM[0][13], 'GATE-04 / Recovery Organiser');
+    console.log('✓ PASS: Test M outage persisted FAILED without altering the booking; retry restored the mirror.\n');
+
+    // ------------------------------------------------------------------
     // TEST LIVE GOOGLE APPS SCRIPT ENDPOINT
     // ------------------------------------------------------------------
-    if (realEndpoint && realEndpoint.includes('script.google.com')) {
+    // Opt-in only: this leg writes a REAL row into the production spreadsheet and
+    // the Apps Script has no delete operation, so the row must be removed by hand.
+    // Enable deliberately with ALLOW_LIVE_SHEETS_WRITE_TEST=1 when a live write is
+    // actually wanted; routine runs stay side-effect free.
+    if (process.env.ALLOW_LIVE_SHEETS_WRITE_TEST !== '1') {
+      console.log('--- Live Sheets write test SKIPPED (set ALLOW_LIVE_SHEETS_WRITE_TEST=1 to enable; it leaves a real row) ---\n');
+    } else if (realEndpoint && realEndpoint.includes('script.google.com')) {
       console.log('--- Real Confirmed-Booking Live Sheets Endpoint Test ---');
       console.log('Target Endpoint:', realEndpoint);
 
@@ -785,6 +933,29 @@ async function runAllSpecificationTests() {
   } finally {
     // Clean up temporary test data from Neon
     console.log('Cleaning up temporary test records from Neon...');
+
+    // Test A confirms a payment, which atomically moves one unit from
+    // reserved_quantity to sold_quantity on the shared official pass. Deleting the
+    // booking alone would leave sold_quantity permanently inflated, so restore the
+    // exact counter movement this suite caused (state-neutral teardown).
+    if (confirmedPayments.length > 0) {
+      for (const entry of confirmedPayments) {
+        const restored = await prisma.$executeRaw`
+          UPDATE passes
+          SET sold_quantity = sold_quantity - ${entry.quantity},
+              updated_at = NOW()
+          WHERE id = ${entry.passId}
+            AND sold_quantity >= ${entry.quantity}
+        `;
+        if (restored === 0) {
+          console.warn(
+            `  ! Could not restore sold_quantity for pass ${entry.passId} (insufficient counter) — verify inventory manually.`
+          );
+        }
+      }
+      console.log(`Restored sold_quantity on ${confirmedPayments.length} pass(es) affected by confirmed test payments.`);
+    }
+
     if (createdBookingIds.length > 0) {
       await prisma.paymentAttempt.deleteMany({
         where: { bookingId: { in: createdBookingIds } },

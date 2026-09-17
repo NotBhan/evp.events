@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Calendar, Clock, MapPin, Phone, Mail } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -388,28 +389,28 @@ export default function GrandestNightBanner() {
             <div className="flex items-center justify-between bg-gradient-to-r from-[#F7C647] via-[#E4A936] to-[#F7C647] text-[#19060F] px-3 lg:px-4 py-1.5 rounded-full border border-antique-gold shadow-[0_4px_16px_rgba(0,0,0,0.6)] font-lucida text-[9px] lg:text-[11px] xl:text-xs font-bold">
               {/* Date */}
               <div className="flex items-center gap-1.5">
-                <span className="text-base leading-none" aria-hidden="true">📅</span>
+                <Calendar className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-[#3D1400] shrink-0" aria-hidden="true" />
                 <div>
-                  <span className="block text-[7px] lg:text-[8px] uppercase tracking-wider text-[#3D1400]">Date:</span>
-                  <span className="font-extrabold tracking-tight">16 October 2026</span>
+                  <span className="block text-[7px] lg:text-[8px] uppercase tracking-wider text-[#3D1400] leading-none">Date:</span>
+                  <span className="font-extrabold tracking-tight leading-tight">16 October 2026</span>
                 </div>
               </div>
               <div className="w-[1px] h-6 bg-[#3D1400]/25" />
               {/* Time */}
               <div className="flex items-center gap-1.5">
-                <span className="text-base leading-none" aria-hidden="true">🕒</span>
+                <Clock className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-[#3D1400] shrink-0" aria-hidden="true" />
                 <div>
-                  <span className="block text-[7px] lg:text-[8px] uppercase tracking-wider text-[#3D1400]">Time:</span>
-                  <span className="font-extrabold tracking-tight">5:00pm - 11:00pm</span>
+                  <span className="block text-[7px] lg:text-[8px] uppercase tracking-wider text-[#3D1400] leading-none">Time:</span>
+                  <span className="font-extrabold tracking-tight leading-tight">5:00pm - 11:00pm</span>
                 </div>
               </div>
               <div className="w-[1px] h-6 bg-[#3D1400]/25" />
               {/* Venue */}
               <div className="flex items-center gap-1.5 max-w-[40%]">
-                <span className="text-base leading-none" aria-hidden="true">📍</span>
+                <MapPin className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-[#3D1400] shrink-0" aria-hidden="true" />
                 <div className="truncate">
-                  <span className="block text-[7px] lg:text-[8px] uppercase tracking-wider text-[#3D1400]">Venue:</span>
-                  <span className="font-extrabold tracking-tight truncate block">Upwan Lawn, Chanakya BNR Hotel, Ranchi</span>
+                  <span className="block text-[7px] lg:text-[8px] uppercase tracking-wider text-[#3D1400] leading-none">Venue:</span>
+                  <span className="font-extrabold tracking-tight truncate block leading-tight">Upwan Lawn, Chanakya BNR Hotel, Ranchi</span>
                 </div>
               </div>
             </div>
@@ -424,12 +425,13 @@ export default function GrandestNightBanner() {
               <span className="px-2 py-0.5 rounded-full bg-royal-maroon/90 border border-antique-gold/60 text-bright-gold font-bold tracking-wider uppercase text-[7px] lg:text-[8px] font-serif">
                 FOR SPONSORSHIP CONTACT
               </span>
-              <span className="font-semibold text-warm-cream font-avenir">
-                📞 9931503960 | 8540006033 | 9430112440
+              <span className="font-semibold text-warm-cream font-avenir flex items-center gap-1">
+                <Phone className="w-3 h-3 text-bright-gold shrink-0" aria-hidden="true" />
+                <span>9931503960 | 8540006033 | 9430112440</span>
               </span>
             </div>
-            <div className="hidden xl:flex items-center gap-1 text-warm-cream/80 text-[9px] font-avenir">
-              <span>✉</span>
+            <div className="hidden xl:flex items-center gap-1.5 text-warm-cream/80 text-[9px] font-avenir">
+              <Mail className="w-3 h-3 text-bright-gold/80 shrink-0" aria-hidden="true" />
               <span>eventpoint42@gmail.com</span>
             </div>
           </div>
@@ -497,6 +499,7 @@ export default function GrandestNightBanner() {
                   src="/images/client/raascdr/web/durga-centerpiece.webp"
                   alt="Goddess Durga Centerpiece"
                   fill
+                  sizes="180px"
                   className="object-contain"
                   priority
                 />
@@ -602,8 +605,14 @@ export default function GrandestNightBanner() {
             <span className="block text-bright-gold font-bold uppercase tracking-wider mb-0.5">
               FOR SPONSORSHIP CONTACT
             </span>
-            <span className="block font-semibold">📞 9931503960 | 8540006033 | 9430112440</span>
-            <span className="block text-[9px] text-warm-cream/60 mt-0.5">✉ eventpoint42@gmail.com</span>
+            <span className="font-semibold flex items-center justify-center gap-1">
+              <Phone className="w-2.5 h-2.5 text-bright-gold shrink-0" aria-hidden="true" />
+              <span>9931503960 | 8540006033 | 9430112440</span>
+            </span>
+            <span className="text-[9px] text-warm-cream/60 mt-0.5 flex items-center justify-center gap-1">
+              <Mail className="w-2.5 h-2.5 text-bright-gold/70 shrink-0" aria-hidden="true" />
+              <span>eventpoint42@gmail.com</span>
+            </span>
           </div>
         </div>
       </div>

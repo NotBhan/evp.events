@@ -67,8 +67,21 @@ async function main() {
       const el = document.querySelector('#booking-receipt-document [class*="border"]');
       return null;
     });
-    for (const kw of ['Retrieve Your Receipt', 'Cancellation', 'Refund Request', '6 October 2026', 'Find / Recover Reservation', 'Cancel Booking', 'Key Recovery']) {
-      assert.ok(screenText.includes(kw), `screen receipt missing: ${kw}`);
+    // Rendered text is CSS-uppercased for several labels, so the keyword check is
+    // case-insensitive against what the customer actually sees.
+    const RECEIPT_KEYWORDS = [
+      'Retrieve Your Receipt',
+      'Cancellation',
+      'Refund Request',
+      '6 October 2026',
+      'Find / Recover Reservation',
+      'Cancel Booking',
+    ];
+    for (const kw of RECEIPT_KEYWORDS) {
+      assert.ok(
+        screenText.toUpperCase().includes(kw.toUpperCase()),
+        `screen receipt missing: ${kw}`
+      );
     }
     const screenPrintRootDisplay = await page.$eval('#print-receipt-root', (el) => getComputedStyle(el).display);
     assert.strictEqual(screenPrintRootDisplay, 'none', 'print root must be hidden on screen');
@@ -95,18 +108,90 @@ async function main() {
     assert.strictEqual(printState.rootDisplay, 'block', 'print root must be visible in print');
     assert.strictEqual(printState.mainDisplay, 'none', 'main must be hidden in print');
     assert.strictEqual(printState.btnDisplay, 'none', 'buttons must be hidden in print');
-    for (const kw of ['Retrieve Your Receipt', 'Cancellation', 'Refund Request', '6 October 2026', 'Find / Recover Reservation', 'Cancel Booking', 'Key Recovery']) {
-      assert.ok(printState.printText.includes(kw), `print receipt missing: ${kw}`);
+    for (const kw of RECEIPT_KEYWORDS) {
+      assert.ok(
+        printState.printText.toUpperCase().includes(kw.toUpperCase()),
+        `print receipt missing: ${kw}`
+      );
     }
     console.log('✓ Print mode: white body, isolated receipt root, app chrome hidden, instructions present');
 
-    // Visual artifacts
+    // Visual artifacts (captured while the booking receipt print root is active)
     const el = await page.$('#print-receipt-root');
     await el.screenshot({ path: `${OUT_DIR}/print-receipt.png` });
     const pdf = await page.pdf({ format: 'A4', printBackground: true });
     fs.writeFileSync(`${OUT_DIR}/receipt.pdf`, pdf);
     console.log('✓ Captured print-receipt.png and receipt.pdf');
     console.log(`  PDF bytes: ${pdf.length}`);
+
+    // ---- Find Pass parity: a recovered pass must print the same document ----
+    await page.emulateMediaType('screen');
+    await fetch(`${BASE_URL}/api/bookings/lookup/clear`, { method: 'POST' });
+    await page.deleteCookie({ name: COOKIE_NAME, url: BASE_URL });
+    await page.goto(`${BASE_URL}/find-pass`, { waitUntil: 'networkidle2', timeout: 45000 });
+    await page.waitForSelector('input[type="email"]', { timeout: 20000 });
+    await page.type('input[type="email"]', 'print@example.com');
+    await page.type('input[type="tel"]', '9931503960');
+    const [lookupRes] = await Promise.all([
+      page.waitForResponse((r) => r.url().includes('/api/bookings/lookup') && r.request().method() === 'POST', { timeout: 30000 }),
+      page.click('button[type="submit"]'),
+    ]);
+    assert.strictEqual(lookupRes.status(), 200, 'Find Pass lookup must succeed');
+    await page.waitForFunction(
+      () => [...document.querySelectorAll('button')].some((b) => /OFFICIAL RECEIPT|VIEW RESERVATION STUB/i.test(b.innerText)),
+      { timeout: 30000 }
+    );
+    await page.evaluate(() => {
+      [...document.querySelectorAll('button')]
+        .find((b) => /OFFICIAL RECEIPT|VIEW RESERVATION STUB/i.test(b.innerText))
+        ?.click();
+    });
+    await page.waitForSelector('#booking-receipt-document', { timeout: 30000 });
+    await page.waitForSelector('#print-receipt-root', { timeout: 20000 });
+
+    const findPassScreenDisplay = await page.$eval('#print-receipt-root', (el) => getComputedStyle(el).display);
+    assert.strictEqual(findPassScreenDisplay, 'none', 'print root must stay hidden on screen in the Find Pass flow');
+
+    // The on-screen "DOWNLOAD / PRINT RECEIPT PDF" action must actually invoke print
+    await page.evaluate(() => {
+      window.__printInvoked = false;
+      window.print = () => {
+        window.__printInvoked = true;
+      };
+    });
+    await page.evaluate(() => {
+      const btn = [...document.querySelectorAll('button')].find((b) => /DOWNLOAD \/ PRINT/i.test(b.innerText));
+      btn?.click();
+    });
+    await sleep(400);
+    const printInvoked = await page.evaluate(() => window.__printInvoked === true);
+    assert.ok(printInvoked, 'Download/Print action must trigger window.print() from the Find Pass receipt');
+    console.log('✓ Find Pass receipt exposes a working Download/Print action');
+
+    await page.emulateMediaType('print');
+    const findPassPrint = await page.evaluate(() => {
+      const root = document.getElementById('print-receipt-root');
+      const main = document.querySelector('main');
+      return {
+        rootDisplay: root ? getComputedStyle(root).display : null,
+        mainDisplay: main ? getComputedStyle(main).display : null,
+        bodyBg: getComputedStyle(document.body).backgroundColor,
+        text: root ? root.innerText : '',
+      };
+    });
+    assert.strictEqual(findPassPrint.rootDisplay, 'block', 'recovered pass must print the receipt document');
+    assert.strictEqual(findPassPrint.mainDisplay, 'none', 'app chrome must be hidden in print from Find Pass');
+    assert.match(findPassPrint.bodyBg, /255, 255, 255|#ffffff/i, 'print body must be white from Find Pass');
+    for (const kw of [...RECEIPT_KEYWORDS, publicId, 'Print Test Attendee']) {
+      assert.ok(
+        findPassPrint.text.toUpperCase().includes(kw.toUpperCase()),
+        `Find Pass printout missing: ${kw}`
+      );
+    }
+    const findPassPdf = await page.pdf({ format: 'A4', printBackground: true });
+    fs.writeFileSync(`${OUT_DIR}/receipt-from-find-pass.pdf`, findPassPdf);
+    console.log(`✓ Find Pass recovered pass prints the full receipt (PDF bytes: ${findPassPdf.length})`);
+    await page.emulateMediaType('screen');
   } finally {
     if (browser) await browser.close();
     if (serverProc) serverProc.kill('SIGKILL');

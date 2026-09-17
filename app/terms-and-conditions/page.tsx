@@ -55,6 +55,32 @@ export default function TermsAndConditionsPage() {
             <p>
               &ldquo;Attendee&rdquo; or &ldquo;Customer&rdquo; refers to any person who reserves, purchases, or holds an entry pass for the Event.
             </p>
+            <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs text-warm-cream/90 space-y-1">
+              <span className="font-bold text-bright-gold uppercase tracking-wider block">
+                Acceptance of Terms &amp; Policies:
+              </span>
+              <p className="leading-relaxed">
+                By accessing or using this website, submitting a booking enquiry, or reserving a pass, you agree to be
+                bound by these{' '}
+                <Link href="/terms-and-conditions" className="text-bright-gold underline hover:text-warm-cream">
+                  Terms &amp; Conditions
+                </Link>{' '}
+                together with our{' '}
+                <Link href="/privacy-policy" className="text-bright-gold underline hover:text-warm-cream">
+                  Privacy Policy
+                </Link>
+                ,{' '}
+                <Link href="/refund-and-cancellation" className="text-bright-gold underline hover:text-warm-cream">
+                  Refund &amp; Cancellation Policy
+                </Link>
+                ,{' '}
+                <Link href="/shipping-policy" className="text-bright-gold underline hover:text-warm-cream">
+                  Shipping Policy
+                </Link>{' '}
+                and all other policies published on this website. If you do not agree with any of them, please do not
+                use the website or reserve a pass.
+              </p>
+            </div>
           </section>
 
           {/* 2. Pass Tiers & Validity */}
@@ -71,28 +97,61 @@ export default function TermsAndConditionsPage() {
             </ul>
             <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs text-warm-cream/90 space-y-1 mt-2">
               <span className="font-bold text-bright-gold uppercase tracking-wider block">
-                Transfer by Possession (Pass Validity):
+                 Transfer by Possession (Pass Validity):
               </span>
               <p className="leading-relaxed">
                 Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. No separate ticket transfer feature or attendee re-assignment is required or provided; presentation of an active, confirmed pass grants admission up to the pass&apos;s specified capacity.
               </p>
             </div>
+            <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs text-warm-cream/90 space-y-1 mt-2">
+              <span className="font-bold text-bright-gold uppercase tracking-wider block">
+                Pass Ownership &amp; Sharing (Receipt Access):
+              </span>
+              <p className="leading-relaxed">
+                Every pass is registered to the name provided at booking and admits one entry. Your Booking ID,
+                email address, mobile number and entry QR are the credentials for your booking: anyone you share them
+                with can open your receipt and take entry with your pass. Once a pass has been used for entry, that
+                entry is
+                final and cannot be reversed, replaced or refunded, and the organisers are not responsible for entry
+                taken using details shared by the booker. This clause governs receipt and QR credentials only — it
+                does not restrict who may use a valid pass under Transfer by Possession above.
+              </p>
+            </div>
           </section>
 
-          {/* 3. Booking Lifecycle & 24-Hour Reservation */}
+          {/* 3. Booking Lifecycle, Pay Now / Pay Later & 24-Hour Deadline */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>3. BOOKING PROCESS &amp; 24-HOUR RESERVATION HOLD</span>
+              <span>3. BOOKING PROCESS, PAY NOW &amp; PAY LATER (24-HOUR PAYMENT DEADLINE)</span>
             </h2>
             <p>
-              Submitting an online booking form creates a temporary reservation in status <code>PENDING</code>.
+              Submitting an online booking form creates a booking in status <code>PENDING</code> and reserves exactly
+              one pass. At the payment step you may choose either:
             </p>
+            <ul className="space-y-2 list-disc list-inside text-warm-cream/85">
+              <li>
+                <strong>Pay Now:</strong> complete payment immediately through the payment gateway. Once the payment
+                is verified, the booking becomes <code>CONFIRMED</code> and <code>PAID</code> and the entry QR is
+                issued on the booking receipt.
+              </li>
+              <li>
+                <strong>Pay Later:</strong> keep the booking pending and complete payment later within the payment
+                deadline. Your booking ID and the exact payment deadline are shown at booking time, and you can
+                return through the Find Pass page to complete payment before the deadline.
+              </li>
+            </ul>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2">
               <span className="font-bold text-bright-gold block text-xs uppercase tracking-wider">
                 Temporary Reservation Window:
               </span>
               <p className="text-xs text-warm-cream/80 leading-relaxed">
                 The requested passes are held for up to <strong>24 hours</strong> from creation. If payment is completed within 24 hours, the booking transitions to <code>CONFIRMED</code>. If payment is not completed within 24 hours, the reservation transitions to <code>EXPIRED</code> and the inventory is returned to the public pool.
+              </p>
+              <p className="text-xs text-warm-cream/80 leading-relaxed">
+                The payment deadline is set by our servers when the booking is created. It is <strong>fixed</strong>:
+                it does not restart if you revisit the booking or retry a payment, and it is displayed with the exact
+                date and time. An expired booking cannot be paid or revived, and no refund applies to an expired
+                booking because no payment was collected. No entry QR is issued while a booking remains unpaid.
               </p>
             </div>
             <p>
@@ -119,19 +178,56 @@ export default function TermsAndConditionsPage() {
             </p>
           </section>
 
-          {/* 5. Booking Reference & Receipt */}
+          {/* 5. Booking Reference, Receipt & Entry QR */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>5. BOOKING REFERENCE &amp; RECEIPT</span>
+              <span>5. BOOKING REFERENCE, RECEIPT &amp; ENTRY QR</span>
             </h2>
             <p>
-              Each reservation request generates a unique Request ID displayed on the booking receipt. Attendees should retain their digital or printed receipt for booking reference and coordination with our support desk.
+              Each reservation request generates a unique Request ID displayed on the booking receipt. Attendees should retain their digital receipt (or a printed copy of it) for booking reference and coordination with our support desk.
             </p>
+            <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2 text-xs text-warm-cream/85 leading-relaxed">
+              <span className="font-bold text-bright-gold block uppercase tracking-wider">
+                Digital Pass Only — No Physical Tickets:
+              </span>
+              <p>
+                All passes for {eventData.eventName} {eventData.year} are issued{' '}
+                <strong>exclusively in digital form</strong> — the official booking receipt and its entry QR, shown on
+                this website. No paper, printed, plastic or collectible ticket is issued, posted, couriered or handed
+                over at the venue, and nothing is held at a collection or will-call counter. A printout, screenshot or
+                PDF of your digital receipt is only a copy of that same digital pass, not a separately issued ticket,
+                and it carries no validity of its own.
+              </p>
+            </div>
             <div className="flex items-start gap-2.5 text-xs text-warm-cream/85">
               <CheckCircle2 className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
               <p>
                 The Request ID serves as the unique reference for your reservation record.
               </p>
+            </div>
+            <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2 text-xs text-warm-cream/85 leading-relaxed">
+              <span className="font-bold text-bright-gold block uppercase tracking-wider">
+                Entry QR Rules:
+              </span>
+              <ul className="space-y-1.5 list-disc list-inside">
+                <li>
+                  An entry QR is issued only for bookings that are both <code>CONFIRMED</code> and{' '}
+                  <code>PAID</code>. Pending, unpaid, expired and cancelled bookings do not carry an active entry QR.
+                </li>
+                <li>
+                  The QR is deterministic for a booking: retrieving or re-printing your receipt shows the same QR,
+                  and it remains valid while the booking remains valid.
+                </li>
+                <li>
+                  The QR alone does not grant admission. Venue staff scan and confirm entry using authenticated
+                  organiser accounts, and each pass admits one entry.
+                </li>
+                <li>
+                  A second scan of the same pass shows that entry was already recorded, including the original entry
+                  time and the organiser who admitted it.
+                </li>
+                <li>Cancelled or expired bookings cannot be admitted and show no active entry QR.</li>
+              </ul>
             </div>
           </section>
 

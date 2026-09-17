@@ -5,6 +5,7 @@ import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { usePathname } from 'next/navigation';
+import { setLenisInstance } from '@/lib/lenis-instance';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,8 +41,8 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
     lenisRef.current = lenis;
     if (typeof window !== 'undefined') {
-      (window as any).lenis = lenis;
-      (window as any).ScrollTrigger = ScrollTrigger;
+      setLenisInstance(lenis);
+      window.ScrollTrigger = ScrollTrigger;
     }
 
     // Synchronize Lenis with GSAP ScrollTrigger

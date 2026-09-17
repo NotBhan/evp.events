@@ -7,7 +7,6 @@
 export interface BookingSubmissionPayload {
   passId: string;
   passType: string;
-  quantity: number;
   unitPrice: number;
   total: number;
   fullName: string;
@@ -24,10 +23,8 @@ export interface BookingSubmissionResponse {
   success: boolean;
   bookingId: string;
   passType: string;
-  quantity: number;
   unitPrice: number;
   total: number;
-  recoveryToken?: string;
   status?: 'PENDING' | 'CONFIRMED' | 'EXPIRED' | 'CANCELLED';
   paymentStatus?: 'NOT_STARTED' | 'PENDING' | 'FAILED' | 'PAID';
   createdAt?: string;
@@ -58,7 +55,6 @@ export async function submitBookingRequest(
       success: false,
       bookingId: payload.bookingId || generateBookingRequestId(),
       passType: payload.passType,
-      quantity: payload.quantity,
       unitPrice: payload.unitPrice,
       total: payload.total,
       error:
@@ -78,7 +74,6 @@ export async function submitBookingRequest(
       },
       body: JSON.stringify({
         passId: payload.passId,
-        quantity: payload.quantity,
         fullName: payload.fullName,
         phone: payload.phone,
         email: payload.email,
@@ -97,7 +92,6 @@ export async function submitBookingRequest(
         success: false,
         bookingId: payload.bookingId || '',
         passType: payload.passType,
-        quantity: payload.quantity,
         unitPrice: payload.unitPrice,
         total: payload.total,
         error:
@@ -111,10 +105,8 @@ export async function submitBookingRequest(
       success: true,
       bookingId: data.bookingId,
       passType: data.passType || payload.passType,
-      quantity: data.quantity ?? payload.quantity,
       unitPrice: data.unitPrice ?? payload.unitPrice,
       total: data.total ?? data.totalAmount ?? payload.total,
-      recoveryToken: data.recoveryToken,
       status: data.status,
       paymentStatus: data.paymentStatus,
       createdAt: data.createdAt,
@@ -134,7 +126,6 @@ export async function submitBookingRequest(
       success: false,
       bookingId: payload.bookingId || '',
       passType: payload.passType,
-      quantity: payload.quantity,
       unitPrice: payload.unitPrice,
       total: payload.total,
       error: errorMessage,

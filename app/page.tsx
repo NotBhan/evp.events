@@ -6,6 +6,7 @@ import ExperienceMosaic from '@/components/sections/ExperienceMosaic';
 import CampaignFeature from '@/components/sections/CampaignFeature';
 import EventDateSchedule from '@/components/sections/EventDateSchedule';
 import PassPreview from '@/components/sections/PassPreview';
+import PaymentPolicySummary from '@/components/sections/PaymentPolicySummary';
 import HeritageNightBanner from '@/components/sections/HeritageNightBanner';
 import VenueFeature from '@/components/sections/VenueFeature';
 import FinalBookingCTA from '@/components/sections/FinalBookingCTA';
@@ -35,6 +36,9 @@ export default function Home() {
 
       {/* 7. Festival Pass Preview */}
       <PassPreview />
+
+      {/* 7b. Payment Options, Pay Later Deadline, Cancellation, Refunds & Entry */}
+      <PaymentPolicySummary />
 
       {/* 8. Recomposed Heritage Transition Banner (RAASCDR) */}
       <HeritageNightBanner />

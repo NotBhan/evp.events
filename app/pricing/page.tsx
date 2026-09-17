@@ -149,7 +149,7 @@ export default function PricingPage() {
                 Digital Pass Fulfillment
               </h3>
               <p>
-                Passes are fulfilled digitally via instant booking confirmation receipts generated immediately upon booking submission and verified payment. There are zero shipping or physical delivery fees.
+                Passes are priced and fulfilled digitally only: each confirmed booking issues an instant booking confirmation receipt with its entry QR upon verified payment. No physical ticket is printed, posted or handed out, and there are zero shipping, courier or physical delivery fees.
               </p>
             </div>
 

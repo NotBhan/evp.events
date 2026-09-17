@@ -342,6 +342,7 @@ export default function ServicesContent() {
                     alt="Maa Durga iconography for Raas Utsav 2026"
                     fill
                     priority
+                    sizes="(max-width: 640px) 224px, 256px"
                     className="object-contain drop-shadow-[0_8px_24px_rgba(217,37,36,0.35)]"
                   />
                 </div>
@@ -352,6 +353,7 @@ export default function ServicesContent() {
                     src="/images/client/raascdr/web/dandiya-sticks.webp"
                     alt=""
                     fill
+                    sizes="192px"
                     className="object-contain"
                   />
                 </div>
@@ -414,6 +416,7 @@ export default function ServicesContent() {
                     src="/images/client/raascdr/web/dandiya-sticks.webp"
                     alt=""
                     fill
+                    sizes="192px"
                     className="object-contain"
                   />
                 </div>

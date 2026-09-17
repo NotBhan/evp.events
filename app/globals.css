@@ -290,7 +290,7 @@ html.lenis, html.lenis body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 8mm;
   }
 
   html,
@@ -299,8 +299,9 @@ html.lenis, html.lenis body {
     padding: 0 !important;
     background: #ffffff !important;
     color: #12080d !important;
-    font-size: 10pt;
-    overflow: visible !important;
+    font-size: 9pt;
+    overflow: hidden !important;
+    height: 100% !important;
   }
 
   /* Hard Isolation: suppress the normal screen application completely */
@@ -321,15 +322,22 @@ html.lenis, html.lenis body {
     display: none !important;
   }
 
-  /* Display ONLY the dedicated print receipt root as a clean white document */
+  /* Display ONLY the dedicated print receipt root as a clean single-page document */
   #print-receipt-root {
     display: block !important;
     position: static !important;
-    width: auto !important;
-    padding: 12mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 281mm !important;
+    max-height: 281mm !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
     box-sizing: border-box !important;
     background: #ffffff !important;
     color: #12080d !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    overflow: hidden !important;
   }
 }
 

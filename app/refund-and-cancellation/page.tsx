@@ -48,7 +48,7 @@ export default function RefundAndCancellationPage() {
               <span>1. 24-HOUR RESERVATION HOLD (UNPAID REQUESTS)</span>
             </h2>
             <p>
-              When an attendee initiates a booking request on our website, the requested passes are placed in a <code>PENDING</code> reservation state for up to <strong>24 hours</strong>.
+              When an attendee initiates a booking request on our website, the requested passes are placed in a <code>PENDING</code> reservation state for up to <strong>24 hours</strong>. This is the same window used by the <strong>Pay Later</strong> option at checkout, which lets you complete payment after booking instead of paying immediately.
             </p>
             <div className="p-4 rounded-xl bg-deep-plum/80 border border-antique-gold/20 space-y-2">
               <div className="flex items-start gap-2.5">
@@ -61,6 +61,12 @@ export default function RefundAndCancellationPage() {
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <p className="text-xs">
                   <strong>Automatic Inventory Release:</strong> Once expired, held pass allocations return to the festival pool without any penalty or cancellation fee.
+                </p>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <Clock className="w-4 h-4 text-bright-gold shrink-0 mt-0.5" />
+                <p className="text-xs">
+                  <strong>Expiry Is Not a Refund:</strong> The 24-hour payment deadline is fixed at booking and is shown on your booking. If payment is not completed before the deadline, the booking expires and the pass is released — expiry is an unpaid hold ending, not a cancellation and not a refund. Because no payment was collected, no refund applies and no refund request is required.
                 </p>
               </div>
             </div>
@@ -134,6 +140,32 @@ export default function RefundAndCancellationPage() {
                   <strong>Refund Process Handled Separately:</strong> Website cancellation and refund processing are distinct operations. Cancelling a booking immediately marks the reservation as <code>CANCELLED</code>. Refund requests and disbursements are handled separately by our accounts desk. Initial support handling is typically acknowledged within 6 business hours.
                 </div>
               </div>
+            </div>
+
+            {/* Checked-in lock & cancelled-pass rules */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-deep-plum/80 border border-antique-gold/25 space-y-2 text-xs">
+              <h3 className="font-display text-sm sm:text-base text-bright-gold uppercase tracking-wider">
+                CHECKED-IN BOOKINGS &amp; CANCELLED PASSES
+              </h3>
+              <ul className="space-y-1.5 list-disc list-inside text-warm-cream/85">
+                <li>
+                  Once a pass has been admitted at the venue, the booking <strong>cannot be cancelled and cannot be
+                  refunded</strong>. Attempting to cancel returns <code>PASS_ALREADY_USED</code>.
+                </li>
+                <li>
+                  Cancellation does not delete the booking: the booking record and Booking ID are retained (Booking
+                  IDs are never reused) and the cancelled state is permanent — a cancelled booking cannot be
+                  reinstated.
+                </li>
+                <li>
+                  A cancelled booking cannot be admitted, and its receipt no longer shows an active entry QR.
+                </li>
+                <li>
+                  Refunds are only available for bookings that were paid <em>and</em> cancelled within the
+                  cancellation window. An unpaid Pay Later hold that expires is not eligible because no payment was
+                  collected.
+                </li>
+              </ul>
             </div>
 
             {/* GST Deduction & Refund Calculation Formula */}

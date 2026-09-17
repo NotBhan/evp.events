@@ -5,6 +5,27 @@ import {
   verifyRazorpayWebhookSignature,
 } from '@/lib/payments';
 
+interface RazorpayWebhookEntity {
+  id: string;
+  order_id: string;
+  amount: number;
+  amount_paid: number;
+  error_code?: string;
+  error_description?: string;
+  notes?: {
+    bookingId?: string;
+    paymentAttemptId?: string;
+  };
+}
+
+interface RazorpayWebhookEvent {
+  event?: string;
+  payload?: {
+    payment?: { entity?: RazorpayWebhookEntity };
+    order?: { entity?: RazorpayWebhookEntity };
+  };
+}
+
 export async function POST(req: Request) {
   const signature = req.headers.get('x-razorpay-signature');
 
@@ -34,7 +55,7 @@ export async function POST(req: Request) {
     );
   }
 
-  let event: any;
+  let event: RazorpayWebhookEvent;
   try {
     event = JSON.parse(rawBody);
   } catch {

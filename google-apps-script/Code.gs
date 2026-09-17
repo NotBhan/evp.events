@@ -5,14 +5,19 @@
  * 1. Open your target Google Sheet (e.g. "Raas Utsav 2026 - Booking Enquiries").
  * 2. In Google Sheets, click Extensions > Apps Script.
  * 3. Replace all code in Code.gs with this file's contents.
- * 4. Click "Deploy" > "New deployment".
+ * 4. Click "Deploy" > "New deployment" (or "Manage deployments" > edit > "Deploy").
  * 5. Select type: "Web app".
- * 6. Set Description: "Raas Utsav Booking Web App v1".
+ * 6. Set Description: "Raas Utsav Booking Web App v2 (14 columns)".
  * 7. Set "Execute as": "Me" (your Google account).
  * 8. Set "Who has access": "Anyone".
  * 9. Click "Deploy" and authorize permissions.
  * 10. Copy the Web App URL (e.g. https://script.google.com/macros/s/.../exec)
  *     and set it as BOOKING_SHEETS_ENDPOINT in your .env.local file (server-side only).
+ *
+ * SCHEMA: 14 columns (A–N). Columns L/M/N carry the entry state mirrored from the
+ * authoritative Neon check-in (Entry Taken / Entry Time / Scanned By). Deployment
+ * runs a safe header repair+extend: existing rows are preserved, never cleared,
+ * and the spreadsheet is never recreated.
  */
 
 // Authoritative destination spreadsheet and tab (gid=0)
@@ -36,7 +41,7 @@ var OFFICIAL_PASS_CATALOG = {
   'pass-group': { id: 'pass-group', name: 'Group Pass (5 Friends)', price: 2199 }
 };
 
-// Fixed 11-column Google Sheet Header Row
+// Fixed 14-column Google Sheet Header Row (A–N)
 var SHEET_HEADERS = [
   'Timestamp',
   'Booking ID',
@@ -48,8 +53,55 @@ var SHEET_HEADERS = [
   'WhatsApp / Mobile',
   'Email',
   'Submission Status',
-  'Source'
+  'Source',
+  'Entry Taken',
+  'Entry Time',
+  'Scanned By'
 ];
+
+/**
+ * Resolves the pinned destination sheet by explicit spreadsheet id + tab name.
+ * Never relies on the ambient active spreadsheet/active tab.
+ */
+function getBookingSheet() {
+  var ss = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID);
+  if (!ss) {
+    throw new Error('Unable to open spreadsheet by id.');
+  }
+  var sheet = ss.getSheetByName(BOOKING_SHEET_TAB_NAME);
+  if (!sheet) {
+    throw new Error('Target sheet tab not found: ' + BOOKING_SHEET_TAB_NAME);
+  }
+  return sheet;
+}
+
+/**
+ * Ensures the header row matches the 14-column schema.
+ * - Brand new/empty sheet: writes and styles the full header row.
+ * - Existing sheet: repairs/extends only the header row (row 1); data rows 2+ are
+ *   never modified, cleared or reordered.
+ */
+function ensureSheetHeaders(sheet) {
+  var headerRange = sheet.getRange(1, 1, 1, SHEET_HEADERS.length);
+  var existing = headerRange.getValues()[0];
+
+  var needsWrite = false;
+  for (var i = 0; i < SHEET_HEADERS.length; i++) {
+    if (String(existing[i] || '').trim() !== SHEET_HEADERS[i]) {
+      needsWrite = true;
+      break;
+    }
+  }
+
+  if (needsWrite) {
+    headerRange.setValues([SHEET_HEADERS]);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#1D1237');
+    headerRange.setFontColor('#F3C64C');
+  }
+
+  return needsWrite;
+}
 
 /**
  * Handles CORS-safe simple POST from browser (Content-Type: text/plain;charset=utf-8)
@@ -160,27 +212,24 @@ function doPost(e) {
     var source = (data.source || 'Web Booking Desk (/booking)').trim();
     var submissionStatus = String(data.submissionStatus || data.status || 'CONFIRMED').trim();
 
+    // Entry state (mirrored from the authoritative Neon check-in).
+    // Invariants: CHECKED_IN => YES + entry time + scanned-by; anything else => NO + blanks.
+    var entryTaken = String(data.entryTaken || '').trim().toUpperCase() === 'YES' ? 'YES' : 'NO';
+    var entryTime = entryTaken === 'YES' && data.entryTime ? String(data.entryTime).trim() : '';
+    var scannedBy = entryTaken === 'YES' && data.scannedBy ? String(data.scannedBy).trim() : '';
+
     // 4. Append or Update in Authoritative Destination Sheet (Upsert by Booking ID in Column B)
-    var ss = null;
+    var sheet;
     try {
-      ss = SpreadsheetApp.getActiveSpreadsheet();
-    } catch (activeErr) {}
-    if (!ss) {
-      ss = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID);
-    }
-    var sheet = ss.getSheetByName(BOOKING_SHEET_TAB_NAME) || ss.getActiveSheet();
-    if (!sheet) {
-      return responseJSON({ status: 'error', message: 'Target sheet tab not found: ' + BOOKING_SHEET_TAB_NAME });
+      sheet = getBookingSheet();
+    } catch (sheetErr) {
+      return responseJSON({ status: 'error', message: 'Target sheet unavailable: ' + sheetErr.toString() });
     }
     var lastRow = sheet.getLastRow();
 
-    // Automatically create fixed header row if sheet is brand new / empty
+    // Ensure the 14-column header row exists / is repaired (data rows are never touched)
+    ensureSheetHeaders(sheet);
     if (lastRow === 0) {
-      sheet.appendRow(SHEET_HEADERS);
-      var headerRange = sheet.getRange(1, 1, 1, SHEET_HEADERS.length);
-      headerRange.setFontWeight('bold');
-      headerRange.setBackground('#1D1237');
-      headerRange.setFontColor('#F3C64C');
       lastRow = 1;
     }
 
@@ -196,9 +245,10 @@ function doPost(e) {
       }
     }
 
-    // Row values exactly matching 11-column SHEET_HEADERS layout:
+    // Row values exactly matching the 14-column SHEET_HEADERS layout (full-row upsert):
     // [0] Timestamp, [1] Booking ID, [2] Pass Type, [3] Quantity, [4] Unit Price,
-    // [5] Total, [6] Full Name, [7] WhatsApp / Mobile, [8] Email, [9] Submission Status, [10] Source
+    // [5] Total, [6] Full Name, [7] WhatsApp / Mobile, [8] Email, [9] Submission Status,
+    // [10] Source, [11] Entry Taken, [12] Entry Time, [13] Scanned By
     var rowValues = [
       timestamp,
       bookingId,
@@ -210,8 +260,23 @@ function doPost(e) {
       "'" + formattedPhone,
       email,
       submissionStatus,
-      source
+      source,
+      entryTaken,
+      entryTime,
+      scannedBy
     ];
+
+    // Out-of-order protection: Apps Script executions can finish after a client
+    // timeout, so a delayed/replayed sync must never downgrade entry columns once
+    // a pass has been admitted. Entry state is monotonic: NO -> YES only.
+    if (targetRow > 1 && entryTaken === 'NO') {
+      var existingEntry = sheet.getRange(targetRow, 12, 1, 3).getValues()[0];
+      if (String(existingEntry[0] || '').trim().toUpperCase() === 'YES') {
+        rowValues[11] = 'YES';
+        rowValues[12] = existingEntry[1];
+        rowValues[13] = existingEntry[2];
+      }
+    }
 
     if (targetRow > 1) {
       // Upsert: Update existing row with authoritative values
@@ -263,18 +328,9 @@ function doGet(e) {
   var sheetName = null;
   var sheetError = null;
   try {
-    var ss = null;
-    try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
-    if (!ss) {
-      ss = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID);
-    }
-    var sheet = ss.getSheetByName(BOOKING_SHEET_TAB_NAME) || ss.getActiveSheet();
-    if (sheet) {
-      sheetStatus = 'connected';
-      sheetName = sheet.getName();
-    } else {
-      sheetStatus = 'sheet_tab_not_found';
-    }
+    var sheet = getBookingSheet();
+    sheetStatus = 'connected';
+    sheetName = sheet.getName();
   } catch (err) {
     sheetStatus = 'error';
     sheetError = err.toString();
@@ -283,6 +339,7 @@ function doGet(e) {
   return responseJSON({
     status: 'ok',
     service: 'Raas Utsav 2026 Booking Web App',
+    schemaColumns: SHEET_HEADERS.length,
     sheetStatus: sheetStatus,
     sheetName: sheetName,
     sheetError: sheetError,
@@ -294,9 +351,6 @@ function doGet(e) {
  * Manual test function to authorize permissions in Apps Script editor
  */
 function testAuth() {
-  var ss = null;
-  try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
-  if (!ss) { ss = SpreadsheetApp.openById(BOOKING_SPREADSHEET_ID); }
-  var sheet = ss.getSheetByName(BOOKING_SHEET_TAB_NAME) || ss.getActiveSheet();
+  var sheet = getBookingSheet();
   Logger.log('Connected sheet: ' + sheet.getName() + ', total rows: ' + sheet.getLastRow());
 }

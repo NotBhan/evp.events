@@ -8,6 +8,7 @@ import {
   CANCELLATION_DEADLINE_ISO,
   CANCELLATION_DEADLINE_DISPLAY,
 } from '@/lib/cancellation';
+import { createEntryTokenForBooking } from '@/lib/entry-token';
 
 /**
  * Validates and normalizes an Indian mobile phone number.
@@ -146,6 +147,7 @@ export async function POST(req: Request) {
         cancellationDeadlineDisplay: CANCELLATION_DEADLINE_DISPLAY,
         refundBreakdown,
         refundStatus: b.status === 'CANCELLED' ? 'Refund handled separately.' : null,
+        entryToken: createEntryTokenForBooking(b),
       };
     });
 
