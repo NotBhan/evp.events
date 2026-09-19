@@ -2,7 +2,11 @@ import 'server-only';
 import { prisma } from '@/lib/db';
 import { checkAndExpireBooking } from '@/lib/expiry';
 import { getAuthorizedBookingIdsFromCookie } from '@/lib/session';
-import { getPaymentProvider, resolveSafeBaseUrl } from '@/lib/payments';
+import {
+  createPhonePePaymentOrder,
+  validateMerchantOrderId,
+  resolveSafeBaseUrl,
+} from '@/lib/payments';
 
 export async function POST(req: Request) {
   let body: Record<string, unknown>;
@@ -38,7 +42,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // 2. Fetch authoritative booking record from Neon
+  // 2. Fetch authoritative booking record from DB
   const booking = await prisma.booking.findFirst({
     where: {
       OR: [{ id: rawBookingId }, { publicId: rawBookingId }],
@@ -64,7 +68,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // 3. Status checks
+  // 3. Status and eligibility checks
   if (booking.status === 'CONFIRMED' && booking.paymentStatus === 'PAID') {
     return Response.json(
       {
@@ -86,7 +90,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Authoritative server-side expiry evaluation
+  // Authoritative server-side 24-hour reservation expiry evaluation
   if (booking.status === 'PENDING' && booking.expiresAt <= new Date()) {
     await checkAndExpireBooking(booking.id);
     return Response.json(
@@ -99,45 +103,64 @@ export async function POST(req: Request) {
   }
 
   try {
-    // 4. Resolve configured PaymentProvider ('stripe', 'razorpay', or 'phonepe')
-    const requestedProvider = typeof body.provider === 'string' ? body.provider : undefined;
-    const provider = getPaymentProvider(requestedProvider);
+    // 4. Derive payment amount ONLY from authoritative DB record (never trust client)
+    const amountPaise = booking.totalAmount * 100;
 
-    // 5. Create PaymentAttempt record in Neon
+    // 5. Generate unique merchantOrderId (<= 63 chars, valid chars)
+    // Format: "ru26_" + publicId + "_" + timestamp (typically ~32 chars)
+    const merchantOrderId = `ru26_${booking.publicId}_${Date.now()}`;
+    if (!validateMerchantOrderId(merchantOrderId)) {
+      return Response.json(
+        { success: false, error: 'Failed to generate a valid merchant order ID.' },
+        { status: 500 }
+      );
+    }
+
+    // 6. Create PaymentAttempt record in DB with provider = "phonepe"
     const attempt = await prisma.paymentAttempt.create({
       data: {
         bookingId: booking.id,
-        provider: provider.name,
+        provider: 'phonepe',
         amount: booking.totalAmount,
         status: 'INITIATED',
+        providerOrderId: merchantOrderId,
       },
     });
 
-    // 6. Resolve safe base URL for redirect callbacks (Origin protection)
+    // 7. Resolve redirect URL for return fallback
     const baseUrl = resolveSafeBaseUrl(req);
+    const redirectUrl = `${baseUrl}/booking/payment/phonepe?merchantOrderId=${encodeURIComponent(merchantOrderId)}`;
 
-    // 7. Invoke PaymentProvider to create checkout session/order
-    const session = await provider.createCheckoutSession({
-      booking,
-      paymentAttemptId: attempt.id,
-      baseUrl,
+    // 8. Call PhonePe Standard Checkout v2 Create Payment API
+    // Payment session expiry: 1200 seconds (20 mins), completely independent of booking's 24-hour hold
+    const phonePeOrder = await createPhonePePaymentOrder({
+      merchantOrderId,
+      amountPaise,
+      expireAfterSeconds: 1200,
+      redirectUrl,
+      metaData: {
+        bookingPublicId: booking.publicId,
+        paymentAttemptId: attempt.id,
+      },
     });
 
-    // 8. Store providerOrderId (Stripe Checkout Session ID or Razorpay Order ID)
-    await prisma.paymentAttempt.update({
-      where: { id: attempt.id },
-      data: { providerOrderId: session.sessionId },
-    });
+    // 9. Update PaymentAttempt if PhonePe returned an explicit provider orderId
+    if (phonePeOrder.orderId && phonePeOrder.orderId !== merchantOrderId) {
+      await prisma.paymentAttempt.update({
+        where: { id: attempt.id },
+        data: { providerOrderId: merchantOrderId },
+      });
+    }
 
+    // 10. Return redirectUrl directly to frontend along with non-sensitive details
     return Response.json({
       success: true,
-      provider: session.provider,
-      checkoutUrl: session.checkoutUrl,
-      sessionId: session.sessionId,
-      orderId: session.orderId || session.sessionId,
-      amount: session.amount,
-      currency: session.currency,
-      keyId: session.keyId,
+      provider: 'phonepe',
+      redirectUrl: phonePeOrder.redirectUrl,
+      merchantOrderId,
+      orderId: phonePeOrder.orderId,
+      amount: amountPaise,
+      currency: 'INR',
       paymentAttemptId: attempt.id,
       booking: {
         publicId: booking.publicId,
@@ -152,13 +175,16 @@ export async function POST(req: Request) {
     });
   } catch (err: unknown) {
     console.error(
-      '[Payment Creation Error]',
+      '[PhonePe Payment Creation Error]',
       err instanceof Error ? err.message : 'Unknown payment error'
     );
     return Response.json(
       {
         success: false,
-        error: 'Unable to initialize checkout session. Please try again.',
+        error:
+          err instanceof Error
+            ? err.message
+            : 'Unable to initialize PhonePe checkout session. Please try again.',
       },
       { status: 500 }
     );

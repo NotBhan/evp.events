@@ -1,0 +1,46 @@
+# RAAS UTSAV 2026 — Jharkhand's Grandest Dandiya Night
+
+> Official festival guide, pass catalog, venue logistics, and policy documentation for AI agents, search engines, and event attendees.
+
+RAAS UTSAV 2026 is an immersive Navratri Dandiya & Garba celebration organized by EVENT POINT (Puja Tent Agency) at Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand on Friday, 16 October 2026 from 5:00 PM to 11:00 PM IST.
+
+## Key Festival Facts
+- **Event Date:** 16 October 2026 (Friday)
+- **Timing:** 5:00 PM – 11:00 PM IST (Entry gates open at dusk)
+- **Venue:** Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001
+- **Organizer:** EVENT POINT (Trade Name: PUJA TENT AGENCY)
+- **Legal Entity:** Kumari Puja Vishwakarma (Proprietor), GSTIN: `20ARLPV7298K1ZZ`
+- **Helpline Phone:** +91 94301 12440 / +91 99315 03960
+- **Official Email:** eventpointranchi18@gmail.com
+- **Official Website:** https://raasutsav.in
+
+## Ticketing & Booking Rules
+- **One Booking = One Pass:** Every pass reservation is an independent booking with its own unique booking reference (e.g., `RU26-REQ-XXXX`) and admission pass.
+- **Pay Now vs. Pay Later:** Attendees can pay immediately via Razorpay / PhonePe, or choose "Pay Later" to hold their reservation for 24 hours.
+- **24-Hour Hold Lifecycle:** If payment is not completed within 24 hours of booking, the reserved pass is automatically released back to public inventory.
+- **Digital Admission QR:** Upon confirmed payment, an unforgeable, cryptographically signed admission QR token is generated on the official receipt for gate scanning. Unpaid or pending bookings have no admission QR.
+- **Cancellation Policy:** Cancellations are permitted until October 10, 2026, 11:59 PM IST with an 80% refund (20% fee + GST). Zero refunds apply after this deadline.
+
+## Pass Tiers & Pricing (GST Inclusive)
+- [Solo Pass Female (₹999)](https://raasutsav.in/pricing): Single entry pass for female attendee with full festival and food court access.
+- [Couple Pass (₹1,999)](https://raasutsav.in/pricing): Entry pass for one couple (two attendees) with main Garba arena access.
+- [Family Pass - 4 Pax (₹3,599)](https://raasutsav.in/pricing): Entry pass for up to 4 family members with family seating and photo booth access.
+- [Group Pass - 6 Pax (₹4,999)](https://raasutsav.in/pricing): Best-value entry pass for up to 6 attendees (friends/students).
+- [VIP Couple Pass (₹3,499)](https://raasutsav.in/pricing): Priority VIP lane entry, reserved elevated seating, and dedicated food service for 2 attendees.
+- [VIP Group Pass - 6 Pax (₹7,999)](https://raasutsav.in/pricing): Premium festival experience with VIP lounge access, luxury seating, and complimentary festive snacks for 6 attendees.
+
+## Essential URLs & Navigation
+- [Home Overview](https://raasutsav.in/): Festival highlights, live dhol masters, and event schedule.
+- [Book Passes Online](https://raasutsav.in/booking): Official 3-step festival box office desk.
+- [Pass Tiers & Pricing](https://raasutsav.in/pricing): Complete transparent ticket catalog with GST inclusions.
+- [Find & Recover Pass](https://raasutsav.in/find-pass): Self-service portal to look up existing bookings by phone or booking ID and print receipts.
+- [Frequently Asked Questions (FAQ)](https://raasutsav.in/faq): Detailed answers regarding Pay Now, Pay Later, refunds, dress code, parking, and gate admission.
+- [About the Festival](https://raasutsav.in/about): Heritage background of Chanakya BNR Hotel and festival cultural pillars.
+- [Offerings & Food Stalls](https://raasutsav.in/services): Food courtyard, royal photo booths, and master dhol entertainment.
+- [Helpdesk & Venue](https://raasutsav.in/contact): Physical office coordinates, map directions, and coordinator helpline.
+- [Terms & Conditions](https://raasutsav.in/terms-and-conditions): Legal terms of attendance, gate entry rules, and conduct.
+- [Privacy Policy](https://raasutsav.in/privacy-policy): Customer data protection and SSL encryption standards.
+- [Cancellation & Refund Policy](https://raasutsav.in/refund-and-cancellation): Step-by-step refund timeline, GST treatment, and eligibility.
+- [Pass Delivery & Fulfillment](https://raasutsav.in/shipping-policy): Instant digital pass fulfillment and physical wristband collection instructions.
+- [All Policies & Legal Hub](https://raasutsav.in/policies): Master directory of all governance documents.
+- [Full Documentation (llms-full.txt)](https://raasutsav.in/llms-full.txt): Comprehensive unabridged event knowledge base.

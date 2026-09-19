@@ -1,0 +1,53 @@
+# robots.txt for https://raasutsav.in
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+# Explicit permissions for AI Search and LLM Indexers
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+User-agent: Applebot
+Allow: /
+Disallow: /api/
+Disallow: /organiser
+Disallow: /booking/payment/
+
+# Sitemap location
+Sitemap: https://raasutsav.in/sitemap.xml
+Host: https://raasutsav.in

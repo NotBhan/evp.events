@@ -9,7 +9,7 @@ export interface CreateCheckoutSessionParams {
 }
 
 export interface CreateCheckoutSessionResult {
-  provider: 'stripe' | 'razorpay';
+  provider: 'stripe' | 'razorpay' | 'phonepe';
   sessionId: string;
   checkoutUrl?: string;
   orderId?: string;

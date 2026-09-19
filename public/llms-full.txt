@@ -1,0 +1,170 @@
+# RAAS UTSAV 2026 — COMPLETE FESTIVAL DOCUMENTATION (UNABRIDGED)
+
+> This document contains the full knowledge base, operational policies, ticketing rules, and legal details for RAAS UTSAV 2026. Designed for consumption by Large Language Models (LLMs), AI assistants, search crawlers, and event coordinators.
+
+---
+
+## 1. GENERAL FESTIVAL OVERVIEW
+
+- **Festival Name:** RAAS UTSAV 2026
+- **Edition:** Jharkhand's Grandest Dandiya & Garba Night
+- **Date:** Friday, 16 October 2026
+- **Timing:** 5:00 PM – 11:00 PM IST
+- **Venue:** Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001, India
+- **Tagline:** Navratri Celebration like never before • Dance · Devotion · Celebration
+- **Capacity:** 2,000+ Attendees across multiple dance zones
+- **Organized By:** EVENT POINT (A Shop for complete Event Solution)
+- **Legal Entity:** PUJA TENT AGENCY
+- **Proprietor:** Kumari Puja Vishwakarma
+- **GSTIN:** 20ARLPV7298K1ZZ
+- **Contact Helplines:** +91 94301 12440, +91 99315 03960
+- **Official Email:** eventpointranchi18@gmail.com
+- **Official Website:** https://raasutsav.in
+
+---
+
+## 2. PASS TIERS & DETAILED INCLUSIONS
+
+Every ticket price is inclusive of applicable Goods and Services Tax (GST).
+
+### 2.1 Solo Pass Female — ₹999
+- **Admit Count:** 1 Female Attendee
+- **Badge:** SOLO ENTRY
+- **Description:** Single entry pass for female guests with full festival grounds access.
+- **Inclusions:** Main Garba & Dandiya dance arena access, food court access, themed royal photo booths.
+
+### 2.2 Couple Pass — ₹1,999
+- **Admit Count:** 2 Attendees (One Male + One Female or Two Females)
+- **Badge:** MOST POPULAR
+- **Description:** Entry pass for two attendees to celebrate in the central dance arena.
+- **Inclusions:** Main concentric Garba dance floor access, food courtyard, photo zones.
+
+### 2.3 Family Pass (4 Pax) — ₹3,599
+- **Admit Count:** Up to 4 Family Members
+- **Badge:** FAMILY ACCESS
+- **Description:** Ideal for families celebrating together with children and elders.
+- **Inclusions:** Main arena access, dedicated family seating area, complimentary pair of dandiya sticks per attendee.
+
+### 2.4 Group Pass (6 Pax) — ₹4,999
+- **Admit Count:** Up to 6 Attendees
+- **Badge:** BEST VALUE FOR FRIENDS
+- **Description:** Cost-effective pass designed for student groups and corporate friends.
+- **Inclusions:** Full access to all public dance circles and food court.
+
+### 2.5 VIP Couple Pass — ₹3,499
+- **Admit Count:** 2 Attendees
+- **Badge:** VIP ACCESS
+- **Description:** Elevated festival comfort with expedited entry and dedicated amenities.
+- **Inclusions:** Fast-track VIP entry lane, reserved elevated lounge seating with prime view of the stage, dedicated food & beverage service, complimentary premium wooden dandiya sticks.
+
+### 2.6 VIP Group Pass (6 Pax) — ₹7,999
+- **Admit Count:** Up to 6 Attendees
+- **Badge:** LUXURY CELEBRATION
+- **Description:** The ultimate royal festival celebration for VIP groups.
+- **Inclusions:** Fast-track entry, private elevated sofa lounge, personalized hospitality host, complimentary festival snack platter and beverages, premium dandiya pairs.
+
+---
+
+## 3. BOOKING & PAYMENT POLICIES
+
+### 3.1 Strict "One Booking = One Pass" Rule
+To ensure tamper-proof admission, zero scalping, and unambiguous gate security, the box office enforces a strict 1 Booking = 1 Pass policy. Multi-ticket carts or bundled checkout are not permitted; each booking record represents an independent pass with its own authoritative booking reference (e.g. `RU26-REQ-XXXX`).
+
+### 3.2 Pay Now vs. Pay Later (24-Hour Hold)
+- **Pay Now:** The attendee completes online payment immediately via Razorpay or PhonePe (supporting UPI, Credit/Debit Cards, and Net Banking). Upon verified payment, the pass is confirmed and an entry QR code is issued immediately.
+- **Pay Later:** An attendee can reserve their pass without paying upfront. The system places the booking in `PENDING` status and locks the ticket from public inventory for exactly 24 hours.
+- **Fixed Deadline:** The 24-hour expiration countdown begins at the exact moment of initial booking creation. Refreshing or retrieving the booking does NOT extend or reset the 24-hour window.
+- **Expiry:** If payment is not completed before the 24-hour deadline, the reservation transitions to `EXPIRED` and the held pass is instantly released back to available inventory.
+- **No Entry QR While Unpaid:** Under no circumstances is an admission QR code issued for unpaid or pending bookings.
+
+---
+
+## 4. ADMISSION, QR VERIFICATION & PASS FULFILLMENT
+
+### 4.1 Digital Pass Delivery
+- RAAS UTSAV 2026 operates as a digital-first, paperless event.
+- No physical passes are shipped by courier or postal mail.
+- Upon confirmed payment, attendees receive a digital booking receipt containing a high-resolution, signed QR code.
+- Receipts can be saved as PDF or printed directly from the screen.
+
+### 4.2 Gate Entry QR Code
+- The admission QR code is cryptographically signed using HMAC-SHA256 (`RAAS26.ENTRY.v1.<publicId>.<signature>`).
+- It contains zero personally identifiable information (PII) to safeguard attendee privacy.
+- At the entry gate, official gate organizers scan the QR code using the organizer scan portal.
+- Once scanned and validated, the status updates to `CHECKED_IN`. Duplicate or shared QR scans are instantly detected and rejected at the gate.
+
+### 4.3 Offline Wristband Collection
+- Attendees presenting their confirmed digital QR code at the box office gate will receive color-coded security wristbands corresponding to their tier (General vs. VIP).
+- Wristbands must be worn continuously inside the festival arena.
+
+---
+
+## 5. CANCELLATION & REFUND POLICY
+
+- **Cancellation Window:** Cancellations are accepted until **Friday, October 10, 2026 at 11:59 PM IST** (6 days prior to the event).
+- **Refund Amount:**
+  - 80% of the booking base amount is refunded.
+  - A 20% cancellation and administrative processing fee is retained.
+  - Applicable GST is handled in accordance with statutory tax rules.
+- **Post-Deadline Policy:** From **Saturday, October 11, 2026, 12:00 AM IST onwards**, all ticket sales are final and strictly non-refundable. No refunds, credits, or exchanges will be provided for late cancellations or no-shows.
+- **Self-Service Cancellation:** Attendees can cancel eligible bookings directly via the [Find Pass](https://raasutsav.in/find-pass) lookup portal or by contacting the official helpdesk.
+- **Refund Timeline:** Approved refunds are processed to the original payment method within 5 to 7 business days.
+
+---
+
+## 6. VENUE LOGISTICS & GUIDELINES
+
+### 6.1 Venue Details
+- **Location:** Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001.
+- **Landmark:** Located adjacent to Ranchi Railway Station, easily accessible by cab, auto, and city transit.
+
+### 6.2 Parking
+- Dedicated on-site four-wheeler and two-wheeler parking available at the BNR Chanakya complex.
+- VIP pass holders have access to designated priority parking slots near Gate 1.
+
+### 6.3 Dress Code
+- Traditional festive ethnic wear is strongly encouraged (Chaniya Choli, Kurta Pajama, Kediyu, Ethnic Sarees).
+- Comfortable ethnic footwear suitable for lawn dancing is recommended.
+
+### 6.4 Safety & Security
+- 24/7 security personnel, female bouncers, and CCTV surveillance throughout the venue.
+- First-aid medical booth with certified medical staff on standby.
+- Alcohol, tobacco, weapons, and outside food/beverages are strictly prohibited.
+
+---
+
+## 7. FREQUENTLY ASKED QUESTIONS (FAQ)
+
+### Q: Can I buy tickets at the venue on event day?
+A: If passes remain available, the on-site box office will be open from 3:00 PM on October 16, 2026. However, due to lawn capacity limits, passes typically sell out online days in advance. Advance booking is strongly recommended.
+
+### Q: Are Dandiya sticks provided at the event?
+A: High-quality wooden dandiya sticks are available for purchase or complimentary depending on your pass tier (VIP and Family passes include dandiya pairs). Personal dandiya sticks are permitted subject to gate security check.
+
+### Q: What if I lose my digital receipt or booking ID?
+A: You can instantly recover your booking reference and admission QR by visiting https://raasutsav.in/find-pass and entering your registered mobile phone number.
+
+### Q: Can I transfer my pass to someone else?
+A: Passes are issued to the named primary attendee. If an attendee cannot attend, they may contact the helpdesk prior to the cancellation deadline or update attendee details through support.
+
+---
+
+## 8. SITEMAP OF CANONICAL PAGES
+
+- https://raasutsav.in/ — Home Overview
+- https://raasutsav.in/pricing — Pass Tiers & Pricing
+- https://raasutsav.in/booking — Online Box Office
+- https://raasutsav.in/find-pass — Pass Recovery & Receipts
+- https://raasutsav.in/faq — Frequently Asked Questions
+- https://raasutsav.in/about — About Festival & Heritage
+- https://raasutsav.in/services — Food Court & Offerings
+- https://raasutsav.in/contact — Venue & Helpdesk
+- https://raasutsav.in/policies — Policies & Governance Hub
+- https://raasutsav.in/terms-and-conditions — Terms & Conditions
+- https://raasutsav.in/privacy-policy — Privacy Policy
+- https://raasutsav.in/refund-and-cancellation — Cancellation & Refund Policy
+- https://raasutsav.in/shipping-policy — Fulfillment & Delivery Policy
+- https://raasutsav.in/sitemap.xml — XML Sitemap
+- https://raasutsav.in/robots.txt — Robots Directives
+- https://raasutsav.in/llms.txt — Summary AI Manifest
+- https://raasutsav.in/llms-full.txt — Full Unabridged Documentation

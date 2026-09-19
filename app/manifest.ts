@@ -1,0 +1,30 @@
+import { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "RAAS UTSAV 2026 — Dandiya & Garba Night",
+    short_name: "Raas Utsav 2026",
+    description: "Jharkhand's Grandest Dandiya Night at Upwan Lawn, Chanakya BNR Hotel, Ranchi on 16 October 2026.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#18051E",
+    theme_color: "#7E121D",
+    icons: [
+      {
+        src: "/icon.svg",
+        sizes: "any",
+        type: "image/svg+xml",
+      },
+      {
+        src: "/icon.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        src: "/apple-icon.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+  };
+}

@@ -45,6 +45,10 @@ import {
   launchRazorpayCheckout,
   loadRazorpayCheckoutScript,
 } from '@/lib/payments/razorpayClient';
+import {
+  launchPhonePeCheckout,
+  loadPhonePeCheckoutScript,
+} from '@/lib/payments/phonepeClient';
 
 export type { SubmittedBookingRecord };
 
@@ -100,6 +104,7 @@ export default function BookingDesk({
 
   // Payment Execution State
   const [isInitiatingPayment, setIsInitiatingPayment] = useState<boolean>(false);
+  const [initiatingGateway, setInitiatingGateway] = useState<'razorpay' | 'phonepe' | null>(null);
   const [paymentError, setPaymentError] = useState<string>('');
   const [copiedBookingId, setCopiedBookingId] = useState<boolean>(false);
 
@@ -145,9 +150,10 @@ export default function BookingDesk({
       })} IST`
     : null;
 
-  // Pre-load Razorpay checkout script on client mount
+  // Pre-load checkout scripts on client mount
   useEffect(() => {
     loadRazorpayCheckoutScript().catch(() => {});
+    loadPhonePeCheckoutScript().catch(() => {});
   }, []);
 
   // Bounded Polling for Authoritative Booking Confirmation (Max 10 retries at 1.5s intervals)
@@ -587,6 +593,7 @@ export default function BookingDesk({
     if (!submittedRecord || isInitiatingPayment) return;
 
     setIsInitiatingPayment(true);
+    setInitiatingGateway('razorpay');
     setPaymentError('');
 
     try {
@@ -673,6 +680,7 @@ export default function BookingDesk({
           },
         });
         setIsInitiatingPayment(false);
+        setInitiatingGateway(null);
       } else if (data.checkoutUrl) {
         // Stripe redirect flow
         window.location.href = data.checkoutUrl;
@@ -681,8 +689,93 @@ export default function BookingDesk({
       }
     } catch (err: unknown) {
       setIsInitiatingPayment(false);
+      setInitiatingGateway(null);
       setPaymentError(
         err instanceof Error ? err.message : 'Unable to initialize checkout. Please try again.'
+      );
+      setDeskStage('PAYMENT_FAILED');
+    }
+  };
+
+  // Trigger Online Payment via PhonePe Standard Checkout
+  const handlePayPhonePe = async () => {
+    if (!submittedRecord || isInitiatingPayment) return;
+
+    setIsInitiatingPayment(true);
+    setInitiatingGateway('phonepe');
+    setPaymentError('');
+
+    try {
+      const res = await fetch('/api/payments/phonepe/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId: submittedRecord.bookingId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Unable to initialize PhonePe checkout session. Please try again.');
+      }
+
+      const { redirectUrl, merchantOrderId } = data;
+
+      await launchPhonePeCheckout({
+        redirectUrl,
+        merchantOrderId,
+        onCallback: async () => {
+          // Response state from PhonePe callback is just a UI signal (e.g. CONCLUDED, USER_CANCEL)
+          // NEVER trust it as payment proof. Authoritatively query backend status!
+          setDeskStage('CONFIRMING');
+
+          try {
+            const statusRes = await fetch(
+              `/api/payments/phonepe/status/${encodeURIComponent(merchantOrderId)}`
+            );
+            const statusData = await statusRes.json();
+
+            if (statusRes.ok && statusData.success && statusData.state === 'COMPLETED') {
+              const confirmedRecord: SubmittedBookingRecord = {
+                ...submittedRecord,
+                status: 'CONFIRMED',
+                paymentStatus: 'PAID',
+                bookingId: statusData.booking.bookingId,
+                unitPrice: statusData.booking.unitPrice,
+                total: statusData.booking.total,
+                confirmedAt: statusData.booking.confirmedAt,
+                entryToken: statusData.booking.entryToken,
+              };
+              setSubmittedRecord(confirmedRecord);
+              setDeskStage('SUCCESS');
+            } else if (statusData.state === 'FAILED') {
+              setPaymentError(
+                statusData.message || 'PhonePe payment was cancelled or declined. You may retry.'
+              );
+              setDeskStage('PAYMENT_FAILED');
+            } else {
+              setPaymentError(
+                'Payment is being processed by PhonePe. Please check reservation status.'
+              );
+              setDeskStage('PAYMENT_PENDING');
+            }
+          } catch {
+            setPaymentError(
+              'Network interrupted while verifying PhonePe payment. Please check your reservation status.'
+            );
+            setDeskStage('PAYMENT_PENDING');
+          }
+        },
+        onFallbackRedirect: () => {
+          setDeskStage('CONFIRMING');
+        },
+      });
+      setIsInitiatingPayment(false);
+      setInitiatingGateway(null);
+    } catch (err: unknown) {
+      setIsInitiatingPayment(false);
+      setInitiatingGateway(null);
+      setPaymentError(
+        err instanceof Error ? err.message : 'Unable to initialize PhonePe checkout. Please try again.'
       );
       setDeskStage('PAYMENT_FAILED');
     }
@@ -1581,43 +1674,71 @@ export default function BookingDesk({
                         <ShieldCheck className="w-4 h-4 text-bright-gold" />
                         <span>256-BIT SSL SECURE CHECKOUT</span>
                       </div>
-                      <p>All payments are securely handled via Razorpay with instant ticket issuance.</p>
+                      <p>All payments are securely handled via Razorpay or PhonePe with instant ticket issuance.</p>
                     </div>
                   </div>
 
                   {/* Right Column: Payment Actions, Pay Later, WhatsApp Helpline */}
                   <div className="lg:col-span-6 space-y-3 pt-6 lg:pt-0 border-t lg:border-t-0 lg:border-l border-antique-gold/30 lg:pl-6 xl:pl-8 lg:self-stretch">
                     {!remainingTime.isExpired && (
-                    <button
-                      id={deskStage === 'PAYMENT_PENDING' || deskStage === 'PAYMENT_FAILED' ? 'payment-retry-btn' : 'payment-stage-pay-btn'}
-                      data-testid="payment-stage-pay-btn"
-                      type="button"
-                      onClick={handlePayNow}
-                      disabled={isInitiatingPayment}
-                      className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-vermilion via-amber-glow to-vermilion text-warm-cream font-display text-xl tracking-wider uppercase border-2 border-antique-gold/80 shadow-[0_4px_24px_rgba(217,37,36,0.5)] flex items-center justify-center gap-3 transition-[transform,box-shadow] duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-bold"
-                    >
-                      {isInitiatingPayment ? (
-                        <>
-                          <Loader2 className="w-6 h-6 animate-spin text-bright-gold shrink-0" />
-                          <span>OPENING SECURE CHECKOUT...</span>
-                        </>
-                      ) : deskStage === 'PAYMENT_PENDING' ? (
-                        <>
-                          <Lock className="w-5 h-5 text-bright-gold" />
-                          <span>COMPLETE PAYMENT (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
-                        </>
-                      ) : deskStage === 'PAYMENT_FAILED' ? (
-                        <>
-                          <Lock className="w-5 h-5 text-bright-gold" />
-                          <span>TRY PAYMENT AGAIN (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="w-5 h-5 text-bright-gold" />
-                          <span>PAY NOW ₹{submittedRecord.total.toLocaleString('en-IN')} WITH RAZORPAY</span>
-                        </>
-                      )}
-                    </button>
+                      <div className="space-y-3">
+                        <button
+                          id={deskStage === 'PAYMENT_PENDING' || deskStage === 'PAYMENT_FAILED' ? 'payment-retry-btn' : 'payment-stage-pay-btn'}
+                          data-testid="payment-stage-pay-btn"
+                          type="button"
+                          onClick={handlePayNow}
+                          disabled={isInitiatingPayment}
+                          className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-vermilion via-amber-glow to-vermilion text-warm-cream font-display text-xl tracking-wider uppercase border-2 border-antique-gold/80 shadow-[0_4px_24px_rgba(217,37,36,0.5)] flex items-center justify-center gap-3 transition-[transform,box-shadow] duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-bold"
+                        >
+                          {isInitiatingPayment && initiatingGateway === 'razorpay' ? (
+                            <>
+                              <Loader2 className="w-6 h-6 animate-spin text-bright-gold shrink-0" />
+                              <span>OPENING SECURE CHECKOUT...</span>
+                            </>
+                          ) : deskStage === 'PAYMENT_PENDING' ? (
+                            <>
+                              <Lock className="w-5 h-5 text-bright-gold" />
+                              <span>PAY WITH RAZORPAY (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
+                            </>
+                          ) : deskStage === 'PAYMENT_FAILED' ? (
+                            <>
+                              <Lock className="w-5 h-5 text-bright-gold" />
+                              <span>TRY WITH RAZORPAY (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="w-5 h-5 text-bright-gold" />
+                              <span>PAY NOW ₹{submittedRecord.total.toLocaleString('en-IN')} WITH RAZORPAY</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          id="phonepe-pay-btn"
+                          data-testid="phonepe-pay-btn"
+                          type="button"
+                          onClick={handlePayPhonePe}
+                          disabled={isInitiatingPayment}
+                          className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#5f259f] via-[#7b2cbf] to-[#5f259f] text-warm-cream font-display text-xl tracking-wider uppercase border-2 border-antique-gold/80 shadow-[0_4px_24px_rgba(95,37,159,0.5)] flex items-center justify-center gap-3 transition-[transform,box-shadow] duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-bold"
+                        >
+                          {isInitiatingPayment && initiatingGateway === 'phonepe' ? (
+                            <>
+                              <Loader2 className="w-6 h-6 animate-spin text-bright-gold shrink-0" />
+                              <span>OPENING PHONEPE CHECKOUT...</span>
+                            </>
+                          ) : deskStage === 'PAYMENT_PENDING' || deskStage === 'PAYMENT_FAILED' ? (
+                            <>
+                              <Lock className="w-5 h-5 text-bright-gold" />
+                              <span>PAY WITH PHONEPE (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="w-5 h-5 text-bright-gold" />
+                              <span>PAY NOW ₹{submittedRecord.total.toLocaleString('en-IN')} WITH PHONEPE</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     )}
 
                     {/* Pay Later — keep the booking pending and pay within 24 hours */}

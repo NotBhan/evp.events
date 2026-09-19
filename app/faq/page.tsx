@@ -410,6 +410,65 @@ export default function FaqPage() {
         </div>
       </div>
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'What payment options are available for Raas Utsav 2026?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Every booking can be paid in one of two ways: Pay Now (immediate secure payment via Razorpay or PhonePe supporting UPI, cards, and net banking) or Pay Later (reserving the pass and completing payment within 24 hours). Both paths create the same booking record.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'How does Pay Later work and what is the payment deadline?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Pay Later creates your reservation immediately and locks the pass for exactly 24 hours from initial booking creation. You can return to the booking page anytime within 24 hours to complete payment. If unpaid after 24 hours, the booking expires automatically.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'What is the ticket cancellation and refund policy?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Cancellations are accepted until Friday, October 10, 2026 at 11:59 PM IST with an 80% refund (20% processing fee). From Saturday, October 11, 2026 onwards, all pass sales are strictly non-refundable.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'How does the entry QR code and gate admission work?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Upon confirmed payment, a signed digital admission QR code is generated on your official receipt. Gate organizers scan this QR code at Upwan Lawn, Chanakya BNR Hotel on event day (16 October 2026). Unpaid or pending bookings have no admission QR.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'What are the pass prices for Raas Utsav 2026?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Pass prices are inclusive of GST: Solo Pass Female is ₹999, Couple Pass is ₹1,999, Family Pass (4 pax) is ₹3,599, Group Pass (6 pax) is ₹4,999, VIP Couple Pass is ₹3,499, and VIP Group Pass (6 pax) is ₹7,999.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Where and when is the event taking place?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'RAAS UTSAV 2026 takes place on Friday, 16 October 2026 from 5:00 PM to 11:00 PM IST at Upwan Lawn, Chanakya BNR Hotel, Station Road, Ranchi, Jharkhand 834001.',
+                },
+              },
+            ],
+          }),
+        }}
+      />
       <Footer />
     </main>
   );
