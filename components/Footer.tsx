@@ -409,27 +409,52 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] text-antique-gold/90 shrink-0">
-            <Link href="/terms-and-conditions" className="hover:text-bright-gold transition-colors">
-              Terms
+          <nav
+            aria-label="Legal and Compliance"
+            className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2 text-[11px] font-body text-antique-gold/90"
+          >
+            <Link
+              href="/terms"
+              className="hover:text-bright-gold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-gold/50 rounded-sm"
+            >
+              Terms &amp; Conditions
             </Link>
-            <span>·</span>
-            <Link href="/privacy-policy" className="hover:text-bright-gold transition-colors">
-              Privacy
+            <span className="text-antique-gold/30 hidden sm:inline" aria-hidden="true">·</span>
+            <Link
+              href="/privacy"
+              className="hover:text-bright-gold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-gold/50 rounded-sm"
+            >
+              Privacy Policy
             </Link>
-            <span>·</span>
-            <Link href="/refund-and-cancellation" className="hover:text-bright-gold transition-colors">
-              Refunds
+            <span className="text-antique-gold/30 hidden sm:inline" aria-hidden="true">·</span>
+            <Link
+              href="/refunds"
+              className="hover:text-bright-gold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-gold/50 rounded-sm"
+            >
+              Cancellation &amp; Refund Policy
             </Link>
-            <span>·</span>
-            <Link href="/faq" className="hover:text-bright-gold transition-colors">
+            <span className="text-antique-gold/30 hidden sm:inline" aria-hidden="true">·</span>
+            <Link
+              href="/fulfillment"
+              className="hover:text-bright-gold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-gold/50 rounded-sm"
+            >
+              Pass Fulfillment Policy
+            </Link>
+            <span className="text-antique-gold/30 hidden sm:inline" aria-hidden="true">·</span>
+            <Link
+              href="/contact"
+              className="hover:text-bright-gold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-gold/50 rounded-sm"
+            >
+              Contact Us
+            </Link>
+            <span className="text-antique-gold/30 hidden sm:inline" aria-hidden="true">·</span>
+            <Link
+              href="/faq"
+              className="hover:text-bright-gold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-gold/50 rounded-sm"
+            >
               FAQ
             </Link>
-            <span>·</span>
-            <Link href="/contact" className="hover:text-bright-gold transition-colors">
-              Helpline
-            </Link>
-          </div>
+          </nav>
         </div>
       </div>
     </footer>

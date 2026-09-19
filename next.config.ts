@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
     "lucy-traditions-stay-appointments.trycloudflare.com",
     "*.trycloudflare.com",
   ],
+  async rewrites() {
+    return [
+      { source: "/terms", destination: "/terms-and-conditions" },
+      { source: "/privacy", destination: "/privacy-policy" },
+      { source: "/refunds", destination: "/refund-and-cancellation" },
+      { source: "/fulfillment", destination: "/shipping-policy" },
+    ];
+  },
 };
 
 export default nextConfig;
