@@ -341,7 +341,6 @@ export default function ServicesContent() {
                     src="/images/client/raascdr/web/durga-centerpiece.webp"
                     alt="Maa Durga iconography for Raas Utsav 2026"
                     fill
-                    priority
                     sizes="(max-width: 640px) 224px, 256px"
                     className="object-contain drop-shadow-[0_8px_24px_rgba(217,37,36,0.35)]"
                   />
@@ -834,7 +833,7 @@ export default function ServicesContent() {
                   src="/images/client/raascdr/web/eventpoint-logo.webp"
                   alt="Event Point Organizer Logo"
                   fill
-                  unoptimized
+                  sizes="64px"
                   className="object-contain"
                 />
               </div>

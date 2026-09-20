@@ -122,6 +122,7 @@ export default function Footer() {
                     src="/images/client/raascdr/web/eventpoint-logo.webp"
                     alt="Event Point Official Organizer Logo"
                     fill
+                    sizes="40px"
                     className="object-contain"
                   />
                 </div>

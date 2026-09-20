@@ -48,7 +48,6 @@ export default function FestivalIntro() {
               caption={eventData.gallery.crowdCelebration.caption}
               badge={eventData.gallery.crowdCelebration.badge}
               aspectRatio="16/9"
-              priority={true}
             />
           </div>
         </div>

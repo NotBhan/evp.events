@@ -181,7 +181,6 @@ export default function BookingReceipt({
                   src="/images/client/raascdr/web/eventpoint-logo.webp"
                   alt="Event Point Official Logo"
                   fill
-                  unoptimized
                   sizes="64px"
                   className="object-contain"
                 />

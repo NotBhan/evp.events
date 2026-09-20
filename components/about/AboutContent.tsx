@@ -406,8 +406,8 @@ export default function AboutContent() {
                     src="/images/client/raascdr/web/string-lights.webp"
                     alt=""
                     fill
+                    sizes="100vw"
                     className="object-cover object-top opacity-95"
-                    unoptimized
                   />
                 </div>
 
@@ -417,8 +417,8 @@ export default function AboutContent() {
                     src="/images/client/raascdr/web/hanging-diyas.webp"
                     alt=""
                     fill
+                    sizes="80px"
                     className="object-contain object-top"
-                    unoptimized
                   />
                 </div>
                 <div className="absolute top-0 right-[1.5%] w-[8%] sm:w-[8.5%] h-[32%] pointer-events-none z-20 opacity-90 scale-x-[-1]">
@@ -426,8 +426,8 @@ export default function AboutContent() {
                     src="/images/client/raascdr/web/hanging-diyas.webp"
                     alt=""
                     fill
+                    sizes="80px"
                     className="object-contain object-top"
-                    unoptimized
                   />
                 </div>
 
@@ -437,8 +437,8 @@ export default function AboutContent() {
                     src="/images/client/raascdr/web/fireworks-burst.webp"
                     alt=""
                     fill
+                    sizes="180px"
                     className="object-contain"
-                    unoptimized
                   />
                 </div>
                 <div className="absolute top-[12%] right-[4%] w-[24%] h-[20%] pointer-events-none opacity-35 mix-blend-screen scale-x-[-1]">
@@ -446,8 +446,8 @@ export default function AboutContent() {
                     src="/images/client/raascdr/web/fireworks-burst.webp"
                     alt=""
                     fill
+                    sizes="180px"
                     className="object-contain"
-                    unoptimized
                   />
                 </div>
 
@@ -458,8 +458,8 @@ export default function AboutContent() {
                       src="/images/client/raascdr/web/eventpoint-badge.webp"
                       alt="Event Point Official Logo"
                       fill
+                      sizes="115px"
                       className="object-contain"
-                      unoptimized
                     />
                   </div>
                 </div>
@@ -474,8 +474,8 @@ export default function AboutContent() {
                       src="/images/client/raascdr/web/plaque-maroon.webp"
                       alt="Official Event Features"
                       fill
+                      sizes="180px"
                       className="object-contain"
-                      unoptimized
                     />
                     <div className="relative z-10 flex flex-col items-start justify-center pl-2 pr-1 text-left font-body">
                       <span className="text-bright-gold font-display text-[9px] sm:text-[11px] tracking-wider font-bold mb-0.5">
@@ -510,8 +510,8 @@ export default function AboutContent() {
                       src="/images/client/raascdr/web/chakri-gold.webp"
                       alt=""
                       fill
+                      sizes="(max-width: 640px) 260px, 360px"
                       className="object-contain"
-                      unoptimized
                     />
                   </div>
 
@@ -526,7 +526,6 @@ export default function AboutContent() {
                       fill
                       className="object-contain object-center"
                       sizes="(max-width: 640px) 200px, 280px"
-                      priority
                     />
                   </div>
                 </div>
@@ -544,8 +543,6 @@ export default function AboutContent() {
                       fill
                       className="object-contain object-center"
                       sizes="(max-width: 640px) 260px, (max-width: 1024px) 380px, 480px"
-                      priority
-                      unoptimized
                     />
                   </div>
 
@@ -617,7 +614,6 @@ export default function AboutContent() {
                       fill
                       className="object-contain object-bottom"
                       sizes="(max-width: 640px) 300px, 420px"
-                      priority
                     />
                   </div>
                 </div>
@@ -630,7 +626,6 @@ export default function AboutContent() {
                     fill
                     sizes="120px"
                     className="object-contain object-bottom-left"
-                    unoptimized
                   />
                 </div>
                 <div className="absolute bottom-[4.5%] right-[2%] w-[22%] h-[18%] pointer-events-none z-20 opacity-85 scale-x-[-1]">
@@ -640,7 +635,6 @@ export default function AboutContent() {
                     fill
                     sizes="120px"
                     className="object-contain object-bottom-left"
-                    unoptimized
                   />
                 </div>
 
@@ -1094,7 +1088,6 @@ export default function AboutContent() {
                 alt="Upwan Lawn at Chanakya BNR Hotel, Ranchi — Official Grounds for Raas Utsav 2026"
                 fill
                 sizes="(max-width: 1280px) 100vw, 1280px"
-                priority
                 className="object-cover object-center"
               />
             </div>

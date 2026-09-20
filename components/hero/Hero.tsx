@@ -12,7 +12,6 @@ import CornerMedallion from '../decorations/CornerMedallion';
 import InnerPosterCard from '../decorations/InnerPosterCard';
 import DandiyaSticks from '../decorations/DandiyaSticks';
 import BackgroundPattern from '../decorations/BackgroundPattern';
-import { initHeroScrollAnimation } from './heroAnimations';
 
 export default function Hero() {
   const heroContainerRef = useRef<HTMLDivElement>(null);
@@ -33,36 +32,45 @@ export default function Hero() {
   const heroCTARef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (
-      !heroContainerRef.current ||
-      !heroStageRef.current ||
-      !leftDancerRef.current ||
-      !rightDancerRef.current ||
-      !durgaAuraRef.current ||
-      !heroTitleRef.current ||
-      !heroCTARef.current
-    ) {
-      return;
-    }
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
 
-    const cleanup = initHeroScrollAnimation({
-      heroContainer: heroContainerRef.current,
-      heroStage: heroStageRef.current,
-      leftDancer: leftDancerRef.current,
-      rightDancer: rightDancerRef.current,
-      durgaAura: durgaAuraRef.current,
-      leftDiya: leftDiyaRef.current,
-      rightDiya: rightDiyaRef.current,
-      leftPillar: leftPillarRef.current,
-      rightPillar: rightPillarRef.current,
-      topFrame: topFrameRef.current,
-      cornerMedallions: [cornerMedallionTLRef.current, cornerMedallionTRRef.current],
-      foregroundSticks: [foregroundStickLeftRef.current, foregroundStickRightRef.current],
-      heroTitle: heroTitleRef.current,
-      heroCTA: heroCTARef.current,
+    import('./heroAnimations').then(({ initHeroScrollAnimation }) => {
+      if (isCleanedUp) return;
+      if (
+        !heroContainerRef.current ||
+        !heroStageRef.current ||
+        !leftDancerRef.current ||
+        !rightDancerRef.current ||
+        !durgaAuraRef.current ||
+        !heroTitleRef.current ||
+        !heroCTARef.current
+      ) {
+        return;
+      }
+
+      cleanupFn = initHeroScrollAnimation({
+        heroContainer: heroContainerRef.current,
+        heroStage: heroStageRef.current,
+        leftDancer: leftDancerRef.current,
+        rightDancer: rightDancerRef.current,
+        durgaAura: durgaAuraRef.current,
+        leftDiya: leftDiyaRef.current,
+        rightDiya: rightDiyaRef.current,
+        leftPillar: leftPillarRef.current,
+        rightPillar: rightPillarRef.current,
+        topFrame: topFrameRef.current,
+        cornerMedallions: [cornerMedallionTLRef.current, cornerMedallionTRRef.current],
+        foregroundSticks: [foregroundStickLeftRef.current, foregroundStickRightRef.current],
+        heroTitle: heroTitleRef.current,
+        heroCTA: heroCTARef.current,
+      });
     });
 
-    return cleanup;
+    return () => {
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
+    };
   }, []);
 
   return (

@@ -11,7 +11,7 @@ export default function ToranGarland({ className = '' }: ToranGarlandProps) {
         viewBox="0 0 1440 140"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-auto min-w-[768px]"
+        className="w-full h-auto"
         preserveAspectRatio="none"
       >
         {/* Layer 1: Topmost Intricate Border Frieze */}

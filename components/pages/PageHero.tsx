@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react';
 import Mandala from '../decorations/Mandala';
 import DandiyaSticks from '../decorations/DandiyaSticks';
-import { animatePageHero } from '../animations/interiorAnimations';
 
 interface PageHeroProps {
   eyebrow: string;
@@ -39,17 +38,26 @@ export default function PageHero({
   const badgeRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const cleanup = animatePageHero({
-      container: containerRef.current,
-      eyebrow: eyebrowRef.current,
-      title: titleRef.current,
-      subtitle: subtitleRef.current,
-      dividerLines: [lineLeftRef.current, lineRightRef.current],
-      sticksIcon: sticksIconRef.current,
-      badge: badgeRef.current,
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
+
+    import('../animations/interiorAnimations').then(({ animatePageHero }) => {
+      if (isCleanedUp) return;
+      cleanupFn = animatePageHero({
+        container: containerRef.current,
+        eyebrow: eyebrowRef.current,
+        title: titleRef.current,
+        subtitle: subtitleRef.current,
+        dividerLines: [lineLeftRef.current, lineRightRef.current],
+        sticksIcon: sticksIconRef.current,
+        badge: badgeRef.current,
+      });
     });
 
-    return cleanup;
+    return () => {
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
+    };
   }, []);
 
   return (

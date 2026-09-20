@@ -35,20 +35,29 @@ import {
   MapPin,
   Users,
 } from 'lucide-react';
-import BookingReceipt from './BookingReceipt';
-import BookingReceiptPrint, { SubmittedBookingRecord } from './BookingReceiptPrint';
+import dynamic from 'next/dynamic';
+import type { SubmittedBookingRecord } from './BookingReceiptPrint';
+
+const BookingReceipt = dynamic(() => import('./BookingReceipt'), {
+  loading: () => (
+    <div className="p-8 text-center text-bright-gold font-body">
+      <div className="w-8 h-8 mx-auto mb-3 border-2 border-antique-gold border-t-bright-gold rounded-full animate-spin" />
+      <span>Loading Admission Pass Receipt...</span>
+    </div>
+  ),
+  ssr: false,
+});
+
+const BookingReceiptPrint = dynamic(() => import('./BookingReceiptPrint'), {
+  ssr: false,
+});
+
 import BookingDancerAtmosphere, {
   getBookingVisualStage,
 } from './BookingDancerAtmosphere';
 import PassOwnershipDisclaimer from './PassOwnershipDisclaimer';
-import {
-  launchRazorpayCheckout,
-  loadRazorpayCheckoutScript,
-} from '@/lib/payments/razorpayClient';
-import {
-  launchPhonePeCheckout,
-  loadPhonePeCheckoutScript,
-} from '@/lib/payments/phonepeClient';
+import { launchRazorpayCheckout } from '@/lib/payments/razorpayClient';
+import { launchPhonePeCheckout } from '@/lib/payments/phonepeClient';
 
 export type { SubmittedBookingRecord };
 
@@ -150,11 +159,8 @@ export default function BookingDesk({
       })} IST`
     : null;
 
-  // Pre-load checkout scripts on client mount
-  useEffect(() => {
-    loadRazorpayCheckoutScript().catch(() => {});
-    loadPhonePeCheckoutScript().catch(() => {});
-  }, []);
+  // Note: Checkout scripts (Razorpay / PhonePe) are loaded on-demand when user clicks to pay
+
 
   // Bounded Polling for Authoritative Booking Confirmation (Max 10 retries at 1.5s intervals)
   const pollBookingConfirmation = useCallback(async (targetId: string, maxAttempts = 10) => {

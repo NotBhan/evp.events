@@ -203,7 +203,7 @@ export default function DurgaAura({
             src="/images/client/raascdr/web/durga-centerpiece.webp"
             alt="Maa Durga Devotional Centerpiece Artwork - Raas Utsav 2026"
             fill
-            sizes="(max-width: 768px) 360px, (max-width: 1200px) 680px, 780px"
+            sizes="(max-width: 640px) 260px, (max-width: 1024px) 410px, 430px"
             className="object-contain object-center pointer-events-none"
             priority
           />

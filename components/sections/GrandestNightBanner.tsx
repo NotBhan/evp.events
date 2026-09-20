@@ -190,8 +190,8 @@ export default function GrandestNightBanner() {
               src="/images/client/raascdr/web/string-lights.webp"
               alt=""
               fill
+              sizes="100vw"
               className="object-cover object-top opacity-95"
-              unoptimized
             />
           </div>
 
@@ -201,8 +201,8 @@ export default function GrandestNightBanner() {
               src="/images/client/raascdr/web/hanging-diyas.webp"
               alt=""
               fill
+              sizes="100px"
               className="object-contain object-top"
-              unoptimized
             />
           </div>
           <div className="absolute top-0 right-[1%] w-[6.5%] h-[42%] pointer-events-none z-20 opacity-90 scale-x-[-1]">
@@ -210,8 +210,8 @@ export default function GrandestNightBanner() {
               src="/images/client/raascdr/web/hanging-diyas.webp"
               alt=""
               fill
+              sizes="100px"
               className="object-contain object-top"
-              unoptimized
             />
           </div>
 
@@ -221,8 +221,8 @@ export default function GrandestNightBanner() {
               src="/images/client/raascdr/web/fireworks-burst.webp"
               alt=""
               fill
+              sizes="250px"
               className="object-contain"
-              unoptimized
             />
           </div>
           <div className="absolute top-[10%] right-[22%] w-[16%] h-[32%] pointer-events-none opacity-30 mix-blend-screen scale-x-[-1]">
@@ -230,8 +230,8 @@ export default function GrandestNightBanner() {
               src="/images/client/raascdr/web/fireworks-burst.webp"
               alt=""
               fill
+              sizes="250px"
               className="object-contain"
-              unoptimized
             />
           </div>
 
@@ -242,8 +242,8 @@ export default function GrandestNightBanner() {
                 src="/images/client/raascdr/web/eventpoint-badge.webp"
                 alt="Event Point Official Logo"
                 fill
+                sizes="120px"
                 className="object-contain"
-                unoptimized
               />
             </div>
           </div>
@@ -259,8 +259,8 @@ export default function GrandestNightBanner() {
                 src="/images/client/raascdr/web/chakri-gold.webp"
                 alt=""
                 fill
+                sizes="(max-width: 1024px) 350px, 450px"
                 className="object-contain"
-                unoptimized
               />
             </div>
 
@@ -275,7 +275,6 @@ export default function GrandestNightBanner() {
                 fill
                 className="object-contain object-center"
                 sizes="(max-width: 1024px) 240px, 340px"
-                priority
               />
             </div>
           </div>
@@ -292,10 +291,7 @@ export default function GrandestNightBanner() {
                 alt="रास Utsav 2026"
                 fill
                 className="object-contain object-left"
-                
                 sizes="(max-width: 1024px) 450px, 650px"
-                priority
-                unoptimized
               />
             </div>
 
@@ -339,7 +335,6 @@ export default function GrandestNightBanner() {
                 fill
                 className="object-contain"
                 sizes="(max-width: 1024px) 160px, 230px"
-                unoptimized
               />
               {/* Plaque Text Content */}
               <div className="relative z-10 flex flex-col items-start justify-center pl-3 pr-2 text-left font-futura">
@@ -376,7 +371,6 @@ export default function GrandestNightBanner() {
                 fill
                 className="object-contain object-right-bottom"
                 sizes="(max-width: 1024px) 400px, 600px"
-                quality={100}
               />
             </div>
           </div>
@@ -458,8 +452,8 @@ export default function GrandestNightBanner() {
               src="/images/client/raascdr/web/string-lights.webp"
               alt=""
               fill
+              sizes="100vw"
               className="object-cover object-top"
-              unoptimized
             />
           </div>
 
@@ -470,8 +464,8 @@ export default function GrandestNightBanner() {
                 src="/images/client/raascdr/web/eventpoint-badge.webp"
                 alt="Event Point Logo"
                 fill
+                sizes="96px"
                 className="object-contain object-left"
-                unoptimized
               />
             </div>
             <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-royal-maroon/90 border border-antique-gold/50 text-[9px] font-bold text-bright-gold uppercase tracking-wider shadow-md">
@@ -489,8 +483,8 @@ export default function GrandestNightBanner() {
                   src="/images/client/raascdr/web/chakri-gold.webp"
                   alt=""
                   fill
+                  sizes="180px"
                   className="object-contain"
-                  unoptimized
                 />
               </div>
               {/* Durga Centerpiece */}
@@ -501,7 +495,6 @@ export default function GrandestNightBanner() {
                   fill
                   sizes="180px"
                   className="object-contain"
-                  priority
                 />
               </div>
             </div>
@@ -515,10 +508,7 @@ export default function GrandestNightBanner() {
                 alt="रास Utsav 2026"
                 fill
                 className="object-contain"
-                
-                sizes="320px"
-                priority
-                unoptimized
+                sizes="(max-width: 640px) 320px, 400px"
               />
             </div>
             <span className="block font-antiqua text-[10px] text-warm-cream/90 tracking-[0.12em] uppercase font-bold mt-1">
@@ -549,6 +539,7 @@ export default function GrandestNightBanner() {
               src="/images/client/raascdr/web/dancers-composite-new.webp"
               alt="Dandiya Dancers"
               fill
+              sizes="(max-width: 640px) 100vw, 400px"
               className="object-contain"
             />
           </div>

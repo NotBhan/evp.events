@@ -38,7 +38,7 @@ export default function HeroDancer({
             src={src}
             alt={alt}
             fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 40vw, 480px"
+            sizes="(max-width: 640px) 160px, (max-width: 1024px) 280px, 350px"
             className="object-contain object-bottom pointer-events-none drop-shadow-[0_8px_24px_rgba(0,0,0,0.85)]"
             priority
           />

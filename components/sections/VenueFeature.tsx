@@ -155,7 +155,6 @@ export default function VenueFeature() {
               alt="Upwan Lawn at Chanakya BNR Hotel, Ranchi - Official Venue for Raas Utsav 2026"
               fill
               sizes="(max-width: 1400px) 100vw, 1400px"
-              priority
               className="object-cover object-center filter brightness-[0.88] contrast-[1.06]"
             />
           </div>

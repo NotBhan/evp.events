@@ -250,8 +250,7 @@ export default function ContactContent() {
                       src="/images/client/raascdr/web/eventpoint-logo.webp"
                       alt="Event Point Organizer Logo"
                       fill
-                      priority
-                      unoptimized
+                      sizes="(max-width: 640px) 176px, 208px"
                       className="object-contain"
                     />
                   </div>

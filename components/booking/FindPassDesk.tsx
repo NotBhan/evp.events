@@ -3,11 +3,24 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import BookingLookupDesk from './BookingLookupDesk';
-import BookingReceipt from './BookingReceipt';
-import BookingReceiptPrint from './BookingReceiptPrint';
 import PassOwnershipDisclaimer from './PassOwnershipDisclaimer';
 import type { SubmittedBookingRecord } from './BookingReceiptPrint';
+
+const BookingReceipt = dynamic(() => import('./BookingReceipt'), {
+  loading: () => (
+    <div className="p-8 text-center text-bright-gold font-body">
+      <div className="w-8 h-8 mx-auto mb-3 border-2 border-antique-gold border-t-bright-gold rounded-full animate-spin" />
+      <span>Loading Admission Pass Receipt...</span>
+    </div>
+  ),
+  ssr: false,
+});
+
+const BookingReceiptPrint = dynamic(() => import('./BookingReceiptPrint'), {
+  ssr: false,
+});
 
 /**
  * Standalone Find Pass desk: recovers a booking and shows its receipt without the

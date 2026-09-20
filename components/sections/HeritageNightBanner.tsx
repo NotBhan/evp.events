@@ -81,8 +81,8 @@ export default function HeritageNightBanner() {
             src="/images/client/raascdr/web/string-lights.webp"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover object-top opacity-90"
-            unoptimized
           />
         </div>
       </div>
@@ -122,7 +122,6 @@ export default function HeritageNightBanner() {
                   fill
                   className="object-contain"
                   sizes="(max-width: 640px) 192px, 224px"
-                  unoptimized
                 />
                 {/* Plaque Text Overlay */}
                 <div className="relative z-10 flex flex-col items-center justify-center px-4 pt-1">

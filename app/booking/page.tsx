@@ -75,7 +75,6 @@ export default function BookingPage({ searchParams }: BookingPageProps) {
             src={eventData.gallery.crowdCelebration.src}
             alt="Festival crowd celebrating under the evening sky"
             fill
-            priority
             sizes="100vw"
             className="object-cover object-center opacity-45"
           />
@@ -85,8 +84,17 @@ export default function BookingPage({ searchParams }: BookingPageProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-deep-plum/50 via-transparent to-deep-plum/50" />
         </div>
 
-        <div className="relative z-10 max-w-5xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1360px] mx-auto">
-          <Suspense fallback={<div className="p-12 text-center text-bright-gold font-body">Loading Festival Box Office...</div>}>
+        <div className="relative z-10 max-w-5xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-[1360px] mx-auto min-h-[720px]">
+          <Suspense
+            fallback={
+              <div className="min-h-[720px] rounded-3xl bg-royal-maroon/40 border border-antique-gold/30 p-6 sm:p-10 flex flex-col items-center justify-center text-center">
+                <div className="w-12 h-12 rounded-full border-2 border-antique-gold/40 border-t-bright-gold animate-spin mb-4" />
+                <span className="font-body text-xs sm:text-sm font-semibold tracking-wider text-bright-gold uppercase">
+                  Loading Festival Box Office...
+                </span>
+              </div>
+            }
+          >
             <BookingDeskWrapper searchParams={searchParams} />
           </Suspense>
         </div>

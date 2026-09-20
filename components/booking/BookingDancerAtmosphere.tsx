@@ -159,25 +159,17 @@ export default function BookingDancerAtmosphere({
               'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 50%, rgba(0,0,0,0.3) 82%, transparent 100%)',
           }}
         >
-          <picture className="w-full">
-            <source
-              type="image/webp"
-              srcSet={`${DANCERS_GROUP_PHOTO.webpSm} 480w, ${DANCERS_GROUP_PHOTO.webpMd} 800w, ${DANCERS_GROUP_PHOTO.webpSrc} 1018w`}
-              sizes={DANCERS_GROUP_PHOTO.sizes}
-            />
-            <Image
-              src={DANCERS_GROUP_PHOTO.src}
-              alt={DANCERS_GROUP_PHOTO.alt}
-              width={DANCERS_GROUP_PHOTO.width}
-              height={DANCERS_GROUP_PHOTO.height}
-              priority
-              sizes={DANCERS_GROUP_PHOTO.sizes}
-              className="w-full h-auto max-h-[380px] sm:max-h-[440px] md:max-h-[500px] object-contain object-bottom drop-shadow-[0_16px_36px_rgba(0,0,0,0.95)]"
-              style={{
-                filter: 'brightness(0.85) contrast(1.15) saturate(1.1) sepia(0.18)',
-              }}
-            />
-          </picture>
+          <Image
+            src={DANCERS_GROUP_PHOTO.webpSrc}
+            alt={DANCERS_GROUP_PHOTO.alt}
+            width={DANCERS_GROUP_PHOTO.width}
+            height={DANCERS_GROUP_PHOTO.height}
+            sizes={DANCERS_GROUP_PHOTO.sizes}
+            className="w-full h-auto max-h-[380px] sm:max-h-[440px] md:max-h-[500px] object-contain object-bottom drop-shadow-[0_16px_36px_rgba(0,0,0,0.95)]"
+            style={{
+              filter: 'brightness(0.85) contrast(1.15) saturate(1.1) sepia(0.18)',
+            }}
+          />
 
           {/* Colorize Tint Overlay: Harmonizes with Deep Plum (#1C0D18), Royal Maroon (#220D1A) & Antique Gold */}
           <div

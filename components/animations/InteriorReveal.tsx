@@ -1,13 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { isReducedMotion } from './interiorAnimations';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 export type RevealVariant = 'up' | 'left' | 'right' | 'clip' | 'scale' | 'fade';
 
@@ -50,77 +44,96 @@ export default function InteriorReveal({
     if (!el || typeof window === 'undefined') return;
 
     if (isReducedMotion()) {
-      gsap.set(el, { opacity: 1, x: 0, y: 0, scale: 1, clipPath: 'none' });
+      el.style.opacity = '1';
       return;
     }
 
-    const isMobile = window.innerWidth < 768;
-    const mobileDist = Math.min(distance, 20);
+    let isCleanedUp = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let ctx: any;
 
-    const ctx = gsap.context(() => {
-      // Determine initial state based on variant
-      let initialVars: gsap.TweenVars = { opacity: 0 };
-      let toVars: gsap.TweenVars = {
-        opacity: 1,
-        duration,
-        delay,
-        ease: 'power2.out',
-        clearProps: 'transform,clipPath',
-      };
+    Promise.all([
+      import('gsap'),
+      import('gsap/ScrollTrigger'),
+    ]).then(([gsapPkg, scrollTriggerPkg]) => {
+      if (isCleanedUp || !elRef.current) return;
+      const gsap = gsapPkg.default || gsapPkg;
+      const { ScrollTrigger } = scrollTriggerPkg;
+      gsap.registerPlugin(ScrollTrigger);
 
-      switch (variant) {
-        case 'up':
-          initialVars = { opacity: 0, y: isMobile ? mobileDist : distance };
-          toVars = { ...toVars, y: 0 };
-          break;
-        case 'left':
-          // On mobile, convert horizontal slide to gentle vertical slide to avoid overflow
-          initialVars = isMobile
-            ? { opacity: 0, y: mobileDist }
-            : { opacity: 0, x: -distance };
-          toVars = isMobile ? { ...toVars, y: 0 } : { ...toVars, x: 0 };
-          break;
-        case 'right':
-          initialVars = isMobile
-            ? { opacity: 0, y: mobileDist }
-            : { opacity: 0, x: distance };
-          toVars = isMobile ? { ...toVars, y: 0 } : { ...toVars, x: 0 };
-          break;
-        case 'clip':
-          initialVars = {
-            opacity: 0,
-            clipPath: 'inset(0 0 0 100%)',
-            x: isMobile ? 0 : 25,
-          };
-          toVars = {
-            ...toVars,
-            clipPath: 'inset(0 0 0 0%)',
-            x: 0,
-            ease: 'power3.inOut',
-          };
-          break;
-        case 'scale':
-          initialVars = { opacity: 0, scale: 0.97 };
-          toVars = { ...toVars, scale: 1 };
-          break;
-        case 'fade':
-        default:
-          initialVars = { opacity: 0 };
-          toVars = { ...toVars };
-          break;
-      }
+      const isMobile = window.innerWidth < 768;
+      const mobileDist = Math.min(distance, 20);
 
-      gsap.fromTo(el, initialVars, {
-        ...toVars,
-        scrollTrigger: {
-          trigger: el,
-          start: threshold,
-          once: true,
-        },
-      });
-    }, el);
+      ctx = gsap.context(() => {
+        // Determine initial state based on variant
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let initialVars: any = { opacity: 0 };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let toVars: any = {
+          opacity: 1,
+          duration,
+          delay,
+          ease: 'power2.out',
+          clearProps: 'transform,clipPath',
+        };
 
-    return () => ctx.revert();
+        switch (variant) {
+          case 'up':
+            initialVars = { opacity: 0, y: isMobile ? mobileDist : distance };
+            toVars = { ...toVars, y: 0 };
+            break;
+          case 'left':
+            // On mobile, convert horizontal slide to gentle vertical slide to avoid overflow
+            initialVars = isMobile
+              ? { opacity: 0, y: mobileDist }
+              : { opacity: 0, x: -distance };
+            toVars = isMobile ? { ...toVars, y: 0 } : { ...toVars, x: 0 };
+            break;
+          case 'right':
+            initialVars = isMobile
+              ? { opacity: 0, y: mobileDist }
+              : { opacity: 0, x: distance };
+            toVars = isMobile ? { ...toVars, y: 0 } : { ...toVars, x: 0 };
+            break;
+          case 'clip':
+            initialVars = {
+              opacity: 0,
+              clipPath: 'inset(0 0 0 100%)',
+              x: isMobile ? 0 : 25,
+            };
+            toVars = {
+              ...toVars,
+              clipPath: 'inset(0 0 0 0%)',
+              x: 0,
+              ease: 'power3.inOut',
+            };
+            break;
+          case 'scale':
+            initialVars = { opacity: 0, scale: 0.97 };
+            toVars = { ...toVars, scale: 1 };
+            break;
+          case 'fade':
+          default:
+            initialVars = { opacity: 0 };
+            toVars = { ...toVars };
+            break;
+        }
+
+        gsap.fromTo(el, initialVars, {
+          ...toVars,
+          scrollTrigger: {
+            trigger: el,
+            start: threshold,
+            once: true,
+          },
+        });
+      }, elRef.current);
+    });
+
+    return () => {
+      isCleanedUp = true;
+      if (ctx) ctx.revert();
+    };
   }, [variant, delay, duration, distance, threshold]);
 
   return (
