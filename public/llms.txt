@@ -12,7 +12,7 @@ RAAS UTSAV 2026 is an immersive Navratri Dandiya & Garba celebration organized b
 - **Legal Entity:** Kumari Puja Vishwakarma (Proprietor), GSTIN: `20ARLPV7298K1ZZ`
 - **Helpline Phone:** +91 94301 12440 / +91 99315 03960
 - **Official Email:** eventpointranchi18@gmail.com
-- **Official Website:** https://raasutsav.in
+- **Official Website:** https://www.eventpointranchi.com
 
 ## Ticketing & Booking Rules
 - **One Booking = One Pass:** Every pass reservation is an independent booking with its own unique booking reference (e.g., `RU26-REQ-XXXX`) and admission pass.
@@ -22,25 +22,25 @@ RAAS UTSAV 2026 is an immersive Navratri Dandiya & Garba celebration organized b
 - **Cancellation Policy:** Cancellations are permitted until October 10, 2026, 11:59 PM IST with an 80% refund (20% fee + GST). Zero refunds apply after this deadline.
 
 ## Pass Tiers & Pricing (GST Inclusive)
-- [Solo Pass Female (₹999)](https://raasutsav.in/pricing): Single entry pass for female attendee with full festival and food court access.
-- [Couple Pass (₹1,999)](https://raasutsav.in/pricing): Entry pass for one couple (two attendees) with main Garba arena access.
-- [Family Pass - 4 Pax (₹3,599)](https://raasutsav.in/pricing): Entry pass for up to 4 family members with family seating and photo booth access.
-- [Group Pass - 6 Pax (₹4,999)](https://raasutsav.in/pricing): Best-value entry pass for up to 6 attendees (friends/students).
-- [VIP Couple Pass (₹3,499)](https://raasutsav.in/pricing): Priority VIP lane entry, reserved elevated seating, and dedicated food service for 2 attendees.
-- [VIP Group Pass - 6 Pax (₹7,999)](https://raasutsav.in/pricing): Premium festival experience with VIP lounge access, luxury seating, and complimentary festive snacks for 6 attendees.
+- [Solo Pass Female (₹999)](https://www.eventpointranchi.com/pricing): Single entry pass for female attendee with full festival and food court access.
+- [Couple Pass (₹1,999)](https://www.eventpointranchi.com/pricing): Entry pass for one couple (two attendees) with main Garba arena access.
+- [Family Pass - 4 Pax (₹3,599)](https://www.eventpointranchi.com/pricing): Entry pass for up to 4 family members with family seating and photo booth access.
+- [Group Pass - 6 Pax (₹4,999)](https://www.eventpointranchi.com/pricing): Best-value entry pass for up to 6 attendees (friends/students).
+- [VIP Couple Pass (₹3,499)](https://www.eventpointranchi.com/pricing): Priority VIP lane entry, reserved elevated seating, and dedicated food service for 2 attendees.
+- [VIP Group Pass - 6 Pax (₹7,999)](https://www.eventpointranchi.com/pricing): Premium festival experience with VIP lounge access, luxury seating, and complimentary festive snacks for 6 attendees.
 
 ## Essential URLs & Navigation
-- [Home Overview](https://raasutsav.in/): Festival highlights, live dhol masters, and event schedule.
-- [Book Passes Online](https://raasutsav.in/booking): Official 3-step festival box office desk.
-- [Pass Tiers & Pricing](https://raasutsav.in/pricing): Complete transparent ticket catalog with GST inclusions.
-- [Find & Recover Pass](https://raasutsav.in/find-pass): Self-service portal to look up existing bookings by phone or booking ID and print receipts.
-- [Frequently Asked Questions (FAQ)](https://raasutsav.in/faq): Detailed answers regarding Pay Now, Pay Later, refunds, dress code, parking, and gate admission.
-- [About the Festival](https://raasutsav.in/about): Heritage background of Chanakya BNR Hotel and festival cultural pillars.
-- [Offerings & Food Stalls](https://raasutsav.in/services): Food courtyard, royal photo booths, and master dhol entertainment.
-- [Helpdesk & Venue](https://raasutsav.in/contact): Physical office coordinates, map directions, and coordinator helpline.
-- [Terms & Conditions](https://raasutsav.in/terms-and-conditions): Legal terms of attendance, gate entry rules, and conduct.
-- [Privacy Policy](https://raasutsav.in/privacy-policy): Customer data protection and SSL encryption standards.
-- [Cancellation & Refund Policy](https://raasutsav.in/refund-and-cancellation): Step-by-step refund timeline, GST treatment, and eligibility.
-- [Pass Delivery & Fulfillment](https://raasutsav.in/shipping-policy): Instant digital pass fulfillment and physical wristband collection instructions.
-- [All Policies & Legal Hub](https://raasutsav.in/policies): Master directory of all governance documents.
-- [Full Documentation (llms-full.txt)](https://raasutsav.in/llms-full.txt): Comprehensive unabridged event knowledge base.
+- [Home Overview](https://www.eventpointranchi.com/): Festival highlights, live dhol masters, and event schedule.
+- [Book Passes Online](https://www.eventpointranchi.com/booking): Official 3-step festival box office desk.
+- [Pass Tiers & Pricing](https://www.eventpointranchi.com/pricing): Complete transparent ticket catalog with GST inclusions.
+- [Find & Recover Pass](https://www.eventpointranchi.com/find-pass): Self-service portal to look up existing bookings by phone or booking ID and print receipts.
+- [Frequently Asked Questions (FAQ)](https://www.eventpointranchi.com/faq): Detailed answers regarding Pay Now, Pay Later, refunds, dress code, parking, and gate admission.
+- [About the Festival](https://www.eventpointranchi.com/about): Heritage background of Chanakya BNR Hotel and festival cultural pillars.
+- [Offerings & Food Stalls](https://www.eventpointranchi.com/services): Food courtyard, royal photo booths, and master dhol entertainment.
+- [Helpdesk & Venue](https://www.eventpointranchi.com/contact): Physical office coordinates, map directions, and coordinator helpline.
+- [Terms & Conditions](https://www.eventpointranchi.com/terms-and-conditions): Legal terms of attendance, gate entry rules, and conduct.
+- [Privacy Policy](https://www.eventpointranchi.com/privacy-policy): Customer data protection and SSL encryption standards.
+- [Cancellation & Refund Policy](https://www.eventpointranchi.com/refund-and-cancellation): Step-by-step refund timeline, GST treatment, and eligibility.
+- [Pass Delivery & Fulfillment](https://www.eventpointranchi.com/shipping-policy): Instant digital pass fulfillment and physical wristband collection instructions.
+- [All Policies & Legal Hub](https://www.eventpointranchi.com/policies): Master directory of all governance documents.
+- [Full Documentation (llms-full.txt)](https://www.eventpointranchi.com/llms-full.txt): Comprehensive unabridged event knowledge base.

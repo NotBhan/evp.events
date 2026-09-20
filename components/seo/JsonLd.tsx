@@ -2,7 +2,7 @@ import React from 'react';
 import { eventData } from '@/data/eventData';
 
 export default function JsonLd() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://raasutsav.in';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.eventpointranchi.com';
 
   // 1. Festival Event Schema
   const eventSchema = {

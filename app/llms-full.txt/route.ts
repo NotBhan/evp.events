@@ -15,7 +15,7 @@ export async function GET() {
     });
   } catch (err) {
     console.error('[llms-full.txt route error]', err);
-    return new Response('# RAAS UTSAV 2026\n\nFull Festival Documentation.\nVisit https://raasutsav.in', {
+    return new Response('# RAAS UTSAV 2026\n\nFull Festival Documentation.\nVisit https://www.eventpointranchi.com', {
       status: 200,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });

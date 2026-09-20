@@ -19,7 +19,7 @@
 - **GSTIN:** 20ARLPV7298K1ZZ
 - **Contact Helplines:** +91 94301 12440, +91 99315 03960
 - **Official Email:** eventpointranchi18@gmail.com
-- **Official Website:** https://raasutsav.in
+- **Official Website:** https://www.eventpointranchi.com
 
 ---
 
@@ -107,7 +107,7 @@ To ensure tamper-proof admission, zero scalping, and unambiguous gate security, 
   - A 20% cancellation and administrative processing fee is retained.
   - Applicable GST is handled in accordance with statutory tax rules.
 - **Post-Deadline Policy:** From **Saturday, October 11, 2026, 12:00 AM IST onwards**, all ticket sales are final and strictly non-refundable. No refunds, credits, or exchanges will be provided for late cancellations or no-shows.
-- **Self-Service Cancellation:** Attendees can cancel eligible bookings directly via the [Find Pass](https://raasutsav.in/find-pass) lookup portal or by contacting the official helpdesk.
+- **Self-Service Cancellation:** Attendees can cancel eligible bookings directly via the [Find Pass](https://www.eventpointranchi.com/find-pass) lookup portal or by contacting the official helpdesk.
 - **Refund Timeline:** Approved refunds are processed to the original payment method within 5 to 7 business days.
 
 ---
@@ -142,7 +142,7 @@ A: If passes remain available, the on-site box office will be open from 3:00 PM 
 A: High-quality wooden dandiya sticks are available for purchase or complimentary depending on your pass tier (VIP and Family passes include dandiya pairs). Personal dandiya sticks are permitted subject to gate security check.
 
 ### Q: What if I lose my digital receipt or booking ID?
-A: You can instantly recover your booking reference and admission QR by visiting https://raasutsav.in/find-pass and entering your registered mobile phone number.
+A: You can instantly recover your booking reference and admission QR by visiting https://www.eventpointranchi.com/find-pass and entering your registered mobile phone number.
 
 ### Q: Can I transfer my pass to someone else?
 A: Passes are issued to the named primary attendee. If an attendee cannot attend, they may contact the helpdesk prior to the cancellation deadline or update attendee details through support.
@@ -151,20 +151,20 @@ A: Passes are issued to the named primary attendee. If an attendee cannot attend
 
 ## 8. SITEMAP OF CANONICAL PAGES
 
-- https://raasutsav.in/ — Home Overview
-- https://raasutsav.in/pricing — Pass Tiers & Pricing
-- https://raasutsav.in/booking — Online Box Office
-- https://raasutsav.in/find-pass — Pass Recovery & Receipts
-- https://raasutsav.in/faq — Frequently Asked Questions
-- https://raasutsav.in/about — About Festival & Heritage
-- https://raasutsav.in/services — Food Court & Offerings
-- https://raasutsav.in/contact — Venue & Helpdesk
-- https://raasutsav.in/policies — Policies & Governance Hub
-- https://raasutsav.in/terms-and-conditions — Terms & Conditions
-- https://raasutsav.in/privacy-policy — Privacy Policy
-- https://raasutsav.in/refund-and-cancellation — Cancellation & Refund Policy
-- https://raasutsav.in/shipping-policy — Fulfillment & Delivery Policy
-- https://raasutsav.in/sitemap.xml — XML Sitemap
-- https://raasutsav.in/robots.txt — Robots Directives
-- https://raasutsav.in/llms.txt — Summary AI Manifest
-- https://raasutsav.in/llms-full.txt — Full Unabridged Documentation
+- https://www.eventpointranchi.com/ — Home Overview
+- https://www.eventpointranchi.com/pricing — Pass Tiers & Pricing
+- https://www.eventpointranchi.com/booking — Online Box Office
+- https://www.eventpointranchi.com/find-pass — Pass Recovery & Receipts
+- https://www.eventpointranchi.com/faq — Frequently Asked Questions
+- https://www.eventpointranchi.com/about — About Festival & Heritage
+- https://www.eventpointranchi.com/services — Food Court & Offerings
+- https://www.eventpointranchi.com/contact — Venue & Helpdesk
+- https://www.eventpointranchi.com/policies — Policies & Governance Hub
+- https://www.eventpointranchi.com/terms-and-conditions — Terms & Conditions
+- https://www.eventpointranchi.com/privacy-policy — Privacy Policy
+- https://www.eventpointranchi.com/refund-and-cancellation — Cancellation & Refund Policy
+- https://www.eventpointranchi.com/shipping-policy — Fulfillment & Delivery Policy
+- https://www.eventpointranchi.com/sitemap.xml — XML Sitemap
+- https://www.eventpointranchi.com/robots.txt — Robots Directives
+- https://www.eventpointranchi.com/llms.txt — Summary AI Manifest
+- https://www.eventpointranchi.com/llms-full.txt — Full Unabridged Documentation

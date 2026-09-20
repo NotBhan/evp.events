@@ -36,9 +36,10 @@ async function run() {
     assert.equal(sitemapRes.status, 200, 'sitemap.xml must return HTTP 200');
     const sitemapText = await sitemapRes.text();
     assert.ok(sitemapText.includes('<urlset'), 'sitemap must have <urlset>');
-    assert.ok(sitemapText.includes('https://raasutsav.in/pricing'), 'sitemap must include /pricing');
-    assert.ok(sitemapText.includes('https://raasutsav.in/booking'), 'sitemap must include /booking');
-    assert.ok(sitemapText.includes('https://raasutsav.in/faq'), 'sitemap must include /faq');
+    assert.ok(sitemapText.includes('https://www.eventpointranchi.com/pricing'), 'sitemap must include /pricing');
+    assert.ok(sitemapText.includes('https://www.eventpointranchi.com/booking'), 'sitemap must include /booking');
+    assert.ok(sitemapText.includes('https://www.eventpointranchi.com/faq'), 'sitemap must include /faq');
+    assert.ok(!sitemapText.includes('raasutsav.in'), 'sitemap must not contain old raasutsav.in domain');
     console.log('✓ /sitemap.xml is valid XML and includes all canonical URLs');
 
     // 2. /robots.txt
@@ -49,7 +50,8 @@ async function run() {
     assert.ok(robotsText.includes('User-agent: *'), 'robots must have User-agent: *');
     assert.ok(robotsText.includes('Disallow: /api/'), 'robots must disallow /api/');
     assert.ok(robotsText.includes('Disallow: /organiser'), 'robots must disallow /organiser');
-    assert.ok(robotsText.includes('Sitemap: https://raasutsav.in/sitemap.xml'), 'robots must cite sitemap.xml');
+    assert.ok(robotsText.includes('Sitemap: https://www.eventpointranchi.com/sitemap.xml'), 'robots must cite sitemap.xml');
+    assert.ok(!robotsText.includes('raasutsav.in'), 'robots must not contain old raasutsav.in domain');
     assert.ok(robotsText.includes('GPTBot') || robotsText.includes('ClaudeBot'), 'robots specifies AI bots');
     console.log('✓ /robots.txt has correct allow/disallow directives and sitemap reference');
 

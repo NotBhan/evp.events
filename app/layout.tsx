@@ -18,7 +18,7 @@ const manrope = Manrope({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://raasutsav.in";
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.eventpointranchi.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

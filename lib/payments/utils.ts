@@ -41,6 +41,8 @@ export function resolveSafeBaseUrl(req?: Request): string {
         const isLocalhost =
           hostname === 'localhost' || hostname === '127.0.0.1';
         const isOfficialDomain =
+          hostname === 'eventpointranchi.com' ||
+          hostname.endsWith('.eventpointranchi.com') ||
           hostname === 'raasutsav.com' ||
           hostname.endsWith('.raasutsav.com') ||
           hostname === 'raasutsav.in' ||

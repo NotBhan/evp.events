@@ -1,4 +1,4 @@
-# robots.txt for https://raasutsav.in
+# robots.txt for https://www.eventpointranchi.com
 User-agent: *
 Allow: /
 Disallow: /api/
@@ -49,5 +49,5 @@ Disallow: /organiser
 Disallow: /booking/payment/
 
 # Sitemap location
-Sitemap: https://raasutsav.in/sitemap.xml
-Host: https://raasutsav.in
+Sitemap: https://www.eventpointranchi.com/sitemap.xml
+Host: https://www.eventpointranchi.com
