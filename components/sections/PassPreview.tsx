@@ -2,14 +2,10 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { eventData } from '@/data/eventData';
 import { Ticket, ArrowRight, ShieldCheck } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
-
-// PassPreview.tsx
 export default function PassPreview() {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -18,78 +14,107 @@ export default function PassPreview() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
 
-    const mm = gsap.matchMedia();
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-    // 1. Reduced Motion Preference
-    mm.add('(prefers-reduced-motion: reduce)', () => {
-      const cards = cardsWrapRef.current?.querySelectorAll('.pass-ticket-card');
-      gsap.set([headerRef.current, infoStripRef.current, ...(cards ? Array.from(cards) : [])], {
-        opacity: 1,
-        clearProps: 'all',
-      });
-    });
+        const mm = gsap.matchMedia();
 
-    // 2. Full Motion Pass: Horizontal Editorial Sequence Stagger
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      if (headerRef.current) gsap.set(headerRef.current, { opacity: 0, y: 20 });
-      if (infoStripRef.current) gsap.set(infoStripRef.current, { opacity: 0, y: 25 });
-
-      const cards = cardsWrapRef.current?.querySelectorAll('.pass-ticket-card');
-      if (cards && cards.length) {
-        cards.forEach((card, i) => {
-          const customY = 20 + (i % 3) * 6;
-          gsap.set(card, { opacity: 0, y: customY, scale: 0.97 });
+        // 1. Reduced Motion Preference
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+          const cards = cardsWrapRef.current?.querySelectorAll('.pass-ticket-card');
+          gsap.set([headerRef.current, infoStripRef.current, ...(cards ? Array.from(cards) : [])], {
+            opacity: 1,
+            clearProps: 'all',
+          });
         });
-      }
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 88%',
-          end: 'top 20%',
-          toggleActions: 'play none none none',
-        },
+        // 2. Full Motion Pass: Horizontal Editorial Sequence Stagger
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          if (headerRef.current) gsap.set(headerRef.current, { opacity: 0, y: 20 });
+          if (infoStripRef.current) gsap.set(infoStripRef.current, { opacity: 0, y: 25 });
+
+          const cards = cardsWrapRef.current?.querySelectorAll('.pass-ticket-card');
+          if (cards && cards.length) {
+            cards.forEach((card, i) => {
+              const customY = 20 + (i % 3) * 6;
+              gsap.set(card, { opacity: 0, y: customY, scale: 0.97 });
+            });
+          }
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 88%',
+              end: 'top 20%',
+              toggleActions: 'play none none none',
+            },
+          });
+
+          // Heading reveals
+          if (headerRef.current) {
+            tl.to(headerRef.current, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0);
+          }
+
+          // 5 Ticket cards stagger in
+          if (cards && cards.length) {
+            tl.to(
+              cards,
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.45,
+                stagger: 0.05,
+                ease: 'power3.out',
+              },
+              0.08
+            );
+          }
+
+          // Booking strip & action reveals after cards
+          if (infoStripRef.current) {
+            tl.to(
+              infoStripRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.45,
+                ease: 'power2.out',
+              },
+              0.26
+            );
+          }
+        });
+
+        cleanupFn = () => mm.revert();
       });
+    };
 
-      // Heading reveals
-      if (headerRef.current) {
-        tl.to(headerRef.current, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0);
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (cleanupFn) cleanupFn();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (cleanupFn) cleanupFn();
+        };
       }
-
-      // 5 Ticket cards stagger in
-      if (cards && cards.length) {
-        tl.to(
-          cards,
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.45,
-            stagger: 0.05,
-            ease: 'power3.out',
-          },
-          0.08
-        );
-      }
-
-      // Booking strip & action reveals after cards
-      if (infoStripRef.current) {
-        tl.to(
-          infoStripRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.45,
-            ease: 'power2.out',
-          },
-          0.26
-        );
-      }
-    });
+    }
 
     return () => {
-      mm.revert();
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
     };
   }, []);
 

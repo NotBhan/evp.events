@@ -3,11 +3,8 @@
 import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { MapPin, ArrowRight } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function VenueFeature() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -18,98 +15,127 @@ export default function VenueFeature() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
 
-    const mm = gsap.matchMedia();
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-    // 1. Reduced Motion Preference
-    mm.add('(prefers-reduced-motion: reduce)', () => {
-      gsap.set(
-        [
-          headerRef.current,
-          frameRef.current,
-          imgWrapRef.current,
-          overlayTextRef.current,
-        ],
-        { opacity: 1, clearProps: 'all' }
-      );
-    });
+        const mm = gsap.matchMedia();
 
-    // 2. Full Motion Pass: Masked Reveal + Vertical Parallax
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      if (headerRef.current) gsap.set(headerRef.current, { opacity: 0, y: 20 });
-      if (frameRef.current) {
-        gsap.set(frameRef.current, {
-          clipPath: 'inset(6% 0% 6% 0%)',
-          opacity: 0.85,
+        // 1. Reduced Motion Preference
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+          gsap.set(
+            [
+              headerRef.current,
+              frameRef.current,
+              imgWrapRef.current,
+              overlayTextRef.current,
+            ],
+            { opacity: 1, clearProps: 'all' }
+          );
         });
-      }
-      if (overlayTextRef.current) {
-        gsap.set(overlayTextRef.current, { opacity: 0, y: 25 });
-      }
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 88%',
-          end: 'top 20%',
-          toggleActions: 'play none none none',
-        },
-      });
+        // 2. Full Motion Pass: Masked Reveal + Vertical Parallax
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          if (headerRef.current) gsap.set(headerRef.current, { opacity: 0, y: 20 });
+          if (frameRef.current) {
+            gsap.set(frameRef.current, {
+              clipPath: 'inset(6% 0% 6% 0%)',
+              opacity: 0.85,
+            });
+          }
+          if (overlayTextRef.current) {
+            gsap.set(overlayTextRef.current, { opacity: 0, y: 25 });
+          }
 
-      // Header reveals
-      if (headerRef.current) {
-        tl.to(headerRef.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0);
-      }
-
-      // Frame masked reveal
-      if (frameRef.current) {
-        tl.to(
-          frameRef.current,
-          {
-            clipPath: 'inset(0% 0% 0% 0%)',
-            opacity: 1,
-            duration: 0.75,
-            ease: 'power3.inOut',
-          },
-          0.08
-        );
-      }
-
-      // Overlay text slides up cleanly
-      if (overlayTextRef.current) {
-        tl.to(
-          overlayTextRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.55,
-            ease: 'power2.out',
-          },
-          0.3
-        );
-      }
-
-      // Continuous vertical parallax on the authentic venue photo
-      if (imgWrapRef.current) {
-        gsap.fromTo(
-          imgWrapRef.current,
-          { yPercent: -4 },
-          {
-            yPercent: 4,
-            ease: 'none',
+          const tl = gsap.timeline({
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1.2,
+              start: 'top 88%',
+              end: 'top 20%',
+              toggleActions: 'play none none none',
             },
+          });
+
+          // Header reveals
+          if (headerRef.current) {
+            tl.to(headerRef.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0);
           }
-        );
+
+          // Frame masked reveal
+          if (frameRef.current) {
+            tl.to(
+              frameRef.current,
+              {
+                clipPath: 'inset(0% 0% 0% 0%)',
+                opacity: 1,
+                duration: 0.75,
+                ease: 'power3.inOut',
+              },
+              0.08
+            );
+          }
+
+          // Overlay text slides up cleanly
+          if (overlayTextRef.current) {
+            tl.to(
+              overlayTextRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.55,
+                ease: 'power2.out',
+              },
+              0.3
+            );
+          }
+
+          // Continuous vertical parallax on the authentic venue photo
+          if (imgWrapRef.current) {
+            gsap.fromTo(
+              imgWrapRef.current,
+              { yPercent: -4 },
+              {
+                yPercent: 4,
+                ease: 'none',
+                scrollTrigger: {
+                  trigger: sectionRef.current,
+                  start: 'top bottom',
+                  end: 'bottom top',
+                  scrub: 1.2,
+                },
+              }
+            );
+          }
+        });
+
+        cleanupFn = () => mm.revert();
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (cleanupFn) cleanupFn();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (cleanupFn) cleanupFn();
+        };
       }
-    });
+    }
 
     return () => {
-      mm.revert();
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
     };
   }, []);
 

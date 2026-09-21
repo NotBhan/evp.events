@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { Music, Disc, Utensils, Heart, Flame } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function ExperienceMosaic() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -19,127 +16,156 @@ export default function ExperienceMosaic() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
 
-    const mm = gsap.matchMedia();
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-    // 1. Reduced Motion Preference
-    mm.add('(prefers-reduced-motion: reduce)', () => {
-      gsap.set(
-        [
-          headerRef.current,
-          mosaicFrameRef.current,
-          card1Ref.current,
-          card2Ref.current,
-          card3Ref.current,
-          card4Ref.current,
-          card5Ref.current,
-        ],
-        { opacity: 1, clearProps: 'all' }
-      );
-    });
+        const mm = gsap.matchMedia();
 
-    // 2. Full Motion Pass: Unified Composition Reveal
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      // Set initial states
-      if (headerRef.current) {
-        gsap.set(headerRef.current, { opacity: 0, y: 20 });
-      }
-      if (mosaicFrameRef.current) {
-        gsap.set(mosaicFrameRef.current, { opacity: 0, scale: 0.98 });
-      }
+        // 1. Reduced Motion Preference
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+          gsap.set(
+            [
+              headerRef.current,
+              mosaicFrameRef.current,
+              card1Ref.current,
+              card2Ref.current,
+              card3Ref.current,
+              card4Ref.current,
+              card5Ref.current,
+            ],
+            { opacity: 1, clearProps: 'all' }
+          );
+        });
 
-      if (card1Ref.current) gsap.set(card1Ref.current, { opacity: 0, y: 20 });
-      if (card2Ref.current) gsap.set(card2Ref.current, { opacity: 0, y: 26 });
-      if (card3Ref.current) gsap.set(card3Ref.current, { opacity: 0, y: 22 });
-      if (card4Ref.current) gsap.set(card4Ref.current, { opacity: 0, y: 26 });
-      if (card5Ref.current) gsap.set(card5Ref.current, { opacity: 0, y: 22 });
+        // 2. Full Motion Pass: Unified Composition Reveal
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          // Set initial states
+          if (headerRef.current) {
+            gsap.set(headerRef.current, { opacity: 0, y: 20 });
+          }
+          if (mosaicFrameRef.current) {
+            gsap.set(mosaicFrameRef.current, { opacity: 0, scale: 0.98 });
+          }
 
-      const indices = sectionRef.current?.querySelectorAll('.card-index');
-      if (indices && indices.length) {
-        gsap.set(indices, { opacity: 0, y: -6 });
-      }
+          if (card1Ref.current) gsap.set(card1Ref.current, { opacity: 0, y: 20 });
+          if (card2Ref.current) gsap.set(card2Ref.current, { opacity: 0, y: 26 });
+          if (card3Ref.current) gsap.set(card3Ref.current, { opacity: 0, y: 22 });
+          if (card4Ref.current) gsap.set(card4Ref.current, { opacity: 0, y: 26 });
+          if (card5Ref.current) gsap.set(card5Ref.current, { opacity: 0, y: 22 });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 88%',
-          end: 'top 20%',
-          toggleActions: 'play none none none',
-        },
+          const indices = sectionRef.current?.querySelectorAll('.card-index');
+          if (indices && indices.length) {
+            gsap.set(indices, { opacity: 0, y: -6 });
+          }
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 88%',
+              end: 'top 20%',
+              toggleActions: 'play none none none',
+            },
+          });
+
+          // Header reveals
+          if (headerRef.current) {
+            tl.to(headerRef.current, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0);
+          }
+
+          // Framing container reveals
+          if (mosaicFrameRef.current) {
+            tl.to(mosaicFrameRef.current, { opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out' }, 0.04);
+          }
+
+          // Feature Panel 01 establishes composition anchor
+          if (card1Ref.current) {
+            tl.to(
+              card1Ref.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.45,
+                ease: 'power3.out',
+              },
+              0.08
+            );
+          }
+
+          // Panel 02 arrives
+          if (card2Ref.current) {
+            tl.to(
+              card2Ref.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.45,
+                ease: 'power3.out',
+              },
+              0.12
+            );
+          }
+
+          // Base Trio (03, 04, 05) arrive together as a foundation
+          const bottomCards = [card3Ref.current, card4Ref.current, card5Ref.current].filter(Boolean) as HTMLElement[];
+          if (bottomCards.length) {
+            tl.to(
+              bottomCards,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.4,
+                stagger: 0.06,
+                ease: 'power2.out',
+              },
+              0.16
+            );
+          }
+
+          // Internal numerals animate into place
+          if (indices && indices.length) {
+            tl.to(
+              indices,
+              {
+                opacity: 0.85,
+                y: 0,
+                duration: 0.35,
+                stagger: 0.04,
+                ease: 'power1.out',
+              },
+              0.2
+            );
+          }
+        });
+
+        cleanupFn = () => mm.revert();
       });
+    };
 
-      // Header reveals
-      if (headerRef.current) {
-        tl.to(headerRef.current, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0);
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (cleanupFn) cleanupFn();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (cleanupFn) cleanupFn();
+        };
       }
-
-      // Framing container reveals
-      if (mosaicFrameRef.current) {
-        tl.to(mosaicFrameRef.current, { opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out' }, 0.04);
-      }
-
-      // Feature Panel 01 establishes composition anchor
-      if (card1Ref.current) {
-        tl.to(
-          card1Ref.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.45,
-            ease: 'power3.out',
-          },
-          0.08
-        );
-      }
-
-      // Panel 02 arrives
-      if (card2Ref.current) {
-        tl.to(
-          card2Ref.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.45,
-            ease: 'power3.out',
-          },
-          0.12
-        );
-      }
-
-      // Base Trio (03, 04, 05) arrive together as a foundation
-      const bottomCards = [card3Ref.current, card4Ref.current, card5Ref.current].filter(Boolean) as HTMLElement[];
-      if (bottomCards.length) {
-        tl.to(
-          bottomCards,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            stagger: 0.06,
-            ease: 'power2.out',
-          },
-          0.16
-        );
-      }
-
-      // Internal numerals animate into place
-      if (indices && indices.length) {
-        tl.to(
-          indices,
-          {
-            opacity: 0.85,
-            y: 0,
-            duration: 0.35,
-            stagger: 0.04,
-            ease: 'power1.out',
-          },
-          0.2
-        );
-      }
-    });
+    }
 
     return () => {
-      mm.revert();
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
     };
   }, []);
 

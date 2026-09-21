@@ -41,6 +41,7 @@ export default function HeroDancer({
             sizes="(max-width: 640px) 160px, (max-width: 1024px) 280px, 350px"
             className="object-contain object-bottom pointer-events-none drop-shadow-[0_8px_24px_rgba(0,0,0,0.85)]"
             priority
+            fetchPriority="high"
           />
         </div>
       ) : isFemale ? (

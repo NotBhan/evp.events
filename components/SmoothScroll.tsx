@@ -32,57 +32,89 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let gsapModule: any;
 
-    Promise.all([
-      import('lenis'),
-      import('gsap'),
-      import('gsap/ScrollTrigger'),
-    ]).then(([lenisModule, gsapPkg, scrollTriggerPkg]) => {
-      if (isCleanedUp) return;
+    const initScroll = () => {
+      Promise.all([
+        import('lenis'),
+        import('gsap'),
+        import('gsap/ScrollTrigger'),
+      ]).then(([lenisModule, gsapPkg, scrollTriggerPkg]) => {
+        if (isCleanedUp) return;
 
-      const LenisClass = lenisModule.default || lenisModule;
-      const gsap = gsapPkg.default || gsapPkg;
-      const { ScrollTrigger } = scrollTriggerPkg;
-      gsapModule = gsap;
+        const LenisClass = lenisModule.default || lenisModule;
+        const gsap = gsapPkg.default || gsapPkg;
+        const { ScrollTrigger } = scrollTriggerPkg;
+        gsapModule = gsap;
 
-      gsap.registerPlugin(ScrollTrigger);
+        gsap.registerPlugin(ScrollTrigger);
 
-      const lenis = new LenisClass({
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 1.5,
-      });
+        const lenis = new LenisClass({
+          duration: 1.2,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+          wheelMultiplier: 1,
+          touchMultiplier: 1.5,
+        });
 
-      lenisRef.current = lenis;
-      if (typeof window !== 'undefined') {
-        setLenisInstance(lenis);
-        (window as unknown as { ScrollTrigger?: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
-      }
-
-      // Synchronize Lenis with GSAP ScrollTrigger
-      lenis.on('scroll', ScrollTrigger.update);
-
-      updateTicker = (time: number) => {
-        lenis.raf(time * 1000);
-      };
-
-      gsap.ticker.add(updateTicker);
-      // Restore GSAP standard lag-smoothing behavior for gentle hitch absorption
-      gsap.ticker.lagSmoothing(500, 33);
-
-      // Support dev ?scroll= parameter for visual testing and timeline verification
-      if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        const scrollVal = params.get('scroll');
-        if (scrollVal) {
-          setTimeout(() => {
-            lenis.scrollTo(parseInt(scrollVal, 10), { immediate: true });
-            ScrollTrigger.update();
-          }, 300);
+        lenisRef.current = lenis;
+        if (typeof window !== 'undefined') {
+          setLenisInstance(lenis);
+          (window as unknown as { ScrollTrigger?: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
         }
+
+        // Synchronize Lenis with GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+
+        updateTicker = (time: number) => {
+          lenis.raf(time * 1000);
+        };
+
+        gsap.ticker.add(updateTicker);
+        // Restore GSAP standard lag-smoothing behavior for gentle hitch absorption
+        gsap.ticker.lagSmoothing(500, 33);
+
+        // Support dev ?scroll= parameter for visual testing and timeline verification
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const scrollVal = params.get('scroll');
+          if (scrollVal) {
+            setTimeout(() => {
+              lenis.scrollTo(parseInt(scrollVal, 10), { immediate: true });
+              ScrollTrigger.update();
+            }, 300);
+          }
+        }
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initScroll, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (updateTicker && gsapModule) {
+            gsapModule.ticker.remove(updateTicker);
+          }
+          if (lenisRef.current) {
+            lenisRef.current.destroy();
+            lenisRef.current = null;
+          }
+        };
+      } else {
+        const timer = setTimeout(initScroll, 200);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (updateTicker && gsapModule) {
+            gsapModule.ticker.remove(updateTicker);
+          }
+          if (lenisRef.current) {
+            lenisRef.current.destroy();
+            lenisRef.current = null;
+          }
+        };
       }
-    });
+    }
 
     return () => {
       isCleanedUp = true;

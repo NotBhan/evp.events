@@ -3,11 +3,8 @@
 import React, { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { Calendar, Clock, MapPin, Phone, Mail } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function GrandestNightBanner() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -22,112 +19,142 @@ export default function GrandestNightBanner() {
 
   useEffect(() => {
     if (!sectionRef.current || !frameRef.current) return;
+    let isCleanedUp = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let ctx: any;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const ctx = gsap.context(() => {
-      // 1. Subtle continuous aura rotation
-      if (auraRef.current) {
-        gsap.to(auraRef.current, {
-          rotation: 360,
-          duration: 60,
-          repeat: -1,
-          ease: 'none',
-        });
-      }
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-      // 2. Layered curtain & entrance timeline following Reference B hierarchy
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 80%',
-          end: 'top 35%',
-          toggleActions: 'play none none none',
-          once: true,
-        },
+        ctx = gsap.context(() => {
+          // 1. Subtle continuous aura rotation
+          if (auraRef.current) {
+            gsap.to(auraRef.current, {
+              rotation: 360,
+              duration: 60,
+              repeat: -1,
+              ease: 'none',
+            });
+          }
+
+          // 2. Layered curtain & entrance timeline following Reference B hierarchy
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 80%',
+              end: 'top 35%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          });
+
+          // 1. Outer frame reveal
+          tl.fromTo(
+            frameRef.current,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out' },
+            0
+          );
+
+          // 2. Background aura & mandala settle
+          if (auraRef.current) {
+            tl.fromTo(
+              auraRef.current,
+              { opacity: 0, scale: 0.8 },
+              { opacity: 0.55, scale: 1, duration: 0.85, ease: 'power2.out' },
+              0.1
+            );
+          }
+
+          // 3. Durga centerpiece resolves
+          if (durgaRef.current) {
+            tl.fromTo(
+              durgaRef.current,
+              { opacity: 0, scale: 0.9, y: 15 },
+              { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: 'back.out(1.2)' },
+              0.2
+            );
+          }
+
+          // 4. Title group enters from left
+          if (titleGroupRef.current) {
+            tl.fromTo(
+              titleGroupRef.current,
+              { opacity: 0, x: -35 },
+              { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' },
+              0.25
+            );
+          }
+
+          // 5. Feature plaque arrives from right
+          if (plaqueRef.current) {
+            tl.fromTo(
+              plaqueRef.current,
+              { opacity: 0, scale: 0.88, y: -10 },
+              { opacity: 1, scale: 1, y: 0, duration: 0.75, ease: 'back.out(1.15)' },
+              0.35
+            );
+          }
+
+          // 6. Dancers settle from right
+          if (dancersRef.current) {
+            tl.fromTo(
+              dancersRef.current,
+              { opacity: 0, x: 35, y: 10 },
+              { opacity: 1, x: 0, y: 0, duration: 0.85, ease: 'power2.out' },
+              0.4
+            );
+          }
+
+          // 7. Date / Venue strip appears
+          if (dateStripRef.current) {
+            tl.fromTo(
+              dateStripRef.current,
+              { opacity: 0, y: 15 },
+              { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out' },
+              0.5
+            );
+          }
+
+          // 8. Sponsorship footer resolves
+          if (sponsorRef.current) {
+            tl.fromTo(
+              sponsorRef.current,
+              { opacity: 0, y: 10 },
+              { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+              0.6
+            );
+          }
+        }, sectionRef);
       });
+    };
 
-      // 1. Outer frame reveal
-      tl.fromTo(
-        frameRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out' },
-        0
-      );
-
-      // 2. Background aura & mandala settle
-      if (auraRef.current) {
-        tl.fromTo(
-          auraRef.current,
-          { opacity: 0, scale: 0.8 },
-          { opacity: 0.55, scale: 1, duration: 0.85, ease: 'power2.out' },
-          0.1
-        );
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (ctx) ctx.revert();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (ctx) ctx.revert();
+        };
       }
+    }
 
-      // 3. Durga centerpiece resolves
-      if (durgaRef.current) {
-        tl.fromTo(
-          durgaRef.current,
-          { opacity: 0, scale: 0.9, y: 15 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: 'back.out(1.2)' },
-          0.2
-        );
-      }
-
-      // 4. Title group enters from left
-      if (titleGroupRef.current) {
-        tl.fromTo(
-          titleGroupRef.current,
-          { opacity: 0, x: -35 },
-          { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' },
-          0.25
-        );
-      }
-
-      // 5. Feature plaque arrives from right
-      if (plaqueRef.current) {
-        tl.fromTo(
-          plaqueRef.current,
-          { opacity: 0, scale: 0.88, y: -10 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.75, ease: 'back.out(1.15)' },
-          0.35
-        );
-      }
-
-      // 6. Dancers settle from right
-      if (dancersRef.current) {
-        tl.fromTo(
-          dancersRef.current,
-          { opacity: 0, x: 35, y: 10 },
-          { opacity: 1, x: 0, y: 0, duration: 0.85, ease: 'power2.out' },
-          0.4
-        );
-      }
-
-      // 7. Date / Venue strip appears
-      if (dateStripRef.current) {
-        tl.fromTo(
-          dateStripRef.current,
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out' },
-          0.5
-        );
-      }
-
-      // 8. Sponsorship footer resolves
-      if (sponsorRef.current) {
-        tl.fromTo(
-          sponsorRef.current,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-          0.6
-        );
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
+    return () => {
+      isCleanedUp = true;
+      if (ctx) ctx.revert();
+    };
   }, []);
 
   return (

@@ -2,12 +2,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { eventData } from '@/data/eventData';
 import { Ticket, Phone, Mail, MessageSquare, ArrowRight } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function FinalBookingCTA() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -21,119 +18,148 @@ export default function FinalBookingCTA() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
 
-    const mm = gsap.matchMedia();
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-    // 1. Reduced Motion Preference
-    mm.add('(prefers-reduced-motion: reduce)', () => {
-      gsap.set(
-        [
-          glowRef.current,
-          cardRef.current,
-          eyebrowRef.current,
-          headlineRef.current,
-          subtitleRef.current,
-          ctaButtonsRef.current,
-          helplineRef.current,
-        ],
-        { opacity: 1, clearProps: 'all' }
-      );
-    });
+        const mm = gsap.matchMedia();
 
-    // 2. Full Motion Pass: Culmination Reveal
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      if (cardRef.current) gsap.set(cardRef.current, { opacity: 0, y: 35, scale: 0.97 });
-      if (glowRef.current) gsap.set(glowRef.current, { opacity: 0, scale: 0.8 });
-      if (eyebrowRef.current) gsap.set(eyebrowRef.current, { opacity: 0, y: 15 });
-      if (headlineRef.current) gsap.set(headlineRef.current, { opacity: 0, y: 25 });
-      if (subtitleRef.current) gsap.set(subtitleRef.current, { opacity: 0, y: 15 });
-      if (ctaButtonsRef.current) gsap.set(ctaButtonsRef.current, { opacity: 0, scale: 0.95 });
-      if (helplineRef.current) gsap.set(helplineRef.current, { opacity: 0 });
+        // 1. Reduced Motion Preference
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+          gsap.set(
+            [
+              glowRef.current,
+              cardRef.current,
+              eyebrowRef.current,
+              headlineRef.current,
+              subtitleRef.current,
+              ctaButtonsRef.current,
+              helplineRef.current,
+            ],
+            { opacity: 1, clearProps: 'all' }
+          );
+        });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 88%',
-          end: 'top 20%',
-          toggleActions: 'play none none none',
-        },
+        // 2. Full Motion Pass: Culmination Reveal
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          if (cardRef.current) gsap.set(cardRef.current, { opacity: 0, y: 35, scale: 0.97 });
+          if (glowRef.current) gsap.set(glowRef.current, { opacity: 0, scale: 0.8 });
+          if (eyebrowRef.current) gsap.set(eyebrowRef.current, { opacity: 0, y: 15 });
+          if (headlineRef.current) gsap.set(headlineRef.current, { opacity: 0, y: 25 });
+          if (subtitleRef.current) gsap.set(subtitleRef.current, { opacity: 0, y: 15 });
+          if (ctaButtonsRef.current) gsap.set(ctaButtonsRef.current, { opacity: 0, scale: 0.95 });
+          if (helplineRef.current) gsap.set(helplineRef.current, { opacity: 0 });
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 88%',
+              end: 'top 20%',
+              toggleActions: 'play none none none',
+            },
+          });
+
+          // Card emerges
+          if (cardRef.current) {
+            tl.to(
+              cardRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.75,
+                ease: 'power3.out',
+              },
+              0
+            );
+          }
+
+          // Glow expands softly
+          if (glowRef.current) {
+            tl.to(
+              glowRef.current,
+              {
+                opacity: 0.65,
+                scale: 1.2,
+                duration: 1,
+                ease: 'power2.out',
+              },
+              0
+            );
+          }
+
+          // Eyebrow
+          if (eyebrowRef.current) {
+            tl.to(eyebrowRef.current, { opacity: 1, y: 0, duration: 0.5 }, 0.15);
+          }
+
+          // Monumental headline
+          if (headlineRef.current) {
+            tl.to(
+              headlineRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.65,
+                ease: 'power2.out',
+              },
+              0.25
+            );
+          }
+
+          // Subtitle
+          if (subtitleRef.current) {
+            tl.to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.5 }, 0.35);
+          }
+
+          // CTA Buttons
+          if (ctaButtonsRef.current) {
+            tl.to(
+              ctaButtonsRef.current,
+              {
+                opacity: 1,
+                scale: 1,
+                duration: 0.55,
+                ease: 'back.out(1.4)',
+              },
+              0.45
+            );
+          }
+
+          // Helpline info
+          if (helplineRef.current) {
+            tl.to(helplineRef.current, { opacity: 1, duration: 0.5 }, 0.55);
+          }
+        });
+
+        cleanupFn = () => mm.revert();
       });
+    };
 
-      // Card emerges
-      if (cardRef.current) {
-        tl.to(
-          cardRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.75,
-            ease: 'power3.out',
-          },
-          0
-        );
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (cleanupFn) cleanupFn();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (cleanupFn) cleanupFn();
+        };
       }
-
-      // Glow expands softly
-      if (glowRef.current) {
-        tl.to(
-          glowRef.current,
-          {
-            opacity: 0.65,
-            scale: 1.2,
-            duration: 1,
-            ease: 'power2.out',
-          },
-          0
-        );
-      }
-
-      // Eyebrow
-      if (eyebrowRef.current) {
-        tl.to(eyebrowRef.current, { opacity: 1, y: 0, duration: 0.5 }, 0.15);
-      }
-
-      // Monumental headline
-      if (headlineRef.current) {
-        tl.to(
-          headlineRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.65,
-            ease: 'power2.out',
-          },
-          0.25
-        );
-      }
-
-      // Subtitle
-      if (subtitleRef.current) {
-        tl.to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.5 }, 0.35);
-      }
-
-      // CTA Buttons
-      if (ctaButtonsRef.current) {
-        tl.to(
-          ctaButtonsRef.current,
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 0.55,
-            ease: 'back.out(1.4)',
-          },
-          0.45
-        );
-      }
-
-      // Helpline info
-      if (helplineRef.current) {
-        tl.to(helplineRef.current, { opacity: 1, duration: 0.5 }, 0.55);
-      }
-    });
+    }
 
     return () => {
-      mm.revert();
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
     };
   }, []);
 

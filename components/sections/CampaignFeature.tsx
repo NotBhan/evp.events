@@ -3,12 +3,9 @@
 import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { eventData } from '@/data/eventData';
 import { ArrowRight, Calendar, Clock, MapPin, Phone, Mail } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function CampaignFeature() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -24,122 +21,152 @@ export default function CampaignFeature() {
 
   useEffect(() => {
     if (!sectionRef.current || !portraitFrameRef.current) return;
+    let isCleanedUp = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let ctx: any;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const ctx = gsap.context(() => {
-      // 1. Subtle continuous aura rotation
-      if (auraRef.current) {
-        gsap.to(auraRef.current, {
-          rotation: 360,
-          duration: 60,
-          repeat: -1,
-          ease: 'none',
-        });
-      }
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-      // 2. Layered Scroll Entrance Timeline for Reference A (Portrait)
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 82%',
-          end: 'top 30%',
-          toggleActions: 'play none none none',
-          once: true,
-        },
+        ctx = gsap.context(() => {
+          // 1. Subtle continuous aura rotation
+          if (auraRef.current) {
+            gsap.to(auraRef.current, {
+              rotation: 360,
+              duration: 60,
+              repeat: -1,
+              ease: 'none',
+            });
+          }
+
+          // 2. Layered Scroll Entrance Timeline for Reference A (Portrait)
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 82%',
+              end: 'top 30%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          });
+
+          // Step 1: Outer portrait frame reveals
+          tl.fromTo(
+            portraitFrameRef.current,
+            { opacity: 0, y: 35 },
+            { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+            0
+          );
+
+          // Step 2: Background aura settles
+          if (auraRef.current) {
+            tl.fromTo(
+              auraRef.current,
+              { opacity: 0, scale: 0.85 },
+              { opacity: 0.55, scale: 1, duration: 0.8, ease: 'power2.out' },
+              0.1
+            );
+          }
+
+          // Step 3: Durga centerpiece reveals
+          if (durgaRef.current) {
+            tl.fromTo(
+              durgaRef.current,
+              { opacity: 0, scale: 0.9, y: 12 },
+              { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: 'back.out(1.2)' },
+              0.18
+            );
+          }
+
+          // Step 4: Title lockup settles
+          if (titleLockupRef.current) {
+            tl.fromTo(
+              titleLockupRef.current,
+              { opacity: 0, y: 18 },
+              { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out' },
+              0.26
+            );
+          }
+
+          // Step 5: Feature plaque arrives
+          if (plaqueRef.current) {
+            tl.fromTo(
+              plaqueRef.current,
+              { opacity: 0, scale: 0.9 },
+              { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.15)' },
+              0.32
+            );
+          }
+
+          // Step 6: Date strip appears
+          if (dateStripRef.current) {
+            tl.fromTo(
+              dateStripRef.current,
+              { opacity: 0, scale: 0.95 },
+              { opacity: 1, scale: 1, duration: 0.65, ease: 'power2.out' },
+              0.38
+            );
+          }
+
+          // Step 7: Dancers reveal
+          if (dancersRef.current) {
+            tl.fromTo(
+              dancersRef.current,
+              { opacity: 0, y: 25 },
+              { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+              0.44
+            );
+          }
+
+          // Step 8: Sponsorship footer
+          if (sponsorRef.current) {
+            tl.fromTo(
+              sponsorRef.current,
+              { opacity: 0, y: 10 },
+              { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+              0.52
+            );
+          }
+
+          // Step 9: Editorial column arrives smoothly
+          if (editorialColRef.current) {
+            tl.fromTo(
+              editorialColRef.current.children,
+              { opacity: 0, x: 30 },
+              { opacity: 1, x: 0, duration: 0.7, stagger: 0.1, ease: 'power2.out' },
+              0.2
+            );
+          }
+        }, sectionRef);
       });
+    };
 
-      // Step 1: Outer portrait frame reveals
-      tl.fromTo(
-        portraitFrameRef.current,
-        { opacity: 0, y: 35 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
-        0
-      );
-
-      // Step 2: Background aura settles
-      if (auraRef.current) {
-        tl.fromTo(
-          auraRef.current,
-          { opacity: 0, scale: 0.85 },
-          { opacity: 0.55, scale: 1, duration: 0.8, ease: 'power2.out' },
-          0.1
-        );
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (ctx) ctx.revert();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (ctx) ctx.revert();
+        };
       }
+    }
 
-      // Step 3: Durga centerpiece reveals
-      if (durgaRef.current) {
-        tl.fromTo(
-          durgaRef.current,
-          { opacity: 0, scale: 0.9, y: 12 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: 'back.out(1.2)' },
-          0.18
-        );
-      }
-
-      // Step 4: Title lockup settles
-      if (titleLockupRef.current) {
-        tl.fromTo(
-          titleLockupRef.current,
-          { opacity: 0, y: 18 },
-          { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out' },
-          0.26
-        );
-      }
-
-      // Step 5: Feature plaque arrives
-      if (plaqueRef.current) {
-        tl.fromTo(
-          plaqueRef.current,
-          { opacity: 0, scale: 0.9 },
-          { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.15)' },
-          0.32
-        );
-      }
-
-      // Step 6: Date strip appears
-      if (dateStripRef.current) {
-        tl.fromTo(
-          dateStripRef.current,
-          { opacity: 0, scale: 0.95 },
-          { opacity: 1, scale: 1, duration: 0.65, ease: 'power2.out' },
-          0.38
-        );
-      }
-
-      // Step 7: Dancers reveal
-      if (dancersRef.current) {
-        tl.fromTo(
-          dancersRef.current,
-          { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
-          0.44
-        );
-      }
-
-      // Step 8: Sponsorship footer
-      if (sponsorRef.current) {
-        tl.fromTo(
-          sponsorRef.current,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-          0.52
-        );
-      }
-
-      // Step 9: Editorial column arrives smoothly
-      if (editorialColRef.current) {
-        tl.fromTo(
-          editorialColRef.current.children,
-          { opacity: 0, x: 30 },
-          { opacity: 1, x: 0, duration: 0.7, stagger: 0.1, ease: 'power2.out' },
-          0.2
-        );
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
+    return () => {
+      isCleanedUp = true;
+      if (ctx) ctx.revert();
+    };
   }, []);
 
   return (

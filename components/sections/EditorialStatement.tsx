@@ -2,12 +2,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { eventData } from '@/data/eventData';
 import { ArrowUpRight, Calendar, Clock, MapPin } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function EditorialStatement() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -21,170 +18,199 @@ export default function EditorialStatement() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
 
-    const mm = gsap.matchMedia();
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-    // 1. Reduced Motion Preference
-    mm.add('(prefers-reduced-motion: reduce)', () => {
-      gsap.set(
-        [
-          ribbonRef.current,
-          eyebrowRef.current,
-          headlineRef.current,
-          goldRuleRef.current,
-          narrativeRef.current,
-          metadataCardRef.current,
-          actionsRef.current,
-        ],
-        { opacity: 1, clearProps: 'all' }
-      );
-    });
+        const mm = gsap.matchMedia();
 
-    // 2. Full Motion pass (Desktop & Mobile)
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      // Set initial states
-      if (ribbonRef.current) {
-        gsap.set(ribbonRef.current, { opacity: 0.9 });
-      }
-      if (eyebrowRef.current) {
-        gsap.set(eyebrowRef.current, { opacity: 0, y: 16 });
-      }
-      if (headlineRef.current) {
-        const lines = headlineRef.current.querySelectorAll('.headline-line');
-        gsap.set(lines, { opacity: 0, y: 35 });
-      }
-      if (goldRuleRef.current) {
-        gsap.set(goldRuleRef.current, { scaleX: 0, transformOrigin: 'left center', opacity: 0 });
-      }
-      if (narrativeRef.current) {
-        gsap.set(narrativeRef.current, { opacity: 0, y: 25 });
-      }
-      if (metadataCardRef.current) {
-        const items = metadataCardRef.current.querySelectorAll('.metadata-item');
-        gsap.set(metadataCardRef.current, { opacity: 0, y: 25, scale: 0.98 });
-        gsap.set(items, { opacity: 0, x: -12 });
-      }
-      if (actionsRef.current) {
-        gsap.set(actionsRef.current, { opacity: 0, y: 16 });
-      }
+        // 1. Reduced Motion Preference
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+          gsap.set(
+            [
+              ribbonRef.current,
+              eyebrowRef.current,
+              headlineRef.current,
+              goldRuleRef.current,
+              narrativeRef.current,
+              metadataCardRef.current,
+              actionsRef.current,
+            ],
+            { opacity: 1, clearProps: 'all' }
+          );
+        });
 
-      // Master Section Timeline deterministically synchronized to Hero 70% progress
-      const heroEl = document.getElementById('hero');
-      const stageEl = heroEl?.querySelector('.hero-stage-sticky') as HTMLElement | null;
+        // 2. Full Motion pass (Desktop & Mobile)
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          // Set initial states
+          if (ribbonRef.current) {
+            gsap.set(ribbonRef.current, { opacity: 0.9 });
+          }
+          if (eyebrowRef.current) {
+            gsap.set(eyebrowRef.current, { opacity: 0, y: 16 });
+          }
+          if (headlineRef.current) {
+            const lines = headlineRef.current.querySelectorAll('.headline-line');
+            gsap.set(lines, { opacity: 0, y: 35 });
+          }
+          if (goldRuleRef.current) {
+            gsap.set(goldRuleRef.current, { scaleX: 0, transformOrigin: 'left center', opacity: 0 });
+          }
+          if (narrativeRef.current) {
+            gsap.set(narrativeRef.current, { opacity: 0, y: 25 });
+          }
+          if (metadataCardRef.current) {
+            const items = metadataCardRef.current.querySelectorAll('.metadata-item');
+            gsap.set(metadataCardRef.current, { opacity: 0, y: 25, scale: 0.98 });
+            gsap.set(items, { opacity: 0, x: -12 });
+          }
+          if (actionsRef.current) {
+            gsap.set(actionsRef.current, { opacity: 0, y: 16 });
+          }
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: heroEl || sectionRef.current,
-          start: () => {
-            if (heroEl && stageEl) {
-              const maxScroll = heroEl.offsetHeight - stageEl.offsetHeight;
-              return `top+=${Math.round(maxScroll * 0.70)} top`;
-            }
-            return 'top 65%';
-          },
-          toggleActions: 'play none none none',
-          invalidateOnRefresh: true,
-        },
+          // Master Section Timeline deterministically synchronized to Hero 70% progress
+          const heroEl = document.getElementById('hero');
+          const stageEl = heroEl?.querySelector('.hero-stage-sticky') as HTMLElement | null;
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: heroEl || sectionRef.current,
+              start: () => {
+                if (heroEl && stageEl) {
+                  const maxScroll = heroEl.offsetHeight - stageEl.offsetHeight;
+                  return `top+=${Math.round(maxScroll * 0.70)} top`;
+                }
+                return 'top 65%';
+              },
+              toggleActions: 'play none none none',
+              invalidateOnRefresh: true,
+            },
+          });
+
+          // Ribbon enters via compositor opacity
+          if (ribbonRef.current) {
+            tl.to(ribbonRef.current, { opacity: 1, duration: 0.35, ease: 'power1.out' }, 0);
+          }
+
+          // Eyebrow reveals via compositor opacity and y
+          if (eyebrowRef.current) {
+            tl.to(eyebrowRef.current, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 0.04);
+          }
+
+          // Headline lines reveal sequentially
+          if (headlineRef.current) {
+            const lines = headlineRef.current.querySelectorAll('.headline-line');
+            tl.to(
+              lines,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.45,
+                stagger: 0.08,
+                ease: 'power2.out',
+              },
+              0.08
+            );
+          }
+
+          // Gold rule draws into place via transform scaleX
+          if (goldRuleRef.current) {
+            tl.to(
+              goldRuleRef.current,
+              {
+                scaleX: 1,
+                opacity: 1,
+                duration: 0.5,
+                ease: 'power2.out',
+              },
+              0.2
+            );
+          }
+
+          // Narrative column enters via compositor opacity and y
+          if (narrativeRef.current) {
+            tl.to(
+              narrativeRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.4,
+                ease: 'power2.out',
+              },
+              0.22
+            );
+          }
+
+          // Metadata card & items reveal cleanly without heavy back.out easing
+          if (metadataCardRef.current) {
+            tl.to(
+              metadataCardRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.45,
+                ease: 'power2.out',
+              },
+              0.26
+            );
+
+            const items = metadataCardRef.current.querySelectorAll('.metadata-item');
+            tl.to(
+              items,
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.35,
+                stagger: 0.06,
+                ease: 'power2.out',
+              },
+              0.3
+            );
+          }
+
+          // Actions button reveal
+          if (actionsRef.current) {
+            tl.to(
+              actionsRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.35,
+                ease: 'power2.out',
+              },
+              0.38
+            );
+          }
+        });
+
+        cleanupFn = () => mm.revert();
       });
+    };
 
-      // Ribbon enters via compositor opacity
-      if (ribbonRef.current) {
-        tl.to(ribbonRef.current, { opacity: 1, duration: 0.35, ease: 'power1.out' }, 0);
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (cleanupFn) cleanupFn();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (cleanupFn) cleanupFn();
+        };
       }
-
-      // Eyebrow reveals via compositor opacity and y
-      if (eyebrowRef.current) {
-        tl.to(eyebrowRef.current, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 0.04);
-      }
-
-      // Headline lines reveal sequentially
-      if (headlineRef.current) {
-        const lines = headlineRef.current.querySelectorAll('.headline-line');
-        tl.to(
-          lines,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.45,
-            stagger: 0.08,
-            ease: 'power2.out',
-          },
-          0.08
-        );
-      }
-
-      // Gold rule draws into place via transform scaleX
-      if (goldRuleRef.current) {
-        tl.to(
-          goldRuleRef.current,
-          {
-            scaleX: 1,
-            opacity: 1,
-            duration: 0.5,
-            ease: 'power2.out',
-          },
-          0.2
-        );
-      }
-
-      // Narrative column enters via compositor opacity and y
-      if (narrativeRef.current) {
-        tl.to(
-          narrativeRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            ease: 'power2.out',
-          },
-          0.22
-        );
-      }
-
-      // Metadata card & items reveal cleanly without heavy back.out easing
-      if (metadataCardRef.current) {
-        tl.to(
-          metadataCardRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.45,
-            ease: 'power2.out',
-          },
-          0.26
-        );
-
-        const items = metadataCardRef.current.querySelectorAll('.metadata-item');
-        tl.to(
-          items,
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.35,
-            stagger: 0.06,
-            ease: 'power2.out',
-          },
-          0.3
-        );
-      }
-
-      // Actions button reveal
-      if (actionsRef.current) {
-        tl.to(
-          actionsRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.35,
-            ease: 'power2.out',
-          },
-          0.38
-        );
-      }
-    });
+    }
 
     return () => {
-      mm.revert();
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
     };
   }, []);
 

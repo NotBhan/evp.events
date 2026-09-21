@@ -2,12 +2,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { loadGsap } from '@/lib/gsap-loader';
 import { eventData } from '@/data/eventData';
 import { Clock, MapPin, ArrowRight } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function EventDateSchedule() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -20,130 +17,159 @@ export default function EventDateSchedule() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+    let isCleanedUp = false;
+    let cleanupFn: (() => void) | undefined;
 
-    const mm = gsap.matchMedia();
+    const initAnimation = () => {
+      loadGsap().then(({ gsap }) => {
+        if (isCleanedUp || !sectionRef.current) return;
 
-    // 1. Reduced Motion Preference
-    mm.add('(prefers-reduced-motion: reduce)', () => {
-      gsap.set(
-        [
-          eyebrowRef.current,
-          dateMonumentRef.current,
-          num16Ref.current,
-          monthBlockRef.current,
-          orbitingBadgesRef.current,
-          scheduleBlockRef.current,
-        ],
-        { opacity: 1, clearProps: 'all' }
-      );
-    });
+        const mm = gsap.matchMedia();
 
-    // 2. Full Motion Pass: Monumental Landmark Sequencing
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      // Set initial states
-      if (eyebrowRef.current) gsap.set(eyebrowRef.current, { opacity: 0, y: 15 });
-      if (num16Ref.current) gsap.set(num16Ref.current, { opacity: 0, scale: 0.92, y: 30 });
-      if (monthBlockRef.current) gsap.set(monthBlockRef.current, { opacity: 0, x: -20 });
-      if (orbitingBadgesRef.current) {
-        const badges = orbitingBadgesRef.current.querySelectorAll('.orbit-badge');
-        gsap.set(badges, { opacity: 0, y: 20, scale: 0.95 });
-      }
-      if (scheduleBlockRef.current) {
-        gsap.set(scheduleBlockRef.current, { opacity: 0, y: 25 });
-        const items = scheduleBlockRef.current.querySelectorAll('.flow-item');
-        gsap.set(items, { opacity: 0, x: -10 });
-      }
+        // 1. Reduced Motion Preference
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+          gsap.set(
+            [
+              eyebrowRef.current,
+              dateMonumentRef.current,
+              num16Ref.current,
+              monthBlockRef.current,
+              orbitingBadgesRef.current,
+              scheduleBlockRef.current,
+            ],
+            { opacity: 1, clearProps: 'all' }
+          );
+        });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 88%',
-          end: 'top 20%',
-          toggleActions: 'play none none none',
-        },
+        // 2. Full Motion Pass: Monumental Landmark Sequencing
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          // Set initial states
+          if (eyebrowRef.current) gsap.set(eyebrowRef.current, { opacity: 0, y: 15 });
+          if (num16Ref.current) gsap.set(num16Ref.current, { opacity: 0, scale: 0.92, y: 30 });
+          if (monthBlockRef.current) gsap.set(monthBlockRef.current, { opacity: 0, x: -20 });
+          if (orbitingBadgesRef.current) {
+            const badges = orbitingBadgesRef.current.querySelectorAll('.orbit-badge');
+            gsap.set(badges, { opacity: 0, y: 20, scale: 0.95 });
+          }
+          if (scheduleBlockRef.current) {
+            gsap.set(scheduleBlockRef.current, { opacity: 0, y: 25 });
+            const items = scheduleBlockRef.current.querySelectorAll('.flow-item');
+            gsap.set(items, { opacity: 0, x: -10 });
+          }
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 88%',
+              end: 'top 20%',
+              toggleActions: 'play none none none',
+            },
+          });
+
+          // Eyebrow
+          if (eyebrowRef.current) {
+            tl.to(eyebrowRef.current, { opacity: 1, y: 0, duration: 0.4 }, 0);
+          }
+
+          // "16" Landmark lands first with monumental impact
+          if (num16Ref.current) {
+            tl.to(
+              num16Ref.current,
+              {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 0.65,
+                ease: 'power3.out',
+              },
+              0.05
+            );
+          }
+
+          // Month & Year lock in
+          if (monthBlockRef.current) {
+            tl.to(
+              monthBlockRef.current,
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.5,
+                ease: 'power2.out',
+              },
+              0.18
+            );
+          }
+
+          // Orbiting Badges (Timing & Venue) reveal
+          if (orbitingBadgesRef.current) {
+            const badges = orbitingBadgesRef.current.querySelectorAll('.orbit-badge');
+            tl.to(
+              badges,
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: 'back.out(1.2)',
+              },
+              0.25
+            );
+          }
+
+          // Schedule flow card arrives smoothly
+          if (scheduleBlockRef.current) {
+            tl.to(
+              scheduleBlockRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.55,
+                ease: 'power2.out',
+              },
+              0.32
+            );
+
+            const items = scheduleBlockRef.current.querySelectorAll('.flow-item');
+            tl.to(
+              items,
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.35,
+                stagger: 0.05,
+                ease: 'power1.out',
+              },
+              0.4
+            );
+          }
+        });
+
+        cleanupFn = () => mm.revert();
       });
+    };
 
-      // Eyebrow
-      if (eyebrowRef.current) {
-        tl.to(eyebrowRef.current, { opacity: 1, y: 0, duration: 0.4 }, 0);
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        const handle = window.requestIdleCallback(initAnimation, { timeout: 2000 });
+        return () => {
+          isCleanedUp = true;
+          window.cancelIdleCallback(handle);
+          if (cleanupFn) cleanupFn();
+        };
+      } else {
+        const timer = setTimeout(initAnimation, 150);
+        return () => {
+          isCleanedUp = true;
+          clearTimeout(timer);
+          if (cleanupFn) cleanupFn();
+        };
       }
-
-      // "16" Landmark lands first with monumental impact
-      if (num16Ref.current) {
-        tl.to(
-          num16Ref.current,
-          {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            duration: 0.65,
-            ease: 'power3.out',
-          },
-          0.05
-        );
-      }
-
-      // Month & Year lock in
-      if (monthBlockRef.current) {
-        tl.to(
-          monthBlockRef.current,
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.5,
-            ease: 'power2.out',
-          },
-          0.18
-        );
-      }
-
-      // Orbiting Badges (Timing & Venue) reveal
-      if (orbitingBadgesRef.current) {
-        const badges = orbitingBadgesRef.current.querySelectorAll('.orbit-badge');
-        tl.to(
-          badges,
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: 'back.out(1.2)',
-          },
-          0.25
-        );
-      }
-
-      // Schedule flow card arrives smoothly
-      if (scheduleBlockRef.current) {
-        tl.to(
-          scheduleBlockRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.55,
-            ease: 'power2.out',
-          },
-          0.32
-        );
-
-        const items = scheduleBlockRef.current.querySelectorAll('.flow-item');
-        tl.to(
-          items,
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.35,
-            stagger: 0.05,
-            ease: 'power1.out',
-          },
-          0.4
-        );
-      }
-    });
+    }
 
     return () => {
-      mm.revert();
+      isCleanedUp = true;
+      if (cleanupFn) cleanupFn();
     };
   }, []);
 
