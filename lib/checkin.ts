@@ -2,7 +2,7 @@ import 'server-only';
 import { prisma } from './db';
 import { syncBookingToSheets } from './sheets';
 import { formatOrganiserDisplayIdentity, type OrganiserIdentity } from './organiser-auth';
-import type { Booking, BookingStatus, CheckInStatus, PaymentStatus, Pass } from '@prisma/client';
+import type { Booking, BookingStatus, CheckInStatus, PaymentStatus, Pass } from '@/lib/generated/prisma';
 
 export type EntryFailureReason =
   | 'INVALID_QR'

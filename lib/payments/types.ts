@@ -1,4 +1,4 @@
-import type { Booking, Pass, PaymentAttempt } from '@prisma/client';
+import type { Booking, Pass, PaymentAttempt } from '@/lib/generated/prisma';
 
 export type BookingWithPass = Booking & { pass: Pass };
 

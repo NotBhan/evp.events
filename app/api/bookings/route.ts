@@ -8,7 +8,7 @@ import {
   BookingIdExhaustedError,
   MAX_COLLISION_RETRIES,
 } from '@/lib/booking-id';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/lib/generated/prisma';
 
 export class InventoryUnavailableError extends Error {
   constructor(message = 'Pass inventory is currently not available or sold out.') {

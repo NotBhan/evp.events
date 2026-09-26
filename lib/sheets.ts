@@ -1,7 +1,7 @@
 import 'server-only';
 import dns from 'node:dns';
 import { prisma } from '@/lib/db';
-import type { Booking } from '@prisma/client';
+import type { Booking } from '@/lib/generated/prisma';
 
 // Prioritize IPv4 for DNS resolution in Node to prevent IPv6 socket hangs in serverless / container runtimes
 if (typeof dns.setDefaultResultOrder === 'function') {

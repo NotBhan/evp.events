@@ -5,7 +5,7 @@ import {
   getOrganiserSessionToken,
   verifyOrganiserSessionToken,
 } from './organiser-session';
-import type { OrganiserRole } from '@prisma/client';
+import type { OrganiserRole } from '@/lib/generated/prisma';
 
 export type { OrganiserRole };
 

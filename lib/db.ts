@@ -1,5 +1,5 @@
 import 'server-only';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/lib/generated/prisma';
 
 /**
  * Server-only authoritative database client for Neon PostgreSQL.

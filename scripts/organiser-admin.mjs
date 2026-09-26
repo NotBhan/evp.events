@@ -17,7 +17,7 @@
  */
 
 import readline from 'node:readline';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../lib/generated/prisma/index.js';
 import {
   hashCredential,
   validatePassword,

@@ -10,7 +10,7 @@ import {
   PaymentError,
 } from './types';
 import { syncBookingToSheets } from '@/lib/sheets';
-import type { Booking, PaymentAttempt } from '@prisma/client';
+import type { Booking, PaymentAttempt } from '@/lib/generated/prisma';
 
 export class InventoryInconsistencyError extends PaymentError {
   constructor(message: string) {

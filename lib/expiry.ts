@@ -1,6 +1,6 @@
 import 'server-only';
 import { prisma } from './db';
-import type { Booking, PrismaClient } from '@prisma/client';
+import type { Booking, PrismaClient } from '@/lib/generated/prisma';
 
 type DbClient = PrismaClient | Parameters<Parameters<PrismaClient['$transaction']>[0]>[0];
 
