@@ -33,14 +33,15 @@ export class PhonePePaymentProvider implements PaymentProvider {
       redirectUrl,
       metaData: {
         bookingId: booking.publicId,
+        bookingPublicId: booking.publicId,
         paymentAttemptId,
       },
     });
 
     return {
       provider: 'phonepe',
-      sessionId: order.orderId,
-      orderId: order.orderId,
+      sessionId: merchantOrderId,
+      orderId: order.orderId || merchantOrderId,
       checkoutUrl: order.redirectUrl,
       amount: amountPaise,
       currency: 'INR',

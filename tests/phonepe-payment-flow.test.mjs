@@ -64,9 +64,9 @@ function startMockPhonePeServer() {
 
         // Auth Header Guard for API endpoints
         const auth = req.headers.authorization;
-        if (!auth || !auth.startsWith('Bearer ')) {
+        if (!auth || (!auth.startsWith('Bearer ') && !auth.startsWith('O-Bearer '))) {
           res.writeHead(401, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ error: 'Unauthorized', message: 'Bearer token required' }));
+          return res.end(JSON.stringify({ error: 'Unauthorized', message: 'Bearer or O-Bearer token required' }));
         }
 
         // 2. POST /checkout/v2/pay
@@ -90,7 +90,11 @@ function startMockPhonePeServer() {
             expireAfter: parsed.expireAfter,
             redirectUrl,
             state: 'CREATED',
-            metaData: parsed.metaData || {},
+            paymentFlow: parsed.paymentFlow || {
+              type: 'PG_CHECKOUT',
+              merchantUrls: { redirectUrl },
+            },
+            metaData: parsed.metaData || parsed.metaInfo || {},
           };
 
           mockPhonePeOrders.set(merchantOrderId, orderRecord);

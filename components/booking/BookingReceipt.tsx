@@ -612,7 +612,7 @@ export default function BookingReceipt({
                 ) : (
                   <>
                     <CreditCard className="w-6 h-6 text-bright-gold" />
-                    <span>PAY NOW ₹{total.toLocaleString('en-IN')} WITH RAZORPAY</span>
+                    <span>PAY NOW ₹{total.toLocaleString('en-IN')} WITH PHONEPE</span>
                   </>
                 )}
               </button>

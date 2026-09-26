@@ -1680,7 +1680,7 @@ export default function BookingDesk({
                         <ShieldCheck className="w-4 h-4 text-bright-gold" />
                         <span>256-BIT SSL SECURE CHECKOUT</span>
                       </div>
-                      <p>All payments are securely handled via Razorpay or PhonePe with instant ticket issuance.</p>
+                      <p>All payments are securely handled via PhonePe with instant ticket issuance.</p>
                     </div>
                   </div>
 
@@ -1690,37 +1690,6 @@ export default function BookingDesk({
                       <div className="space-y-3">
                         <button
                           id={deskStage === 'PAYMENT_PENDING' || deskStage === 'PAYMENT_FAILED' ? 'payment-retry-btn' : 'payment-stage-pay-btn'}
-                          data-testid="payment-stage-pay-btn"
-                          type="button"
-                          onClick={handlePayNow}
-                          disabled={isInitiatingPayment}
-                          className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-vermilion via-amber-glow to-vermilion text-warm-cream font-display text-xl tracking-wider uppercase border-2 border-antique-gold/80 shadow-[0_4px_24px_rgba(217,37,36,0.5)] flex items-center justify-center gap-3 transition-[transform,box-shadow] duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-bold"
-                        >
-                          {isInitiatingPayment && initiatingGateway === 'razorpay' ? (
-                            <>
-                              <Loader2 className="w-6 h-6 animate-spin text-bright-gold shrink-0" />
-                              <span>OPENING SECURE CHECKOUT...</span>
-                            </>
-                          ) : deskStage === 'PAYMENT_PENDING' ? (
-                            <>
-                              <Lock className="w-5 h-5 text-bright-gold" />
-                              <span>PAY WITH RAZORPAY (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
-                            </>
-                          ) : deskStage === 'PAYMENT_FAILED' ? (
-                            <>
-                              <Lock className="w-5 h-5 text-bright-gold" />
-                              <span>TRY WITH RAZORPAY (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
-                            </>
-                          ) : (
-                            <>
-                              <Lock className="w-5 h-5 text-bright-gold" />
-                              <span>PAY NOW ₹{submittedRecord.total.toLocaleString('en-IN')} WITH RAZORPAY</span>
-                            </>
-                          )}
-                        </button>
-
-                        <button
-                          id="phonepe-pay-btn"
                           data-testid="phonepe-pay-btn"
                           type="button"
                           onClick={handlePayPhonePe}
@@ -1732,10 +1701,15 @@ export default function BookingDesk({
                               <Loader2 className="w-6 h-6 animate-spin text-bright-gold shrink-0" />
                               <span>OPENING PHONEPE CHECKOUT...</span>
                             </>
-                          ) : deskStage === 'PAYMENT_PENDING' || deskStage === 'PAYMENT_FAILED' ? (
+                          ) : deskStage === 'PAYMENT_PENDING' ? (
                             <>
                               <Lock className="w-5 h-5 text-bright-gold" />
                               <span>PAY WITH PHONEPE (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
+                            </>
+                          ) : deskStage === 'PAYMENT_FAILED' ? (
+                            <>
+                              <Lock className="w-5 h-5 text-bright-gold" />
+                              <span>RETRY WITH PHONEPE (₹{submittedRecord.total.toLocaleString('en-IN')})</span>
                             </>
                           ) : (
                             <>

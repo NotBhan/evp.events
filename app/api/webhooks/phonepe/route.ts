@@ -7,8 +7,26 @@ import {
 } from '@/lib/payments';
 
 export async function POST(req: Request) {
-  // Support standard PhonePe signature headers (x-verify, x-signature, authorization)
+  // 1. Read raw request body as plaintext BEFORE JSON parsing
+  let rawBody: string;
+  try {
+    rawBody = await req.text();
+  } catch {
+    return Response.json(
+      { error: 'Unable to read request payload.' },
+      { status: 400 }
+    );
+  }
+
+  // 2. Read PhonePe HMAC verification headers
+  const keyId =
+    req.headers.get('x-phonepe-checksum-key-id') ||
+    req.headers.get('phonepe-checksum-key-id') ||
+    req.headers.get('x-verify-key-id');
+
   const signature =
+    req.headers.get('phonepe-checksum-signature') ||
+    req.headers.get('x-phonepe-checksum-signature') ||
     req.headers.get('x-verify') ||
     req.headers.get('x-signature') ||
     req.headers.get('authorization');
@@ -20,18 +38,8 @@ export async function POST(req: Request) {
     );
   }
 
-  let rawBody: string;
-  try {
-    rawBody = await req.text();
-  } catch {
-    return Response.json(
-      { error: 'Unable to read request payload.' },
-      { status: 400 }
-    );
-  }
-
-  // 1. Cryptographically verify PhonePe webhook signature (HMAC-SHA256)
-  const isValid = verifyPhonePeWebhookSignature(rawBody, signature);
+  // 3. Cryptographically verify signature from raw body before parsing JSON
+  const isValid = verifyPhonePeWebhookSignature(rawBody, signature, keyId);
   if (!isValid) {
     return Response.json(
       { error: 'Invalid PhonePe webhook signature.' },
@@ -39,6 +47,7 @@ export async function POST(req: Request) {
     );
   }
 
+  // 4. Parse JSON payload only after authentication succeeds
   let event: PhonePeWebhookPayload;
   try {
     event = JSON.parse(rawBody);
@@ -50,10 +59,10 @@ export async function POST(req: Request) {
   }
 
   const eventType = (event.event || '').toLowerCase();
-  // Standard Checkout v2 can place payload in payload or data object
+  // Standard Checkout v2 payload can be in event.payload or event.data
   const orderData = (event.payload || event.data || {}) as Record<string, unknown>;
   const merchantOrderId =
-    (orderData.merchantOrderId as string) || (orderData.orderId as string);
+    (orderData.merchantOrderId as string) || (orderData.orderId as string) || (event.merchantOrderId as string);
 
   if (!merchantOrderId) {
     return Response.json(
@@ -62,10 +71,20 @@ export async function POST(req: Request) {
     );
   }
 
-  const orderState = typeof orderData.state === 'string' ? orderData.state.toUpperCase() : '';
-  const amountPaise = typeof orderData.amount === 'number' ? orderData.amount : undefined;
-  const metaData = (orderData.metaData as Record<string, string>) || {};
-  const bookingPublicId = metaData.bookingPublicId;
+  const orderState = typeof orderData.state === 'string'
+    ? orderData.state.toUpperCase()
+    : typeof (event as Record<string, unknown>).state === 'string'
+    ? ((event as Record<string, unknown>).state as string).toUpperCase()
+    : '';
+
+  const amountPaise = typeof orderData.amount === 'number'
+    ? orderData.amount
+    : typeof (event as Record<string, unknown>).amount === 'number'
+    ? ((event as Record<string, unknown>).amount as number)
+    : undefined;
+
+  const metaData = (orderData.metaData || orderData.metaInfo || (event as Record<string, unknown>).metaInfo || {}) as Record<string, string>;
+  const bookingPublicId = metaData.bookingPublicId || metaData.bookingId;
   const paymentAttemptId = metaData.paymentAttemptId;
 
   try {

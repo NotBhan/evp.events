@@ -21,6 +21,7 @@ export function validateMerchantOrderId(orderId: string): boolean {
 
 /**
  * Creates a PhonePe Standard Checkout v2 payment order.
+ * Uses official PG_CHECKOUT paymentFlow structure and O-Bearer authorization.
  * Returns redirectUrl directly from PhonePe response.
  */
 export async function createPhonePePaymentOrder(
@@ -46,20 +47,28 @@ export async function createPhonePePaymentOrder(
   const config = getPhonePeConfig();
   const token = await getPhonePeAccessToken();
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     merchantOrderId,
     amount: amountPaise,
     expireAfter: clampedExpireAfter,
-    redirectUrl,
-    metaData,
+    paymentFlow: {
+      type: 'PG_CHECKOUT',
+      merchantUrls: {
+        redirectUrl,
+      },
+    },
   };
+
+  if (metaData && Object.keys(metaData).length > 0) {
+    payload.metaInfo = metaData;
+  }
 
   const url = `${config.apiBaseUrl}/checkout/v2/pay`;
 
   let res = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `O-Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
@@ -72,7 +81,7 @@ export async function createPhonePePaymentOrder(
     res = await fetch(url, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${freshToken}`,
+        Authorization: `O-Bearer ${freshToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -83,16 +92,25 @@ export async function createPhonePePaymentOrder(
 
   if (!res.ok || !rawJson) {
     const errorMsg =
-      rawJson?.message || rawJson?.error || rawJson?.description || 'PhonePe order creation failed';
+      rawJson?.message || rawJson?.error || rawJson?.description || `PhonePe order creation failed (status ${res.status})`;
     throw new Error(`PhonePe API Error (${res.status}): ${errorMsg}`);
   }
 
-  // Standard Checkout v2 can return at root level or within a data wrapper
-  const data = rawJson.data || rawJson;
+  // Standard Checkout v2 can return at root level, data wrapper, or paymentFlow
+  const data = (rawJson.data || rawJson.payload || rawJson) as Record<string, unknown>;
 
-  const orderId = data.orderId || data.merchantOrderId || merchantOrderId;
-  const redirectUrlResult = data.redirectUrl || data.checkoutUrl;
-  const state = data.state || 'CREATED';
+  const orderId = (data.orderId || data.merchantOrderId || rawJson.orderId || merchantOrderId) as string;
+  const redirectUrlResult = (
+    data.redirectUrl ||
+    data.checkoutUrl ||
+    (data.paymentFlow as Record<string, unknown>)?.merchantUrls &&
+      ((data.paymentFlow as Record<string, unknown>).merchantUrls as Record<string, unknown>)?.redirectUrl ||
+    (data.paymentFlow as Record<string, unknown>)?.redirectUrl ||
+    (data.instrumentResponse as Record<string, unknown>)?.redirectInfo &&
+      ((data.instrumentResponse as Record<string, unknown>).redirectInfo as Record<string, unknown>)?.url ||
+    rawJson.redirectUrl
+  ) as string | undefined;
+  const state = ((data.state || rawJson.state || 'CREATED') as string).toUpperCase();
 
   if (!redirectUrlResult) {
     throw new Error('PhonePe did not return a valid redirectUrl in create payment response.');
@@ -102,13 +120,13 @@ export async function createPhonePePaymentOrder(
     orderId,
     state,
     redirectUrl: redirectUrlResult,
-    expireAt: data.expireAt,
+    expireAt: (data.expireAt || rawJson.expireAt) as string | undefined,
   };
 }
 
 /**
  * Fetches authoritative order status from PhonePe Order Status API.
- * Uses root-level order state as the authoritative order state.
+ * Uses root-level order state / payload.state as the authoritative order state.
  */
 export async function fetchPhonePeOrderStatus(
   merchantOrderId: string
@@ -125,7 +143,7 @@ export async function fetchPhonePeOrderStatus(
   let res = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `O-Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });
@@ -137,7 +155,7 @@ export async function fetchPhonePeOrderStatus(
     res = await fetch(url, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${freshToken}`,
+        Authorization: `O-Bearer ${freshToken}`,
         'Content-Type': 'application/json',
       },
     });
@@ -147,21 +165,38 @@ export async function fetchPhonePeOrderStatus(
 
   if (!res.ok || !rawJson) {
     const errorMsg =
-      rawJson?.message || rawJson?.error || 'PhonePe order status retrieval failed';
+      rawJson?.message || rawJson?.error || `PhonePe order status retrieval failed (status ${res.status})`;
     throw new Error(`PhonePe Status API Error (${res.status}): ${errorMsg}`);
   }
 
-  // Authoritative state is read from root-level state or data wrapper
-  const data = rawJson.data || rawJson;
+  // Authoritative state is read from payload, data wrapper, or root-level state
+  const data = (rawJson.data || rawJson.payload || rawJson) as Record<string, unknown>;
+  const rawPayload = (rawJson.payload || data.payload || {}) as Record<string, unknown>;
+
+  const state = (
+    (rawPayload.state as string) ||
+    (data.state as string) ||
+    (rawJson.state as string) ||
+    'PENDING'
+  ).toUpperCase();
+
+  const amount =
+    typeof rawPayload.amount === 'number'
+      ? rawPayload.amount
+      : typeof data.amount === 'number'
+      ? data.amount
+      : typeof rawJson.amount === 'number'
+      ? rawJson.amount
+      : 0;
 
   return {
-    orderId: data.orderId || rawJson.orderId || merchantOrderId,
-    merchantOrderId: data.merchantOrderId || rawJson.merchantOrderId || merchantOrderId,
-    state: (data.state || rawJson.state || 'PENDING').toUpperCase(),
-    amount: typeof data.amount === 'number' ? data.amount : (rawJson.amount || 0),
-    expireAt: data.expireAt || rawJson.expireAt,
-    paymentDetails: data.paymentDetails || rawJson.paymentDetails || [],
-    metaData: data.metaData || rawJson.metaData,
+    orderId: (data.orderId || rawJson.orderId || rawPayload.orderId || merchantOrderId) as string,
+    merchantOrderId: (data.merchantOrderId || rawJson.merchantOrderId || rawPayload.merchantOrderId || merchantOrderId) as string,
+    state,
+    amount,
+    expireAt: (data.expireAt || rawJson.expireAt || rawPayload.expireAt) as string | undefined,
+    paymentDetails: (data.paymentDetails || rawJson.paymentDetails || rawPayload.paymentDetails || []) as PhonePeOrderStatusResponse['paymentDetails'],
+    metaData: (data.metaData || data.metaInfo || rawJson.metaData || rawJson.metaInfo || rawPayload.metaData || rawPayload.metaInfo) as Record<string, string> | undefined,
   };
 }
 
@@ -171,10 +206,12 @@ export async function fetchPhonePeOrderStatus(
  * Supports PhonePe's HMAC-SHA256 signature scheme:
  * - Expected: HMAC_SHA256(rawBody, webhookSecret)
  * - Header format: `<signature>` or `<signature>###<keyIndex>`
+ * - Optional key ID header: `x-phonepe-checksum-key-id`
  */
 export function verifyPhonePeWebhookSignature(
   rawBody: string | Buffer,
-  signatureHeader: string | null | undefined
+  signatureHeader: string | null | undefined,
+  keyIdHeader?: string | null | undefined
 ): boolean {
   if (!rawBody || !signatureHeader) {
     return false;
@@ -189,28 +226,55 @@ export function verifyPhonePeWebhookSignature(
     }
 
     // If header has keyIndex separator "###<keyIndex>", split it
-    const [providedSignature, keyIndex] = signatureHeader.split('###');
+    let providedSignature = signatureHeader.trim();
+    let keyId = keyIdHeader?.trim();
 
-    if (config.webhookKeyId && keyIndex && keyIndex !== config.webhookKeyId) {
-      console.warn(`[PhonePe Webhook] Key index mismatch: expected "${config.webhookKeyId}", got "${keyIndex}".`);
-      return false;
+    if (providedSignature.includes('###')) {
+      const parts = providedSignature.split('###');
+      providedSignature = parts[0].trim();
+      if (!keyId && parts[1]) {
+        keyId = parts[1].trim();
+      }
+    }
+
+    // If keyId is provided, verify against configured webhookKeyId or clientVersion
+    if (keyId) {
+      const expectedKeyId = config.webhookKeyId || config.clientVersion;
+      if (expectedKeyId && keyId !== expectedKeyId) {
+        console.warn(`[PhonePe Webhook] Key ID mismatch: expected "${expectedKeyId}", got "${keyId}".`);
+        return false;
+      }
     }
 
     const payloadBuffer = typeof rawBody === 'string' ? Buffer.from(rawBody, 'utf8') : rawBody;
 
-    const expectedSignature = crypto
+    const expectedHex = crypto
       .createHmac('sha256', secret)
       .update(payloadBuffer)
       .digest('hex');
 
-    const expectedBuf = Buffer.from(expectedSignature, 'utf8');
-    const providedBuf = Buffer.from(providedSignature.trim(), 'utf8');
+    const expectedBase64 = crypto
+      .createHmac('sha256', secret)
+      .update(payloadBuffer)
+      .digest('base64');
 
-    if (expectedBuf.length !== providedBuf.length) {
-      return false;
+    const providedBuf = Buffer.from(providedSignature, 'utf8');
+
+    // Check hex match (case-insensitive timing safe compare)
+    const expectedHexBuf = Buffer.from(expectedHex.toLowerCase(), 'utf8');
+    const providedHexBuf = Buffer.from(providedSignature.toLowerCase(), 'utf8');
+
+    if (expectedHexBuf.length === providedHexBuf.length && crypto.timingSafeEqual(expectedHexBuf, providedHexBuf)) {
+      return true;
     }
 
-    return crypto.timingSafeEqual(expectedBuf, providedBuf);
+    // Check base64 match
+    const expectedBase64Buf = Buffer.from(expectedBase64, 'utf8');
+    if (expectedBase64Buf.length === providedBuf.length && crypto.timingSafeEqual(expectedBase64Buf, providedBuf)) {
+      return true;
+    }
+
+    return false;
   } catch (err) {
     console.error('[PhonePe Webhook Verification Error]', err);
     return false;

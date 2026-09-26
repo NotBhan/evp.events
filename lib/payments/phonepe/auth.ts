@@ -1,21 +1,23 @@
 import 'server-only';
-import type { PhonePeConfig, PhonePeOAuthTokenResponse } from './types';
+import type { PhonePeConfig, PhonePeOAuthTokenResponse, PhonePeEnv } from './types';
 
 let cachedAccessToken: string | null = null;
 let cachedExpiresAt = 0;
 
 export function getPhonePeConfig(): PhonePeConfig {
-  const env = (process.env.PHONEPE_ENV || 'sandbox').toLowerCase() === 'production'
-    ? 'production'
-    : 'sandbox';
+  const rawEnv = (process.env.PHONEPE_ENV || 'sandbox').trim().toLowerCase();
+  const env: PhonePeEnv = rawEnv === 'production' ? 'production' : 'sandbox';
 
-  const clientId = process.env.PHONEPE_CLIENT_ID || '';
-  const clientSecret = process.env.PHONEPE_CLIENT_SECRET || '';
-  const clientVersion = process.env.PHONEPE_CLIENT_VERSION || '1';
-  const webhookSecret = process.env.PHONEPE_WEBHOOK_SECRET || clientSecret;
-  const webhookKeyId = process.env.PHONEPE_WEBHOOK_KEY_ID || clientVersion;
-  const merchantId = process.env.PHONEPE_MERCHANT_ID || clientId;
+  const clientId = (process.env.PHONEPE_CLIENT_ID || '').trim();
+  const clientSecret = (process.env.PHONEPE_CLIENT_SECRET || '').trim();
+  const clientVersion = (process.env.PHONEPE_CLIENT_VERSION || '1').trim();
+  const webhookSecret = (process.env.PHONEPE_WEBHOOK_SECRET || clientSecret).trim();
+  const webhookKeyId = (process.env.PHONEPE_WEBHOOK_KEY_ID || clientVersion).trim();
+  const merchantId = (process.env.PHONEPE_MERCHANT_ID || clientId).trim();
 
+  // Official Sandbox endpoints:
+  // Authorization: https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token
+  // API base: https://api-preprod.phonepe.com/apis/pg-sandbox
   const defaultOAuthUrl = env === 'production'
     ? 'https://api.phonepe.com/apis/identity-manager/v1/oauth/token'
     : 'https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token';
@@ -84,7 +86,14 @@ export async function getPhonePeAccessToken(forceRefresh = false): Promise<strin
   }
 
   cachedAccessToken = data.access_token;
-  const expiresInSeconds = typeof data.expires_in === 'number' ? data.expires_in : 3600;
+  let expiresInSeconds = 3600;
+  if (typeof (data as unknown as Record<string, unknown>).expires_in === 'number') {
+    expiresInSeconds = (data as unknown as Record<string, unknown>).expires_in as number;
+  } else if (typeof (data as unknown as Record<string, unknown>).expires_at === 'number') {
+    const rawExp = (data as unknown as Record<string, unknown>).expires_at as number;
+    const expiresAtMs = rawExp > 1e11 ? rawExp : rawExp * 1000;
+    expiresInSeconds = Math.max(60, Math.floor((expiresAtMs - now) / 1000));
+  }
   cachedExpiresAt = now + expiresInSeconds * 1000;
 
   return cachedAccessToken;
