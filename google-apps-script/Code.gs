@@ -28,7 +28,7 @@ var BOOKING_SHEET_TAB_NAME = 'Sheet1';
 var OFFICIAL_PASS_CATALOG = {
   // Official Client Pass Tiers (Slide 6 of Sponsor Presentation)
   'solo-female': { id: 'solo-female', name: 'SOLO PASS FEMALE', price: 999 },
-  'couple': { id: 'couple', name: 'COUPLE PASS', price: 1599 },
+  'couple': { id: 'couple', name: 'COUPLE PASS', price: 1799 },
   'family': { id: 'family', name: 'FAMILY PASS (4 PAX)', price: 3099 },
   'group': { id: 'group', name: 'GROUP PASS (6 PAX)', price: 4599 },
   'vip': { id: 'vip', name: 'VIP PASS', price: 1499 },

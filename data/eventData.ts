@@ -308,9 +308,9 @@ export const eventData: EventConfig = {
     {
       id: "couple",
       name: "COUPLE PASS",
-      price: 1599,
+      price: 1799,
       currency: "₹",
-      priceDisplay: "₹1,599",
+      priceDisplay: "₹1,799",
       category: "Entry for 2",
       admitCount: 2,
       description: "Entry for 2",
