@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     // Local agent tooling — not part of the application source tree:
     ".commandcode/**",
     ".claude/**",
+    "lib/generated/**",
   ]),
 ]);
 

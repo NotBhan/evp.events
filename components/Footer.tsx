@@ -461,7 +461,7 @@ export default function Footer() {
         {/* Website Watermark */}
         <div className="mt-6 pt-4 border-t border-antique-gold/10 text-center">
           <p className="text-[11px] sm:text-xs font-body tracking-wider text-warm-cream/50 uppercase">
-            Website Powered by <span className="font-semibold text-bright-gold/80 hover:text-bright-gold transition-colors">Sarvin Pvt Ltd</span>
+            Website Powered by <span className="font-semibold text-bright-gold/80 hover:text-bright-gold transition-colors">Sarvin</span>
           </p>
         </div>
       </div>

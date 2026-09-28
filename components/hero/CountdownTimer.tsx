@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
+
+const emptySubscribe = () => () => {};
 
 interface TimeLeft {
   days: number;
@@ -34,10 +36,13 @@ function calculateTimeLeft(): TimeLeft {
  */
 export default function CountdownTimer({ className = '' }: { className?: string }) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft);
-  const [hasMounted, setHasMounted] = useState(false);
+  const hasMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
-    setHasMounted(true);
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
