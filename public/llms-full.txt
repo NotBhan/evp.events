@@ -33,35 +33,29 @@ Every ticket price is inclusive of applicable Goods and Services Tax (GST).
 - **Description:** Single entry pass for female guests with full festival grounds access.
 - **Inclusions:** Main Garba & Dandiya dance arena access, food court access, themed royal photo booths.
 
-### 2.2 Couple Pass — ₹1,999
-- **Admit Count:** 2 Attendees (One Male + One Female or Two Females)
-- **Badge:** MOST POPULAR
-- **Description:** Entry pass for two attendees to celebrate in the central dance arena.
-- **Inclusions:** Main concentric Garba dance floor access, food courtyard, photo zones.
+### 2.2 VIP Pass — ₹1,499
+- **Admit Count:** 1 Attendee
+- **Badge:** VIP EXPERIENCE
+- **Description:** Premium single entry with VIP hospitality and stage-front views.
+- **Inclusions:** Fast-track VIP entry lane, designated VIP seating & hospitality lounge, front-row view of stage performances.
 
-### 2.3 Family Pass (4 Pax) — ₹3,599
+### 2.3 Couple Pass — ₹1,799
+- **Admit Count:** 2 Attendees (One Male + One Female or Two Females)
+- **Badge:** POPULAR
+- **Description:** Festival access pass for two attendees to celebrate in the central dance arena.
+- **Inclusions:** Main Garba & Dandiya dance floor access, festival courtyard, photo zones.
+
+### 2.4 Family Pass (4 Pax) — ₹3,099
 - **Admit Count:** Up to 4 Family Members
 - **Badge:** FAMILY ACCESS
 - **Description:** Ideal for families celebrating together with children and elders.
-- **Inclusions:** Main arena access, dedicated family seating area, complimentary pair of dandiya sticks per attendee.
+- **Inclusions:** Full access to festival grounds & dance arenas, family seating and photo booth areas.
 
-### 2.4 Group Pass (6 Pax) — ₹4,999
+### 2.5 Group Pass (6 Pax) — ₹4,599
 - **Admit Count:** Up to 6 Attendees
-- **Badge:** BEST VALUE FOR FRIENDS
+- **Badge:** BEST VALUE
 - **Description:** Cost-effective pass designed for student groups and corporate friends.
-- **Inclusions:** Full access to all public dance circles and food court.
-
-### 2.5 VIP Couple Pass — ₹3,499
-- **Admit Count:** 2 Attendees
-- **Badge:** VIP ACCESS
-- **Description:** Elevated festival comfort with expedited entry and dedicated amenities.
-- **Inclusions:** Fast-track VIP entry lane, reserved elevated lounge seating with prime view of the stage, dedicated food & beverage service, complimentary premium wooden dandiya sticks.
-
-### 2.6 VIP Group Pass (6 Pax) — ₹7,999
-- **Admit Count:** Up to 6 Attendees
-- **Badge:** LUXURY CELEBRATION
-- **Description:** The ultimate royal festival celebration for VIP groups.
-- **Inclusions:** Fast-track entry, private elevated sofa lounge, personalized hospitality host, complimentary festival snack platter and beverages, premium dandiya pairs.
+- **Inclusions:** Entry pass for a group of up to 6 attendees, access to main dance circle & event grounds.
 
 ---
 
@@ -101,14 +95,11 @@ To ensure tamper-proof admission, zero scalping, and unambiguous gate security, 
 
 ## 5. CANCELLATION & REFUND POLICY
 
-- **Cancellation Window:** Cancellations are accepted until **Friday, October 10, 2026 at 11:59 PM IST** (6 days prior to the event).
-- **Refund Amount:**
-  - 80% of the booking base amount is refunded.
-  - A 20% cancellation and administrative processing fee is retained.
-  - Applicable GST is handled in accordance with statutory tax rules.
-- **Post-Deadline Policy:** From **Saturday, October 11, 2026, 12:00 AM IST onwards**, all ticket sales are final and strictly non-refundable. No refunds, credits, or exchanges will be provided for late cancellations or no-shows.
+- **Cancellation Window:** Confirmed and paid bookings can be cancelled through the website until **6 October 2026, 11:59:59 PM IST**.
+- **Refund Amount:** Only the statutory GST component included in the gross pass price is deducted: **Refund = Gross Paid Amount × 100 / 118** (18% GST-inclusive rate).
+- **Post-Deadline Policy:** After **6 October 2026**, website cancellation is permanently closed and bookings cannot be cancelled. Expired unpaid reservations are not cancellations and carry no refund because no payment was collected.
 - **Self-Service Cancellation:** Attendees can cancel eligible bookings directly via the [Find Pass](https://www.eventpointranchi.com/find-pass) lookup portal or by contacting the official helpdesk.
-- **Refund Timeline:** Approved refunds are processed to the original payment method within 5 to 7 business days.
+- **Refund Method:** Approved refunds are returned to the original payment method. Cancellation and refund processing are separate steps handled by the accounts desk.
 
 ---
 

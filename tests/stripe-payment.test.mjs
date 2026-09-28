@@ -363,9 +363,9 @@ async function runStripeTests() {
     const pricePoints = [
       { inr: 999, expectedPaise: 99900 },
       { inr: 1499, expectedPaise: 149900 },
-      { inr: 1999, expectedPaise: 199900 },
-      { inr: 3599, expectedPaise: 359900 },
-      { inr: 4999, expectedPaise: 499900 },
+      { inr: 1799, expectedPaise: 179900 },
+      { inr: 3099, expectedPaise: 309900 },
+      { inr: 4599, expectedPaise: 459900 },
     ];
 
     for (const p of pricePoints) {

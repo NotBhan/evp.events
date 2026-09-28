@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { eventData } from '@/data/eventData';
+import { eventData, passesByPrice } from '@/data/eventData';
 import { Ticket, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -158,7 +158,7 @@ export default function PricingPage() {
                 GST-Inclusive Ticket Rates
               </h3>
               <p>
-                All listed pass prices are inclusive of applicable GST. Pass rates (Solo ₹999, VIP ₹1,499, Couple ₹1,999, Family ₹3,599, Group ₹4,999) represent the complete customer payable amount. No additional tax is charged at checkout.
+                All listed pass prices are inclusive of applicable GST. Pass rates ({passesByPrice.map((tier) => `${tier.shortLabel} ${tier.priceDisplay}`).join(', ')}) represent the complete customer payable amount. No additional tax is charged at checkout.
               </p>
             </div>
           </div>

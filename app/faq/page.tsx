@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { eventData } from '@/data/eventData';
+import { eventData, passesByPrice } from '@/data/eventData';
 import { HelpCircle, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -438,7 +438,7 @@ export default function FaqPage() {
                 name: 'What is the ticket cancellation and refund policy?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Cancellations are accepted until Friday, October 10, 2026 at 11:59 PM IST with an 80% refund (20% processing fee). From Saturday, October 11, 2026 onwards, all pass sales are strictly non-refundable.',
+                  text: 'Confirmed and paid bookings can be cancelled through the website until 6 October 2026, 11:59:59 PM IST. Only the 18% GST component included in the gross pass price is deducted, so the refund is calculated as Gross Paid Amount × 100 / 118. After 6 October 2026, cancellation is closed and no refund applies.',
                 },
               },
               {
@@ -454,7 +454,7 @@ export default function FaqPage() {
                 name: 'What are the pass prices for Raas Utsav 2026?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Pass prices are inclusive of GST: Solo Pass Female is ₹999, Couple Pass is ₹1,999, Family Pass (4 pax) is ₹3,599, Group Pass (6 pax) is ₹4,999, VIP Couple Pass is ₹3,499, and VIP Group Pass (6 pax) is ₹7,999.',
+                  text: `Pass prices are inclusive of GST: ${passesByPrice.map((tier) => `${tier.shortLabel} ${tier.priceDisplay}`).join(', ')}.`,
                 },
               },
               {

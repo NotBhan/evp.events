@@ -41,7 +41,6 @@ async function run() {
       '5 to 7 business days',
       '5–7 working days',
       'Ranchi court',
-      'exclusive jurisdiction',
       'GST excluded',
       'taxes extra',
       'Daily 10:00 AM',

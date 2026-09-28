@@ -24,21 +24,15 @@
 var BOOKING_SPREADSHEET_ID = '1wxctnQdchiufXzt25hfW5OCf8i08fJJPk78xkGo9RRM';
 var BOOKING_SHEET_TAB_NAME = 'Sheet1';
 
-// Authoritative Pass Catalog matching official Raas Utsav passes from eventData.ts
+// Authoritative Pass Catalog — exactly the five official Raas Utsav pass tiers.
+// Pricing source of truth: the live event database (`passes` table). Keep these
+// values identical to the database records shown by `pnpm run db:inventory`.
 var OFFICIAL_PASS_CATALOG = {
-  // Official Client Pass Tiers (Slide 6 of Sponsor Presentation)
   'solo-female': { id: 'solo-female', name: 'SOLO PASS FEMALE', price: 999 },
+  'vip': { id: 'vip', name: 'VIP PASS', price: 1499 },
   'couple': { id: 'couple', name: 'COUPLE PASS', price: 1799 },
   'family': { id: 'family', name: 'FAMILY PASS (4 PAX)', price: 3099 },
-  'group': { id: 'group', name: 'GROUP PASS (6 PAX)', price: 4599 },
-  'vip': { id: 'vip', name: 'VIP PASS', price: 1499 },
-
-  // Generic / Alternate IDs
-  'pass-single': { id: 'pass-single', name: 'Single Day Pass', price: 499 },
-  'pass-couple': { id: 'pass-couple', name: 'Couple Pass (Pair Entry)', price: 899 },
-  'pass-vip': { id: 'pass-vip', name: 'VIP Access Pass', price: 1299 },
-  'pass-season': { id: 'pass-season', name: 'Full Festival Season Pass', price: 1899 },
-  'pass-group': { id: 'pass-group', name: 'Group Pass (5 Friends)', price: 2199 }
+  'group': { id: 'group', name: 'GROUP PASS (6 PAX)', price: 4599 }
 };
 
 // Fixed 14-column Google Sheet Header Row (A–N)
@@ -179,18 +173,10 @@ function doPost(e) {
         }
       }
     }
-    // Tertiary fallback: if unitPrice is provided and within legitimate festival bounds, accept
+    // Prices are never accepted from the caller: an unrecognized tier is rejected
+    // so no arbitrary amount can ever be written into the sheet.
     if (!passConfig) {
-      var clientPrice = parseFloat(data.unitPrice);
-      if (!isNaN(clientPrice) && clientPrice >= 300 && clientPrice <= 15000) {
-        passConfig = {
-          id: data.passId || 'custom-pass',
-          name: (data.passType || 'Festival Pass').trim(),
-          price: clientPrice
-        };
-      } else {
-        return responseJSON({ status: 'error', message: 'Unrecognized festival pass tier' });
-      }
+      return responseJSON({ status: 'error', message: 'Unrecognized festival pass tier' });
     }
 
     var quantity = parseInt(data.quantity, 10);

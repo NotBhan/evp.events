@@ -3,12 +3,51 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { eventData } from '@/data/eventData';
+import { eventData, passesByPrice } from '@/data/eventData';
 import { FileText, CheckCircle2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: `Terms & Conditions | ${eventData.eventName} ${eventData.year}`,
   description: `Official terms of service, pass reservation rules, and event details for ${eventData.eventName} ${eventData.year} at Chanakya BNR Hotel, Ranchi.`,
+};
+
+/**
+ * Official Event Point ticket terms & conditions, clause 1–22.
+ * Source of truth: the organiser's issued ticket terms. Do not reword, reorder,
+ * merge or omit any clause.
+ */
+const EVENT_TICKET_CLAUSES: string[] = [
+  `By accepting, holding or using a ticket, you acknowledge that you have read, understood, accepted and agreed to the full terms and conditions.`,
+  `The organizer reserves the right of admission.`,
+  `The organizer may alter the event schedule without prior notice.`,
+  `Entry is permitted only after a thorough security check and through designated entrances.`,
+  `Re-entry is not permitted.`,
+  `The venue does not allow food, beverages, liquids, bottles, cans, tins, bags, lighters, matchboxes, flammable items, or any illegal or hazardous substances inside the venue or seating area ("Prohibited Items"). Security personnel will search ticket holders' belongings at entry. If a ticket holder refuses a search and/or is found in possession of Prohibited Items, the organizer may deny entry without any refund or compensation.`,
+  `This is a drug-free event. If any ticket holder uses, possesses, procures, supplies, or consumes drugs, narcotics, or psychotropic substances (as defined under the Narcotic Drugs and Psychotropic Substances Act, 1985), the organizer will immediately evict them from the venue without refund or compensation. The organizer also reserves the right to initiate legal action as permitted under applicable law.`,
+  `The organizer reserves the right to refuse admission or eject any ticket holder who appears intoxicated, under the influence of drugs, behaves dangerously or inappropriately, or engages in conduct likely to cause harassment, damage, injury, or nuisance. The organizer's decision in such cases shall be final.`,
+  `The use of audio or video recording equipment, including still cameras, is strictly prohibited.`,
+  `The organizer issues this ticket in accordance with the rules and regulations of the event organizer and venue management.`,
+  `The organizer does not accept responsibility for any injury to persons or for any loss or damage to personal property brought to the event.`,
+  `In accordance with applicable law, persons below the legally permissible age may not purchase or consume alcoholic beverages.`,
+  `The organizer and venue are not liable for any issues arising from unauthorized copies or reproductions of this ticket. Except as stated herein, the ticket is non-refundable and cannot be exchanged, cancelled, or returned once purchased.`,
+  `If the organizer cancels the performance, the organizer will refund the ticket fee. All other charges, including parking fees, internet handling fees, and order processing fees, remain non-refundable.`,
+  `The ticket is invalid if the security features affixed to it are tampered with.`,
+  `You voluntarily assume all risks related to contracting COVID-19, H1N1, or any other communicable disease or illness, whether occurring before, during, or after the event, and waive all claims against the organizer arising from such risks.`,
+  `The event is subject to force majeure conditions.`,
+  `We request your cooperation at all times.`,
+  `All disputes or claims shall be subject to the exclusive jurisdiction of the courts in Mumbai.`,
+  `The organizer may modify these terms and conditions at its discretion from time to time.`,
+  `All secondary performances (if any) and the event lineup are subject to the artist's discretion.`,
+  `To ensure a high-quality user experience, the organizer may collect certain information (including personally identifiable information such as name, email address, or phone number) at the time of booking, registration, or payment, in accordance with its Terms and Conditions and Privacy Policy.`,
+];
+
+/** Admission validity note per pass tier (prices come from the canonical catalog). */
+const PASS_VALIDITY_NOTES: Record<string, string> = {
+  'solo-female': 'Grants entry for one female attendee.',
+  vip: 'Grants entry for one attendee with VIP lounge access.',
+  couple: 'Grants entry for two attendees (one male and one female, or two female attendees).',
+  family: 'Grants entry for up to four family members.',
+  group: 'Grants entry for up to six attendees.',
 };
 
 export default function TermsAndConditionsPage() {
@@ -41,10 +80,40 @@ export default function TermsAndConditionsPage() {
 
         {/* Policy Body */}
         <div className="space-y-10 font-body text-xs sm:text-sm text-warm-cream/90 leading-relaxed">
-          {/* 1. Definitions & Event Scope */}
+          {/* Official Ticket Terms & Conditions — Clauses 1 to 22 */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>1. DEFINITIONS &amp; EVENT SCOPE</span>
+              <span>EVENT TICKET TERMS &amp; CONDITIONS</span>
+            </h2>
+            <p className="text-warm-cream/85">
+              These clauses apply to every ticket holder for {eventData.eventName} {eventData.year}. By accepting,
+              holding or using a ticket you agree to each of the following clauses.
+            </p>
+            <ol className="space-y-3 list-decimal pl-5 sm:pl-6 marker:text-bright-gold marker:font-bold text-warm-cream/90">
+              {EVENT_TICKET_CLAUSES.map((clause, index) => (
+                <li key={index} className="leading-relaxed pl-1">
+                  {clause}
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          {/* Supplementary policy heading */}
+          <div className="text-center pt-2">
+            <h2 className="font-display text-xl sm:text-2xl text-warm-cream uppercase tracking-wide">
+              ADDITIONAL EVENT &amp; BOOKING POLICIES
+            </h2>
+            <div className="h-0.5 max-w-xs mx-auto bg-gradient-to-r from-transparent via-bright-gold to-transparent my-4" />
+            <p className="text-warm-cream/80 max-w-2xl mx-auto">
+              The sections below supplement the ticket terms above with the booking, payment, receipt, entry and
+              support rules for this website.
+            </p>
+          </div>
+
+          {/* A. Definitions & Event Scope */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
+            <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
+              <span>A. DEFINITIONS &amp; EVENT SCOPE</span>
             </h2>
             <p>
               &ldquo;Event&rdquo; refers to <strong>{eventData.eventName} {eventData.year}</strong> scheduled to take place on <strong>{eventData.dateDisplay}</strong> from <strong>{eventData.timeDisplay}</strong> at <strong>{eventData.venueDisplay}</strong>.
@@ -83,21 +152,22 @@ export default function TermsAndConditionsPage() {
             </div>
           </section>
 
-          {/* 2. Pass Tiers & Validity */}
+          {/* B. Pass Tiers & Validity */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>2. PASS CATEGORIES &amp; VALIDITY</span>
+              <span>B. PASS CATEGORIES &amp; VALIDITY</span>
             </h2>
             <ul className="space-y-2 list-disc list-inside text-warm-cream/85">
-              <li><strong>Solo Pass – Female (₹999):</strong> Grants entry for one female attendee.</li>
-              <li><strong>VIP Pass (₹1,499):</strong> Grants entry for one attendee with VIP lounge access.</li>
-              <li><strong>Couple Pass (₹1,999):</strong> Grants entry for two attendees (one male and one female, or two female attendees).</li>
-              <li><strong>Family Pass (₹3,599):</strong> Grants entry for up to four family members.</li>
-              <li><strong>Group Pass (₹4,999):</strong> Grants entry for up to six attendees.</li>
+              {passesByPrice.map((tier) => (
+                <li key={tier.id}>
+                  <strong>{tier.shortLabel} ({tier.priceDisplay}):</strong>{' '}
+                  {PASS_VALIDITY_NOTES[tier.id] ?? tier.description}
+                </li>
+              ))}
             </ul>
             <div className="p-3.5 rounded-xl bg-deep-plum/80 border border-antique-gold/20 text-xs text-warm-cream/90 space-y-1 mt-2">
               <span className="font-bold text-bright-gold uppercase tracking-wider block">
-                 Transfer by Possession (Pass Validity):
+                Transfer by Possession (Pass Validity):
               </span>
               <p className="leading-relaxed">
                 Pass validity is determined by the pass type, capacity, and validity of the booking/payment. The attendee name entered during booking does not by itself restrict who may use a valid pass. No separate ticket transfer feature or attendee re-assignment is required or provided; presentation of an active, confirmed pass grants admission up to the pass&apos;s specified capacity.
@@ -119,10 +189,10 @@ export default function TermsAndConditionsPage() {
             </div>
           </section>
 
-          {/* 3. Booking Lifecycle, Pay Now / Pay Later & 24-Hour Deadline */}
+          {/* C. Booking Lifecycle, Pay Now / Pay Later & 24-Hour Deadline */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>3. BOOKING PROCESS, PAY NOW &amp; PAY LATER (24-HOUR PAYMENT DEADLINE)</span>
+              <span>C. BOOKING PROCESS, PAY NOW &amp; PAY LATER (24-HOUR PAYMENT DEADLINE)</span>
             </h2>
             <p>
               Submitting an online booking form creates a booking in status <code>PENDING</code> and reserves exactly
@@ -159,10 +229,10 @@ export default function TermsAndConditionsPage() {
             </p>
           </section>
 
-          {/* 4. Payment Terms */}
+          {/* D. Payment Terms */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>4. PAYMENT TERMS &amp; PRICING TRANSPARENCY</span>
+              <span>D. PAYMENT TERMS &amp; PRICING TRANSPARENCY</span>
             </h2>
             <p>
               Payments for passes are handled online via authorized payment gateways or coordinated directly with the official Event Point team.
@@ -178,10 +248,10 @@ export default function TermsAndConditionsPage() {
             </p>
           </section>
 
-          {/* 5. Booking Reference, Receipt & Entry QR */}
+          {/* E. Booking Reference, Receipt & Entry QR */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>5. BOOKING REFERENCE, RECEIPT &amp; ENTRY QR</span>
+              <span>E. BOOKING REFERENCE, RECEIPT &amp; ENTRY QR</span>
             </h2>
             <p>
               Each reservation request generates a unique Request ID displayed on the booking receipt. Attendees should retain their digital receipt (or a printed copy of it) for booking reference and coordination with our support desk.
@@ -231,20 +301,20 @@ export default function TermsAndConditionsPage() {
             </div>
           </section>
 
-          {/* 6. Event Decorum & Coordination */}
+          {/* F. Event Decorum & Coordination */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>6. EVENT DECORUM &amp; VENUE GUIDANCE</span>
+              <span>F. EVENT DECORUM &amp; VENUE GUIDANCE</span>
             </h2>
             <p>
               Attendees are requested to maintain festival decorum and follow guidance provided by Event Point coordinators and venue staff to ensure a safe, celebratory, and family-friendly cultural celebration.
             </p>
           </section>
 
-          {/* 7. Contact for Inquiries */}
+          {/* G. Contact for Inquiries */}
           <section className="p-6 sm:p-8 rounded-3xl bg-card-surface border border-antique-gold/30 shadow-lg space-y-4">
             <h2 className="font-display text-lg sm:text-xl text-bright-gold uppercase tracking-wider flex items-center gap-2">
-              <span>7. QUESTIONS &amp; OFFICIAL CONTACT</span>
+              <span>G. QUESTIONS &amp; OFFICIAL CONTACT</span>
             </h2>
             <p>
               For questions regarding these Terms &amp; Conditions or pass reservations, please contact:

@@ -66,38 +66,38 @@ async function runAllTests() {
   assert.equal(t16.refundFormatted, '1270.34');
   console.log('  ✓ Test 16: VIP Pass ₹1,499 -> GST ₹228.66, Refund ₹1,270.34');
 
-  // Test 17: ₹1,999 -> ₹1,694.07
-  const t17 = calculateGstAndRefund(1999);
-  assert.equal(t17.grossRupees, 1999);
-  assert.equal(t17.gstRupees, 304.93);
-  assert.equal(t17.refundRupees, 1694.07);
-  assert.equal(t17.grossFormatted, '1999.00');
-  assert.equal(t17.gstFormatted, '304.93');
-  assert.equal(t17.refundFormatted, '1694.07');
-  console.log('  ✓ Test 17: Couple Pass ₹1,999 -> GST ₹304.93, Refund ₹1,694.07');
+  // Test 17: ₹1,799 -> ₹1,524.58
+  const t17 = calculateGstAndRefund(1799);
+  assert.equal(t17.grossRupees, 1799);
+  assert.equal(t17.gstRupees, 274.42);
+  assert.equal(t17.refundRupees, 1524.58);
+  assert.equal(t17.grossFormatted, '1799.00');
+  assert.equal(t17.gstFormatted, '274.42');
+  assert.equal(t17.refundFormatted, '1524.58');
+  console.log('  ✓ Test 17: Couple Pass ₹1,799 -> GST ₹274.42, Refund ₹1,524.58');
 
-  // Test 18: ₹3,599 -> ₹3,050.00
-  const t18 = calculateGstAndRefund(3599);
-  assert.equal(t18.grossRupees, 3599);
-  assert.equal(t18.gstRupees, 549.00);
-  assert.equal(t18.refundRupees, 3050.00);
-  assert.equal(t18.grossFormatted, '3599.00');
-  assert.equal(t18.gstFormatted, '549.00');
-  assert.equal(t18.refundFormatted, '3050.00');
-  console.log('  ✓ Test 18: Family Pass ₹3,599 -> GST ₹549.00, Refund ₹3,050.00');
+  // Test 18: ₹3,099 -> ₹2,626.27
+  const t18 = calculateGstAndRefund(3099);
+  assert.equal(t18.grossRupees, 3099);
+  assert.equal(t18.gstRupees, 472.73);
+  assert.equal(t18.refundRupees, 2626.27);
+  assert.equal(t18.grossFormatted, '3099.00');
+  assert.equal(t18.gstFormatted, '472.73');
+  assert.equal(t18.refundFormatted, '2626.27');
+  console.log('  ✓ Test 18: Family Pass ₹3,099 -> GST ₹472.73, Refund ₹2,626.27');
 
-  // Test 19: ₹4,999 -> ₹4,236.44
-  const t19 = calculateGstAndRefund(4999);
-  assert.equal(t19.grossRupees, 4999);
-  assert.equal(t19.gstRupees, 762.56);
-  assert.equal(t19.refundRupees, 4236.44);
-  assert.equal(t19.grossFormatted, '4999.00');
-  assert.equal(t19.gstFormatted, '762.56');
-  assert.equal(t19.refundFormatted, '4236.44');
-  console.log('  ✓ Test 19: Group Pass ₹4,999 -> GST ₹762.56, Refund ₹4,236.44');
+  // Test 19: ₹4,599 -> ₹3,897.46
+  const t19 = calculateGstAndRefund(4599);
+  assert.equal(t19.grossRupees, 4599);
+  assert.equal(t19.gstRupees, 701.54);
+  assert.equal(t19.refundRupees, 3897.46);
+  assert.equal(t19.grossFormatted, '4599.00');
+  assert.equal(t19.gstFormatted, '701.54');
+  assert.equal(t19.refundFormatted, '3897.46');
+  console.log('  ✓ Test 19: Group Pass ₹4,599 -> GST ₹701.54, Refund ₹3,897.46');
 
   // Test 20: Verified exact formula gross × 100 / 118
-  [999, 1499, 1999, 3599, 4999].forEach((amt) => {
+  [999, 1499, 1799, 3099, 4599].forEach((amt) => {
     const res = calculateGstAndRefund(amt);
     assert.equal(res.formula, 'Gross Paid Amount × 100 / 118');
     assert.equal(res.gstPaise + res.refundPaise, res.grossPaise);

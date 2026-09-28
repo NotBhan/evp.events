@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { eventData } from '@/data/eventData';
+import { eventData, passesByPrice } from '@/data/eventData';
+import { calculateGstAndRefund } from '@/lib/cancellation-constants';
 import { RotateCcw, AlertTriangle, CheckCircle2, Clock, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -194,36 +195,20 @@ export default function RefundAndCancellationPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-antique-gold/15 font-mono text-[11px] sm:text-xs text-warm-cream/90">
-                    <tr>
-                      <td className="py-2 pr-3 font-body font-medium">Solo Pass – Female</td>
-                      <td className="py-2 px-3 text-right">₹999.00</td>
-                      <td className="py-2 px-3 text-right text-vermilion">₹152.39</td>
-                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹846.61</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 pr-3 font-body font-medium">VIP Pass</td>
-                      <td className="py-2 px-3 text-right">₹1,499.00</td>
-                      <td className="py-2 px-3 text-right text-vermilion">₹228.66</td>
-                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹1,270.34</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 pr-3 font-body font-medium">Couple Pass</td>
-                      <td className="py-2 px-3 text-right">₹1,999.00</td>
-                      <td className="py-2 px-3 text-right text-vermilion">₹304.93</td>
-                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹1,694.07</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 pr-3 font-body font-medium">Family Pass</td>
-                      <td className="py-2 px-3 text-right">₹3,599.00</td>
-                      <td className="py-2 px-3 text-right text-vermilion">₹549.00</td>
-                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹3,050.00</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 pr-3 font-body font-medium">Group Pass</td>
-                      <td className="py-2 px-3 text-right">₹4,999.00</td>
-                      <td className="py-2 px-3 text-right text-vermilion">₹762.56</td>
-                      <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹4,236.44</td>
-                    </tr>
+                    {passesByPrice.map((tier) => {
+                      const refund = calculateGstAndRefund(tier.price);
+                      const formatAmount = (value: number) =>
+                        value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                      return (
+                        <tr key={tier.id}>
+                          <td className="py-2 pr-3 font-body font-medium">{tier.shortLabel}</td>
+                          <td className="py-2 px-3 text-right">₹{formatAmount(refund.grossRupees)}</td>
+                          <td className="py-2 px-3 text-right text-vermilion">₹{formatAmount(refund.gstRupees)}</td>
+                          <td className="py-2 pl-3 text-right font-bold text-emerald-300">₹{formatAmount(refund.refundRupees)}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

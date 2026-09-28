@@ -1,6 +1,8 @@
 export interface PassTier {
   id: string;
   name: string;
+  /** Short display label used in policy/disclosure copy (e.g. refund tables). */
+  shortLabel: string;
   price: number;
   currency: string;
   priceDisplay: string;
@@ -287,6 +289,7 @@ export const eventData: EventConfig = {
     {
       id: "solo-female",
       name: "SOLO PASS FEMALE",
+      shortLabel: "Solo Pass – Female",
       price: 999,
       currency: "₹",
       priceDisplay: "₹999",
@@ -308,6 +311,7 @@ export const eventData: EventConfig = {
     {
       id: "couple",
       name: "COUPLE PASS",
+      shortLabel: "Couple Pass",
       price: 1799,
       currency: "₹",
       priceDisplay: "₹1,799",
@@ -329,6 +333,7 @@ export const eventData: EventConfig = {
     {
       id: "family",
       name: "FAMILY PASS (4 PAX)",
+      shortLabel: "Family Pass",
       price: 3099,
       currency: "₹",
       priceDisplay: "₹3,099",
@@ -350,6 +355,7 @@ export const eventData: EventConfig = {
     {
       id: "group",
       name: "GROUP PASS (6 PAX)",
+      shortLabel: "Group Pass",
       price: 4599,
       currency: "₹",
       priceDisplay: "₹4,599",
@@ -371,6 +377,7 @@ export const eventData: EventConfig = {
     {
       id: "vip",
       name: "VIP PASS",
+      shortLabel: "VIP Pass",
       price: 1499,
       currency: "₹",
       priceDisplay: "₹1,499",
@@ -448,3 +455,18 @@ export const eventData: EventConfig = {
     { label: "Instagram", href: "https://www.instagram.com/raas_utsav_2026/" },
   ],
 };
+
+/**
+ * Pass tiers ordered by price (ascending), used by pricing disclosures, policy
+ * tables and structured data so no tier list is ever hardcoded twice.
+ *
+ * PRICING SOURCE OF TRUTH: the live `passes` table in PostgreSQL is authoritative.
+ * Every booking, payment order and receipt is priced server-side from `Pass.price`
+ * (see lib/passes.ts and app/api/bookings/route.ts). The `price` values in this file
+ * are the cached public presentation copy and must always mirror the database
+ * records shown by `pnpm run db:inventory`; syncPassCatalog() logs a warning if the
+ * two ever diverge.
+ */
+export const passesByPrice: PassTier[] = [...eventData.passes].sort(
+  (a, b) => a.price - b.price
+);
