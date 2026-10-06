@@ -1,3 +1,5 @@
+nodeLinker: hoisted
+shamefullyHoist: true
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
