@@ -10,14 +10,14 @@ import {
 } from '@/lib/booking-id';
 import { Prisma } from '@/lib/generated/prisma';
 
-export class InventoryUnavailableError extends Error {
+class InventoryUnavailableError extends Error {
   constructor(message = 'Pass inventory is currently not available or sold out.') {
     super(message);
     this.name = 'InventoryUnavailableError';
   }
 }
 
-export class PassNotFoundError extends Error {
+class PassNotFoundError extends Error {
   constructor(message = 'Requested pass tier was not found or is inactive.') {
     super(message);
     this.name = 'PassNotFoundError';
