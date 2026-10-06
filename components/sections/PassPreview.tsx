@@ -191,12 +191,26 @@ export default function PassPreview() {
                 {/* Bottom Section: Verified Price & Booking Action */}
                 <div className="relative z-10 pt-8 mt-2">
                   <div className="mb-4">
-                    <span className="font-body text-[10px] uppercase tracking-widest text-antique-gold/80 block font-semibold">
-                      OFFICIAL PRICE
-                    </span>
-                    <span className="font-display text-3xl sm:text-4xl text-bright-gold font-black tracking-tight drop-shadow-[0_2px_12px_rgba(243,198,76,0.3)]">
-                      {pass.priceDisplay}
-                    </span>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="font-body text-[10px] uppercase tracking-widest text-antique-gold/80 block font-semibold">
+                        FESTIVE OFFER
+                      </span>
+                      {pass.discountBadge && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm">
+                          {pass.discountBadge}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-baseline gap-2">
+                      <span className="font-display text-3xl sm:text-4xl text-bright-gold font-black tracking-tight drop-shadow-[0_2px_12px_rgba(243,198,76,0.3)]">
+                        {pass.priceDisplay}
+                      </span>
+                      {pass.originalPriceDisplay && (
+                        <span className="font-display text-base sm:text-lg text-warm-cream/45 line-through decoration-vermilion/80 decoration-2">
+                          {pass.originalPriceDisplay}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <Link

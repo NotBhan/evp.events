@@ -732,11 +732,21 @@ export default function ServicesContent() {
                     {pass.name}
                   </h3>
 
-                  <div className="pb-4 mb-4 border-b-2 border-dashed border-antique-gold/25 flex items-baseline gap-2">
+                  <div className="pb-4 mb-4 border-b-2 border-dashed border-antique-gold/25 flex flex-wrap items-baseline gap-2.5">
                     <span className="font-display text-4xl sm:text-5xl text-bright-gold font-bold">
                       {pass.priceDisplay}
                     </span>
-                    <span className="font-body text-xs text-warm-cream/60">
+                    {pass.originalPriceDisplay && (
+                      <span className="font-display text-xl sm:text-2xl text-warm-cream/45 line-through decoration-vermilion/80 decoration-2">
+                        {pass.originalPriceDisplay}
+                      </span>
+                    )}
+                    {pass.discountBadge && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm">
+                        {pass.discountBadge}
+                      </span>
+                    )}
+                    <span className="font-body text-xs text-warm-cream/60 w-full sm:w-auto">
                       / {pass.admitCount === 1 ? '1 Attendee' : `${pass.admitCount} Attendees`}
                     </span>
                   </div>

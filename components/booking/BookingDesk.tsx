@@ -34,6 +34,7 @@ import {
   Calendar,
   MapPin,
   Users,
+  Sparkles,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import type { SubmittedBookingRecord } from './BookingReceiptPrint';
@@ -945,11 +946,25 @@ export default function BookingDesk({
                                 {pass.description}
                               </p>
                             </div>
-                            <div className="pt-3 border-t border-antique-gold/20 flex items-baseline justify-between">
-                              <span className="text-xs text-warm-cream/50 uppercase font-body">Price</span>
-                              <span className="font-display text-2xl font-bold text-bright-gold">
-                                ₹{pass.price.toLocaleString('en-IN')}
-                              </span>
+                            <div className="pt-3 border-t border-antique-gold/20 flex items-baseline justify-between gap-2">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs text-warm-cream/50 uppercase font-body">Price</span>
+                                {pass.discountBadge && (
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                    {pass.discountBadge}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-baseline gap-2">
+                                {pass.originalPrice && (
+                                  <span className="font-display text-sm text-warm-cream/45 line-through decoration-vermilion/80">
+                                    ₹{pass.originalPrice.toLocaleString('en-IN')}
+                                  </span>
+                                )}
+                                <span className="font-display text-2xl font-bold text-bright-gold">
+                                  ₹{pass.price.toLocaleString('en-IN')}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         );
@@ -1025,6 +1040,25 @@ export default function BookingDesk({
                               {selectedPass.admitCount || 1} Person{((selectedPass.admitCount || 1) > 1) ? 's' : ''} Entry
                             </span>
                           </div>
+                          {selectedPass.originalPrice && (
+                            <div className="flex items-center justify-between py-1">
+                              <span className="text-warm-cream/60">Standard Rate:</span>
+                              <span className="font-mono line-through text-warm-cream/45">
+                                ₹{selectedPass.originalPrice.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          )}
+                          {selectedPass.originalPrice && (
+                            <div className="flex items-center justify-between py-1 text-emerald-400">
+                              <span className="flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-bright-gold" />
+                                <span>Festive Discount (15% OFF):</span>
+                              </span>
+                              <span className="font-semibold font-mono">
+                                -₹{(selectedPass.originalPrice - selectedPass.price).toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex items-center justify-between py-1">
                             <span className="text-warm-cream/60 flex items-center gap-1.5">
                               <ShieldCheck className="w-3.5 h-3.5 text-amber-glow" />
@@ -1042,9 +1076,16 @@ export default function BookingDesk({
                             </span>
                             <span className="text-[10px] text-warm-cream/40">Zero additional booking fees</span>
                           </div>
-                          <span className="font-display text-3xl font-bold text-bright-gold">
-                            ₹{selectedPass.price.toLocaleString('en-IN')}
-                          </span>
+                          <div className="flex flex-col items-end">
+                            {selectedPass.originalPrice && (
+                              <span className="text-xs text-warm-cream/45 line-through font-display decoration-vermilion/80">
+                                ₹{selectedPass.originalPrice.toLocaleString('en-IN')}
+                              </span>
+                            )}
+                            <span className="font-display text-3xl font-bold text-bright-gold">
+                              ₹{selectedPass.price.toLocaleString('en-IN')}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1270,6 +1311,25 @@ export default function BookingDesk({
                               {selectedPass.admitCount || 1} Person{((selectedPass.admitCount || 1) > 1) ? 's' : ''} Entry
                             </span>
                           </div>
+                          {selectedPass.originalPrice && (
+                            <div className="flex items-center justify-between py-1">
+                              <span className="text-warm-cream/60">Standard Rate:</span>
+                              <span className="font-mono line-through text-warm-cream/45">
+                                ₹{selectedPass.originalPrice.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          )}
+                          {selectedPass.originalPrice && (
+                            <div className="flex items-center justify-between py-1 text-emerald-400">
+                              <span className="flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-bright-gold" />
+                                <span>Festive Discount (15% OFF):</span>
+                              </span>
+                              <span className="font-semibold font-mono">
+                                -₹{(selectedPass.originalPrice - selectedPass.price).toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex items-center justify-between py-1">
                             <span className="text-warm-cream/60 flex items-center gap-1.5">
                               <ShieldCheck className="w-3.5 h-3.5 text-amber-glow" />
@@ -1287,9 +1347,16 @@ export default function BookingDesk({
                             </span>
                             <span className="text-[10px] text-warm-cream/40">Zero additional booking fees</span>
                           </div>
-                          <span className="font-display text-3xl font-bold text-bright-gold">
-                            ₹{selectedPass.price.toLocaleString('en-IN')}
-                          </span>
+                          <div className="flex flex-col items-end">
+                            {selectedPass.originalPrice && (
+                              <span className="text-xs text-warm-cream/45 line-through font-display decoration-vermilion/80">
+                                ₹{selectedPass.originalPrice.toLocaleString('en-IN')}
+                              </span>
+                            )}
+                            <span className="font-display text-3xl font-bold text-bright-gold">
+                              ₹{selectedPass.price.toLocaleString('en-IN')}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

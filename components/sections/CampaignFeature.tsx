@@ -567,9 +567,17 @@ export default function CampaignFeature() {
                   <ArrowRight className="w-4 h-4 text-deep-plum stroke-[2.5]" />
                 </Link>
 
-                <div className="text-xs font-body text-warm-cream/70">
+                <div className="text-xs font-body text-warm-cream/70 flex flex-wrap items-center gap-1.5">
                   <span>Passes starting from </span>
-                  <span className="text-bright-gold font-bold">{eventData.passes[0]?.priceDisplay || '₹999'}</span>
+                  <span className="text-bright-gold font-bold text-sm">{eventData.passes[0]?.priceDisplay || '₹849'}</span>
+                  {eventData.passes[0]?.originalPriceDisplay && (
+                    <span className="line-through text-warm-cream/45 text-xs decoration-vermilion/80">
+                      {eventData.passes[0].originalPriceDisplay}
+                    </span>
+                  )}
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                    15% OFF
+                  </span>
                 </div>
               </div>
             </div>

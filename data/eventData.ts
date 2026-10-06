@@ -4,8 +4,11 @@ export interface PassTier {
   /** Short display label used in policy/disclosure copy (e.g. refund tables). */
   shortLabel: string;
   price: number;
+  originalPrice?: number;
   currency: string;
   priceDisplay: string;
+  originalPriceDisplay?: string;
+  discountBadge?: string;
   category: string;
   admitCount: number;
   description: string;
@@ -284,15 +287,18 @@ export const eventData: EventConfig = {
     },
   ],
 
-  // Exact 5 client pass tiers from Slide 6 of the Sponsor Presentation
+  // Exact 5 client pass tiers with 15% festive discount applied & strikethrough original pricing
   passes: [
     {
       id: "solo-female",
       name: "SOLO PASS FEMALE",
       shortLabel: "Solo Pass – Female",
-      price: 999,
+      price: 849,
+      originalPrice: 999,
       currency: "₹",
-      priceDisplay: "₹999",
+      priceDisplay: "₹849",
+      originalPriceDisplay: "₹999",
+      discountBadge: "15% OFF",
       category: "Entry Pass",
       admitCount: 1,
       description: "Entry Pass",
@@ -312,9 +318,12 @@ export const eventData: EventConfig = {
       id: "couple",
       name: "COUPLE PASS",
       shortLabel: "Couple Pass",
-      price: 1799,
+      price: 1529,
+      originalPrice: 1799,
       currency: "₹",
-      priceDisplay: "₹1,799",
+      priceDisplay: "₹1,529",
+      originalPriceDisplay: "₹1,799",
+      discountBadge: "15% OFF",
       category: "Entry for 2",
       admitCount: 2,
       description: "Entry for 2",
@@ -334,9 +343,12 @@ export const eventData: EventConfig = {
       id: "family",
       name: "FAMILY PASS (4 PAX)",
       shortLabel: "Family Pass",
-      price: 3099,
+      price: 2634,
+      originalPrice: 3099,
       currency: "₹",
-      priceDisplay: "₹3,099",
+      priceDisplay: "₹2,634",
+      originalPriceDisplay: "₹3,099",
+      discountBadge: "15% OFF",
       category: "Up to 4 People",
       admitCount: 4,
       description: "Up to 4 People",
@@ -356,9 +368,12 @@ export const eventData: EventConfig = {
       id: "group",
       name: "GROUP PASS (6 PAX)",
       shortLabel: "Group Pass",
-      price: 4599,
+      price: 3909,
+      originalPrice: 4599,
       currency: "₹",
-      priceDisplay: "₹4,599",
+      priceDisplay: "₹3,909",
+      originalPriceDisplay: "₹4,599",
+      discountBadge: "15% OFF",
       category: "Up to 6 People",
       admitCount: 6,
       description: "Up to 6 People",
@@ -378,9 +393,12 @@ export const eventData: EventConfig = {
       id: "vip",
       name: "VIP PASS",
       shortLabel: "VIP Pass",
-      price: 1499,
+      price: 1274,
+      originalPrice: 1499,
       currency: "₹",
-      priceDisplay: "₹1,499",
+      priceDisplay: "₹1,274",
+      originalPriceDisplay: "₹1,499",
+      discountBadge: "15% OFF",
       category: "VIP Access",
       admitCount: 1,
       description: "VIP Access",

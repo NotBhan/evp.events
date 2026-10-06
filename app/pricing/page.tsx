@@ -37,7 +37,7 @@ export default function PricingPage() {
 
           <div className="mt-6 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-royal-maroon/80 border border-antique-gold/50 text-xs sm:text-sm font-body text-bright-gold font-semibold shadow-lg">
             <span>✦</span>
-            <span>All listed pass prices are inclusive of applicable GST.</span>
+            <span>Festive Offer: 15% Instant Discount Applied • Inclusive of GST</span>
             <span>✦</span>
           </div>
         </div>
@@ -77,11 +77,21 @@ export default function PricingPage() {
                     {tier.name}
                   </h2>
 
-                  <div className="flex items-baseline gap-1 mb-6 pb-4 border-b border-antique-gold/20">
+                  <div className="flex flex-wrap items-baseline gap-2 mb-6 pb-4 border-b border-antique-gold/20">
                     <span className="text-2xl sm:text-3xl font-display text-bright-gold font-bold">
                       ₹{tier.price.toLocaleString('en-IN')}
                     </span>
-                    <span className="text-xs text-warm-cream/60 font-body">/ pass</span>
+                    {tier.originalPrice && (
+                      <span className="text-base sm:text-lg font-display text-warm-cream/45 line-through decoration-vermilion/80 decoration-2">
+                        ₹{tier.originalPrice.toLocaleString('en-IN')}
+                      </span>
+                    )}
+                    {tier.discountBadge && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm ml-auto">
+                        {tier.discountBadge}
+                      </span>
+                    )}
+                    <span className="text-xs text-warm-cream/60 font-body w-full sm:w-auto">/ pass</span>
                   </div>
 
                   {/* Inclusions list */}

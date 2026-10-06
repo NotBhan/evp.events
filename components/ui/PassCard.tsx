@@ -52,8 +52,20 @@ export default function PassCard({ pass }: PassCardProps) {
           {pass.name}
         </h3>
 
-        <div className="font-display text-4xl text-bright-gold mb-3 font-bold">
-          {pass.priceDisplay}
+        <div className="flex flex-wrap items-baseline gap-2.5 mb-2">
+          <span className="font-display text-4xl sm:text-5xl text-bright-gold font-bold tracking-tight">
+            {pass.priceDisplay}
+          </span>
+          {pass.originalPriceDisplay && (
+            <span className="font-display text-xl sm:text-2xl text-warm-cream/45 line-through decoration-vermilion/80 decoration-2">
+              {pass.originalPriceDisplay}
+            </span>
+          )}
+          {pass.discountBadge && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm">
+              {pass.discountBadge}
+            </span>
+          )}
         </div>
 
         <p className="font-body text-xs sm:text-sm text-warm-cream/75 mb-6 leading-relaxed">

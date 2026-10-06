@@ -46,12 +46,12 @@ export function isCancellationAllowed(currentDate?: Date): boolean {
  * 2. gstPaise = Math.round((grossPaise * 18) / 118)
  * 3. refundPaise = grossPaise - gstPaise
  *
- * Verified exact outputs (current pass tiers):
- * - ₹999   -> GST ₹152.39, Refund ₹846.61
- * - ₹1,499 -> GST ₹228.66, Refund ₹1,270.34
- * - ₹1,799 -> GST ₹274.42, Refund ₹1,524.58
- * - ₹3,099 -> GST ₹472.73, Refund ₹2,626.27
- * - ₹4,599 -> GST ₹701.54, Refund ₹3,897.46
+ * Verified exact outputs (discounted pass tiers):
+ * - ₹849   -> GST ₹129.51, Refund ₹719.49
+ * - ₹1,274 -> GST ₹194.34, Refund ₹1,079.66
+ * - ₹1,529 -> GST ₹233.24, Refund ₹1,295.76
+ * - ₹2,634 -> GST ₹401.79, Refund ₹2,232.21
+ * - ₹3,909 -> GST ₹596.29, Refund ₹3,312.71
  */
 export function calculateGstAndRefund(grossRupees: number): RefundCalculation {
   const grossPaise = Math.round(grossRupees * 100);
