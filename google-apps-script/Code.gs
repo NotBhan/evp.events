@@ -24,7 +24,7 @@
 var BOOKING_SPREADSHEET_ID = '1wxctnQdchiufXzt25hfW5OCf8i08fJJPk78xkGo9RRM';
 var BOOKING_SHEET_TAB_NAME = 'Sheet1';
 
-// Authoritative Pass Catalog — exactly the five official Raas Utsav pass tiers.
+// Authoritative Pass Catalog — exactly the six official Raas Utsav pass tiers.
 // Pricing source of truth: the live event database (`passes` table). Keep these
 // values identical to the database records shown by `pnpm run db:inventory`.
 var OFFICIAL_PASS_CATALOG = {
@@ -32,7 +32,8 @@ var OFFICIAL_PASS_CATALOG = {
   'vip': { id: 'vip', name: 'VIP PASS', price: 1274, originalPrice: 1499 },
   'couple': { id: 'couple', name: 'COUPLE PASS', price: 1529, originalPrice: 1799 },
   'family': { id: 'family', name: 'FAMILY PASS (4 PAX)', price: 2634, originalPrice: 3099 },
-  'group': { id: 'group', name: 'GROUP PASS (6 PAX)', price: 3909, originalPrice: 4599 }
+  'group': { id: 'group', name: 'GROUP PASS (6 PAX)', price: 3909, originalPrice: 4599 },
+  'vip-couple': { id: 'vip-couple', name: 'VIP COUPLE PASS', price: 2899 }
 };
 
 // Fixed 14-column Google Sheet Header Row (A–N)

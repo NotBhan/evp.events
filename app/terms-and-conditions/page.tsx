@@ -48,6 +48,7 @@ const PASS_VALIDITY_NOTES: Record<string, string> = {
   couple: 'Grants entry for two attendees (one male and one female, or two female attendees).',
   family: 'Grants entry for up to four family members.',
   group: 'Grants entry for up to six attendees.',
+  'vip-couple': 'Grants fast-track entry for two attendees with VIP lounge access and reserved seating.',
 };
 
 export default function TermsAndConditionsPage() {

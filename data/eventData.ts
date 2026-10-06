@@ -414,6 +414,30 @@ export const eventData: EventConfig = {
         "Front-row view of stage performances",
       ],
     },
+    {
+      id: "vip-couple",
+      name: "VIP COUPLE PASS",
+      shortLabel: "VIP Couple Pass",
+      price: 2899,
+      currency: "₹",
+      priceDisplay: "₹2,899",
+      category: "VIP Entry for 2",
+      admitCount: 2,
+      description: "VIP Entry for 2",
+      badge: "VIP COUPLE",
+      features: [
+        "Fast-track VIP entry lane for two attendees",
+        "Access to designated VIP seating & hospitality lounge",
+        "Front-row view of stage performances & master dhol sets",
+        "Access to festival food court & royal photo booths",
+      ],
+      inclusions: [
+        "Fast-track VIP entry lane for two attendees",
+        "Access to designated VIP seating & hospitality lounge",
+        "Front-row view of stage performances & master dhol sets",
+        "Access to festival food court & royal photo booths",
+      ],
+    },
   ],
 
   gallery: {
